@@ -32,7 +32,8 @@
   html{
     scroll-snap-type:y proximity;   /* gentle: never fights a deliberate scroll */
     scroll-behavior:smooth;
-    scroll-padding-top:14px;
+    /* keep snapped sections clear of the notch / status bar */
+    scroll-padding-top:max(56px, calc(env(safe-area-inset-top) + 20px));
     -webkit-text-size-adjust:100%;
   }
   body{margin:0; background:var(--lane); color:var(--bone);
@@ -40,7 +41,8 @@
     overscroll-behavior-y:none;                    /* no rubber-band past the ends */
     -webkit-tap-highlight-color:transparent;       /* no grey flash on tap */
   }
-  section, .masthead{scroll-snap-align:start}
+  /* the masthead is already the top of the page — snapping it hides the eyebrow */
+  section{scroll-snap-align:start}
   @media (prefers-reduced-motion:reduce){
     html{scroll-snap-type:none; scroll-behavior:auto}
   }
@@ -49,6 +51,14 @@
     padding-right:max(16px, env(safe-area-inset-right));
     padding-bottom:max(64px, calc(env(safe-area-inset-bottom) + 44px));
     padding-left:max(16px, env(safe-area-inset-left))}
+
+  /* opaque bar behind the notch / status bar, so scrolled content
+     can never appear underneath it */
+  body::before{
+    content:""; position:fixed; top:0; left:0; right:0; z-index:40;
+    height:max(48px, env(safe-area-inset-top));
+    background:var(--lane); pointer-events:none;
+  }
 
   /* icons */
   .ico{width:15px; height:15px; flex:0 0 auto; stroke:var(--maple); fill:none;
