@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rambowls Scheduler — Fall 2026</title>
+<meta name="description" content="Schedule, availability and playoff eligibility for the Rambowls, 2026 Fall Wednesday League at The Gutter.">
+<meta name="theme-color" content="#0E1116">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rambowls Scheduler">
+<meta property="og:description" content="Every matchup, lane and start time for Fall 2026 — plus who's in each week and who still needs games to qualify.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='9.4' cy='8.4' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='14' cy='7.7' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='12.6' cy='11.9' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lane:#0E1116; --lane-2:#161B22; --maple:#C8873C; --bone:#F3EEE3;
+    --strike:#E85A52; --signal:#35A79B; --dim:#7A828E; --rule:#242B34;
+    --early:#4FB3A4; --late:#9B8CE0;
+    --display:"Anton", Impact, Haettenschweiler, sans-serif;
+    --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --data:"Roboto Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--lane); color:var(--bone);
+    font-family:var(--body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px; margin:0 auto; padding:28px 20px 80px}
+
+  /* icons */
+  .ico{width:15px; height:15px; flex:0 0 auto; stroke:var(--maple); fill:none;
+    stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px}
+
+  .ico.ball{width:23px; height:23px; stroke-width:1.3}
+
+  .topbar{font-family:var(--data); font-size:11px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--maple); margin:0 0 18px;
+    display:flex; align-items:center; gap:9px}
+
+  .masthead{display:flex; flex-direction:row; align-items:stretch; gap:12px;
+    border-bottom:3px solid var(--maple); padding-bottom:18px}
+  .masthead header{flex:1 1 42%; min-width:0}
+  .masthead .nextup{flex:1 1 58%; min-width:0; align-self:flex-start}
+  header{min-width:0}
+  h1{font-family:var(--display); font-size:clamp(27px,7.6vw,76px); line-height:.86;
+    margin:0; text-transform:uppercase; word-break:break-word}
+  .sub{font-family:var(--data); font-size:10px; color:var(--dim); margin-top:8px; line-height:1.6}
+  .stamps{margin-top:10px; display:flex; gap:5px; flex-wrap:wrap}
+  .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:3px;
+    font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--dim)}
+
+  /* next up */
+  .nextup{margin-top:0; border:1px solid var(--maple); border-radius:5px;
+    background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03)); padding:12px 13px}
+  .nextup .lab{font-family:var(--data); font-size:8.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--maple); margin-bottom:6px;
+    display:flex; align-items:center; gap:5px}
+  .nextup .lab .ico{width:11px !important; height:11px !important}
+  .nextup .date{font-family:var(--display); font-size:clamp(17px,4.6vw,34px);
+    line-height:1.05; text-transform:uppercase; margin-bottom:8px}
+  .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.65;
+    color:var(--bone); overflow-wrap:anywhere}
+  .nextup .games b{color:var(--maple); font-weight:500}
+  .nextup .cta{margin-top:11px}
+  .nextup .btn{font-size:9px; padding:8px 10px; letter-spacing:.06em}
+
+  /* shirt call */
+  .shirtwrap{margin-top:13px; padding-top:12px; border-top:1px solid rgba(200,135,60,.28)}
+  .shirtlab{font-family:var(--data); font-size:8.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--maple); margin-bottom:7px;
+    display:flex; align-items:center; gap:5px}
+  .shirtlab .ico{width:12px !important; height:12px !important}
+  .shirts{display:flex; flex-wrap:wrap; gap:5px}
+  .shirt{font-family:var(--data); font-size:9px; letter-spacing:.05em;
+    text-transform:uppercase; padding:5px 8px; border-radius:3px;
+    border:1px solid var(--rule); color:var(--dim); background:var(--lane-2)}
+  .shirt.on{border-color:var(--maple); background:var(--maple); color:#140C03; font-weight:700}
+  .shirt.tbd{border-style:dashed; color:var(--maple); border-color:var(--maple);
+    background:transparent}
+  .cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .btn{display:inline-block; padding:9px 15px; border-radius:4px; text-decoration:none;
+    font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    border:1px solid var(--rule); color:var(--bone); background:var(--lane-2); cursor:pointer}
+  .btn:hover{border-color:var(--maple); color:var(--maple)}
+  .btn.solid{background:var(--maple); color:#140C03; border-color:var(--maple); font-weight:700}
+  .btn.solid:hover{color:#140C03; opacity:.9}
+
+  section{margin-top:44px}
+  h2{font-family:var(--display); font-size:22px; letter-spacing:.06em;
+    text-transform:uppercase; margin:0 0 4px; font-weight:400;
+    display:flex; align-items:center; gap:9px}
+  h2 .ico{width:17px; height:17px}
+  .note{font-size:13.5px; color:var(--dim); margin:0 0 18px; max-width:62ch}
+
+  /* league sheet callout */
+  .sheetbox{display:flex; align-items:center; gap:14px; text-decoration:none;
+    border:1px solid var(--maple); border-radius:5px; padding:16px 18px;
+    background:rgba(200,135,60,.08); color:var(--bone); min-height:44px}
+  .sheetbox:hover{background:rgba(200,135,60,.16)}
+  .sheetbox .ico{width:22px; height:22px}
+  .sheetbox .txt{min-width:0}
+  .sheetbox .t{font-family:var(--data); font-size:12.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--maple); font-weight:700}
+  .sheetbox .d{font-size:13px; color:var(--dim); margin-top:3px}
+  .sheetbox .arw{margin-left:auto; color:var(--maple); font-size:20px; flex:0 0 auto}
+
+  .record{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--rule); border:1px solid var(--rule); border-radius:4px; overflow:hidden}
+  .rec-cell{background:var(--lane-2); padding:14px 12px}
+  .rec-val{font-family:var(--display); font-size:30px; line-height:1}
+  .rec-val .of{font-size:15px; color:var(--dim)}
+  .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--dim); margin-top:6px}
+
+  .board{border-top:1px solid var(--rule)}
+  .row{display:grid; grid-template-columns:1fr auto; gap:10px 16px; align-items:center;
+    padding:13px 2px; border-bottom:1px solid var(--rule)}
+  .who{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .name{font-weight:700; font-size:15.5px}
+  .meta{font-family:var(--data); font-size:11px; color:var(--dim)}
+  .track{display:flex; align-items:center; gap:9px}
+  .pins{display:flex; gap:5px}
+  .pin{width:11px; height:22px; display:block}
+  .count{font-family:var(--data); font-size:12px; color:var(--dim); min-width:30px; text-align:right}
+  .stamp{font-family:var(--data); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--signal); border:1px solid var(--signal); border-radius:2px; padding:2px 5px}
+  .flag{color:var(--strike); border-color:var(--strike)}
+  .row.alt .name{font-weight:500; color:#C3C9D2}
+  .divider{font-family:var(--data); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--maple); padding:20px 0 8px; border-bottom:1px solid var(--rule)}
+
+  .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
+  .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    padding:7px 12px; border:1px solid var(--rule); border-radius:3px; background:var(--lane-2);
+    color:var(--dim); cursor:pointer}
+  .tab:hover{color:var(--bone)}
+  .tab.on{border-color:var(--maple); color:var(--maple); background:rgba(200,135,60,.1)}
+  .tab.empty{opacity:.5}
+  .tab.empty.on{opacity:1}
+  .avail{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px}
+  .col{border:1px solid var(--rule); border-radius:4px; padding:12px 14px; background:var(--lane-2)}
+  .col h3{font-family:var(--data); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    margin:0 0 10px; font-weight:500}
+  .col.in h3{color:var(--signal)} .col.out h3{color:var(--strike)}
+  .col.maybe h3{color:var(--maple)} .col.quiet h3{color:var(--dim)}
+  .col ul{margin:0; padding:0; list-style:none}
+  .col li{font-size:14px; padding:3px 0}
+  .col li span{font-family:var(--data); font-size:10.5px; color:var(--dim)}
+
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th{font-family:var(--data); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--dim); font-weight:500; text-align:left; padding:0 10px 8px 0;
+    border-bottom:1px solid var(--rule)}
+  td{padding:10px 10px 10px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+  td.wk{font-family:var(--data); color:var(--maple); font-size:12px; white-space:nowrap}
+  td.when{font-family:var(--data); font-size:12px; color:var(--dim); white-space:nowrap}
+  td.score{font-family:var(--data); font-size:13px; white-space:nowrap; text-align:right}
+  tr.next td{background:rgba(200,135,60,.07)}
+  tr.done td{color:#B6BCC5}
+  .chip{font-family:var(--data); font-size:10px; font-weight:700; padding:2px 6px;
+    border-radius:2px; letter-spacing:.06em}
+  .w{background:var(--signal); color:#08110F}
+  .l{background:var(--strike); color:#170403}
+  .pending{color:var(--dim)}
+
+  /* early / late night badge */
+  .slot{display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+    font-family:var(--data); font-size:9px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; padding:3px 7px 3px 5px; border-radius:3px; border:1px solid}
+  .slot svg{width:11px; height:11px; fill:none; stroke-width:1.7;
+    stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto}
+  .slot.early{color:var(--early); border-color:rgba(79,179,164,.5); background:rgba(79,179,164,.1)}
+  .slot.early svg{stroke:var(--early)}
+  .slot.late{color:var(--late); border-color:rgba(155,140,224,.5); background:rgba(155,140,224,.1)}
+  .slot.late svg{stroke:var(--late)}
+  .slot.mini{padding:3px 4px; gap:0}
+  .tab.early{border-left:3px solid rgba(79,179,164,.75)}
+  .tab.late{border-left:3px solid rgba(155,140,224,.75)}
+  td.when .slot{margin-right:7px}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; margin:0 0 16px}
+  .legend span{font-family:var(--data); font-size:10.5px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px}
+
+  footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule);
+    font-family:var(--data); font-size:11px; color:var(--dim); line-height:1.75}
+  .venue{display:flex; align-items:center; gap:11px; text-decoration:none;
+    color:var(--bone); margin-bottom:16px; min-height:44px}
+  .venue:hover b{color:var(--maple)}
+  .venue .ico{width:19px; height:19px}
+  .venue b{font-weight:700; letter-spacing:.04em}
+  .venue span{font-size:11.5px; color:var(--dim); line-height:1.6}
+
+  /* ===== base = mobile ===== */
+  .wrap{max-width:900px; margin:0 auto; padding:20px 16px 64px}
+  .record{grid-template-columns:repeat(2,1fr)}
+  .row{grid-template-columns:1fr; gap:8px}
+  .track{justify-content:flex-start}
+  .tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    padding-bottom:4px; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto; min-height:44px}
+  .btn{min-height:44px; display:inline-flex; align-items:center}
+
+  /* schedule becomes cards on phones */
+  table, thead, tbody, tr, td, th{display:block}
+  thead{display:none}
+  tr{border-bottom:1px solid var(--rule); padding:12px 0; position:relative}
+  tr.next{background:rgba(200,135,60,.07); padding-left:10px; padding-right:10px;
+    border-radius:4px; border-bottom-color:var(--maple)}
+  td{border:0; padding:1px 0}
+  td.wk{position:absolute; top:12px; right:0; font-size:11px}
+  tr.next td.wk{right:10px}
+  td:nth-child(3){font-size:15.5px; font-weight:500; padding-right:34px}
+  td.when{font-size:12px}
+  td.score{text-align:left; padding-top:5px}
+
+  @media (min-width:640px){
+    .wrap{padding:28px 20px 80px}
+    .masthead{gap:28px; padding-bottom:22px}
+    .sub{font-size:12px; margin-top:10px}
+    .stamps{gap:8px; margin-top:12px}
+    .tag{padding:4px 10px; font-size:10.5px; letter-spacing:.13em}
+    .nextup{padding:18px 20px}
+    .nextup .lab{font-size:10px; letter-spacing:.18em; margin-bottom:8px; gap:7px}
+    .nextup .lab .ico{width:13px !important; height:13px !important}
+    .nextup .date{margin-bottom:10px}
+    .nextup .games{font-size:13px; line-height:1.9}
+    .nextup .cta{margin-top:16px}
+    .nextup .btn{font-size:11px; padding:9px 15px; letter-spacing:.1em}
+    .record{grid-template-columns:repeat(4,1fr)}
+    .row{grid-template-columns:1fr auto; gap:10px 16px}
+    .tabs{flex-wrap:wrap; overflow:visible}
+    table{display:table; width:100%; border-collapse:collapse; font-size:14px}
+    thead{display:table-header-group}
+    tbody{display:table-row-group}
+    tr{display:table-row; padding:0; border-bottom:0}
+    tr.next{border-radius:0; padding:0}
+    td, th{display:table-cell}
+    td{padding:10px 10px 10px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+    td.wk{position:static; font-size:12px}
+    td:nth-child(3){font-size:14px; font-weight:400; padding-right:10px}
+    td.score{text-align:right; padding-top:10px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="topbar">
+    <svg class="ico ball" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
+    2026 Fall Wednesday League · The Gutter
+  </p>
+
+  <div class="masthead">
+    <header>
+      <h1>Rambowls<br>Scheduler</h1>
+      <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
+      <div class="stamps">
+        <span class="tag">Read only</span>
+        <span class="tag" id="updated">Updated —</span>
+      </div>
+    </header>
+    <div class="nextup" id="nextup"></div>
+  </div>
+
+  <section>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Where we stand</h2>
+    <p class="note" id="throughNote">Team record and scoring so far.</p>
+    <div class="record">
+      <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg team total</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recThem">—</div><div class="rec-lab">Avg opponent</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.1 0 3.2 2.2 3.2 4.1 0 1.5-.7 2.4-.7 3.4 0 1.5 2.1 3.6 2.1 8.2 0 3.1-2.1 4.3-4.6 4.3s-4.6-1.2-4.6-4.3c0-4.6 2.1-6.7 2.1-8.2 0-1-.7-1.9-.7-3.4C8.8 5.2 9.9 3 12 3z"/><path d="M9.2 11.2c1.8.9 3.8.9 5.6 0"/></svg>Road to eligibility</h2>
+    <p class="note">Six games logged and you're eligible for semis. One pin per game bowled. Anyone still dark is someone we need on a lane.</p>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.6a3.4 3.4 0 0 0-3.4-3.4H6.4A3.4 3.4 0 0 0 3 18.4V20"/><circle cx="9.5" cy="7.6" r="3.4"/><path d="M21 20v-1.6a3.4 3.4 0 0 0-2.6-3.3M15.6 4.4a3.4 3.4 0 0 1 0 6.4"/></svg><span id="availHead">Availability</span></h2>
+    <div class="tabs" id="availTabs"></div>
+    <p class="note" id="availNote"></p>
+    <div class="avail" id="avail"></div>
+  </section>
+
+  <section>
+    <a class="sheetbox" id="sheetLink" href="#" target="_blank" rel="noopener">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.5h17M3.5 15h17M9.5 3.5v17M15 3.5v17"/></svg>
+      <span class="txt">
+        <span class="t">Official league sheet</span>
+        <span class="d">Every score, standing and handicap, straight from the league</span>
+      </span>
+      <span class="arw" aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <section>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>Full schedule</h2>
+    <p class="note" id="schedNote">Every matchup, lane and start time for the season. All start times are PM.</p>
+    <div class="legend" id="legend"></div>
+    <table>
+      <thead><tr><th>Wk</th><th>When</th><th>Opponent</th><th style="text-align:right">Result</th></tr></thead>
+      <tbody id="sched"></tbody>
+    </table>
+    <div class="cta">
+      <button class="btn" id="icsAll">Add all 24 games to calendar</button>
+      <button class="btn" id="icsRest">Remaining games only</button>
+    </div>
+  </section>
+
+  <footer>
+    <a class="venue" href="https://www.google.com/maps/search/?api=1&amp;query=The+Gutter+Williamsburg+200+N+14th+St+Brooklyn+NY" target="_blank" rel="noopener">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.5s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10.3" r="2.6"/></svg>
+      <span><b>The Gutter Williamsburg</b><br>200 N. 14th Street, Brooklyn</span>
+    </a>
+    Scores cross-checked against the league sheet each week.
+  </footer>
+</div>
+
+<script>
+/* ---------- config ---------- */
+const SHEET_URL     = "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/edit?gid=62#gid=62";
+const LAST_UPDATED  = "2026-08-26";
+
+/* ============================================================
+   SHIRT CALL — change the value on the right, save, push.
+   Options: "leroy"  = Leroy Jenkins
+            "aloha"  = Aloha
+            "fresh"  = Fresh Fit
+            null     = not called yet
+   ============================================================ */
+const SHIRT_CALLS = {
+  "2026-08-26": "fresh",
+  "2026-09-02": null
+};
+
+const PIN_ON  = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="#F3EEE3"/><path d="M3.4 8.6c1.7.9 3.5.9 5.2 0" stroke="#E85A52" stroke-width="1.6" fill="none"/></svg>';
+const PIN_OFF = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="none" stroke="#2E3742" stroke-width="1.2"/></svg>';
+
+/* ---------- data ---------- */
+// avg / hcp = current league figures, verified against the Rambowls tab.
+// Sheet formula: ballast = 4 - games played; avg = (scratch total + ballast x
+// previous avg) / (games + ballast); hcp = 70% of (200 - avg).
+const roster = [
+  {name:"Eric Rodriguez",  avg:121, hcp:55, games:2, alt:false},
+  {name:"Ken Yamaguchi",   avg:138, hcp:44, games:2, alt:false},
+  {name:"Ron Upperman",    avg:109, hcp:64, games:1, alt:false},
+  {name:"Michael Seidler", avg:126, hcp:52, games:1, alt:false},
+  {name:"Phil Marken",     avg:134, hcp:47, games:0, alt:false},
+  {name:"Dave Prah",       avg:138, hcp:43, games:0, alt:false},
+  {name:"Kelvyn Perez",    avg:null, hcp:56, games:0, alt:true},
+  {name:"Jamiqve Mascoll", avg:null, hcp:56, games:0, alt:true},
+  {name:"Pete",            avg:null, hcp:56, games:0, alt:true}
+];
+
+// iso = calendar date; time24 = 24h start time
+const schedule = [
+  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads", us:533, them:470},
+  {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",            us:514, them:532},
+  {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly"},
+  {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds"},
+  {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals"},
+  {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts"},
+  {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful"},
+  {wk:4,  iso:"2026-09-09", time24:"20:10", lane:7, opp:"Glory Bowl"},
+  {wk:5,  iso:"2026-09-16", time24:"19:00", lane:6, opp:"Bowls on Parade"},
+  {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats"},
+  {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends"},
+  {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters"},
+  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads"},
+  {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
+  {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
+  {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
+  {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
+  {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
+  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
+  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly"},
+  {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split"},
+  {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl"},
+  {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM"},
+  {wk:12, iso:"2026-11-04", time24:"20:10", lane:6, opp:"Tokyo Drifters"}
+];
+
+// Shirt options. `shirt` on a night = the id that's been called,
+// or null / omitted when nobody's decided yet.
+const SHIRTS = [
+  {id:"leroy", label:"Leroy Jenkins"},
+  {id:"aloha", label:"Aloha"},
+  {id:"fresh", label:"Fresh Fit"}
+];
+
+// One entry per bowling night, keyed by date.
+//   played  -> who actually bowled, and how many games
+//   upcoming -> who has replied what
+const nights = {
+  "2026-08-19": {
+    played: true,
+    bowled: [["Eric",2], ["Ken",2], ["Ron",1], ["Michael",1]],
+    sat:    [["Phil",""], ["Prah",""]]
+  },
+  "2026-08-26": {
+    played: false,
+    in:    [["Eric",""], ["Ron",""], ["Prah",""]],
+    maybe: [],
+    out:   [],
+    quiet: [["Ken",""], ["Michael",""], ["Phil",""],
+            ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
+  },
+  "2026-09-02": {
+    played: false,
+    in:    [["Eric",""], ["Kelvyn","alt"]],
+    maybe: [["Michael",""]],
+    out:   [["Ken",""], ["Jamiqve","alt"]],
+    quiet: [["Phil",""], ["Ron",""], ["Prah",""], ["Pete","alt"]]
+  }
+};
+
+/* ---------- early / late night ---------- */
+const SUN  = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.2A8.4 8.4 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg>';
+
+// A night is "early" when its first game starts before 9pm.
+function nightSlot(iso){
+  const first = schedule.filter(g => g.iso === iso)[0];
+  if (!first) return null;
+  return parseInt(first.time24, 10) < 21 ? "early" : "late";
+}
+
+function slotBadge(iso){
+  const slot = nightSlot(iso);
+  if (!slot) return "";
+  const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24));
+  return `<span class="slot ${slot}">${slot === "early" ? SUN : MOON}`
+       + `${slot} · ${times.join(" & ")}</span>`;
+}
+
+// compact icon-only marker for schedule rows
+function slotBadge2(g){
+  const slot = parseInt(g.time24, 10) < 21 ? "early" : "late";
+  return `<span class="slot ${slot} mini" title="${slot} night">`
+       + `${slot === "early" ? SUN : MOON}</span>`;
+}
+
+/* ---------- helpers ---------- */
+const pad = n => String(n).padStart(2,"0");
+
+function fmtTime(t24){
+  let [h,m] = t24.split(":").map(Number);
+  const h12 = h > 12 ? h - 12 : h;
+  return `${h12}:${pad(m)}`;
+}
+function fmtDate(iso, long){
+  const [y,mo,d] = iso.split("-").map(Number);
+  const dt = new Date(y, mo-1, d);
+  const opts = long
+    ? {weekday:"long", month:"long", day:"numeric"}
+    : {month:"short", day:"numeric"};
+  return dt.toLocaleDateString("en-US", opts);
+}
+function todayISO(){
+  const n = new Date();
+  return `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;
+}
+
+/* ---------- next up ---------- */
+function nextNight(){
+  const t = todayISO();
+  const upcoming = schedule.filter(g => g.iso >= t).map(g => g.iso);
+  return upcoming.length ? upcoming[0] : null;
+}
+
+function renderNextUp(){
+  const iso = nextNight();
+  const el = document.getElementById("nextup");
+  if (!iso){
+    el.innerHTML = `<div class="lab">Season complete</div>
+      <div class="date">That's a wrap</div>
+      <div class="games">All 24 games bowled. Results below.</div>`;
+    return;
+  }
+  const games = schedule.filter(g => g.iso === iso);
+  const isToday = iso === todayISO();
+  const wk = games[0].wk;
+  const lines = games.map(g =>
+    `<b>${fmtTime(g.time24)}</b> · Lane ${g.lane} · ${g.opp}`).join("<br>");
+
+  const called = SHIRT_CALLS[iso] || null;
+  const chips = called
+    ? SHIRTS.map(sh =>
+        `<span class="shirt${sh.id === called ? " on" : ""}">${sh.label}</span>`).join("")
+    : `<span class="shirt tbd">Not called yet</span>` +
+      SHIRTS.map(sh => `<span class="shirt">${sh.label}</span>`).join("");
+
+  el.innerHTML = `
+    <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
+    <div class="date">${fmtDate(iso, true)}</div>
+    <div style="margin:-2px 0 9px">${slotBadge(iso)}</div>
+    <div class="games">${lines}</div>
+    <div class="shirtwrap">
+      <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>What we're wearing</div>
+      <div class="shirts">${chips}</div>
+    </div>`;
+}
+
+/* ---------- eligibility board ---------- */
+function renderBoard(){
+  const line = p => {
+    const pins = Array.from({length:6}, (_,i) => i < p.games ? PIN_ON : PIN_OFF).join("");
+    let mark = "";
+    if (p.games >= 6) mark = '<span class="stamp">Qualified</span>';
+    else if (!p.alt && p.games === 0) mark = '<span class="stamp flag">Needs games</span>';
+    const meta = p.avg ? `avg ${p.avg} · hcp ${p.hcp}` : `no average yet · hcp ${p.hcp}`;
+    return `<div class="row${p.alt ? " alt" : ""}">
+      <div class="who"><span class="name">${p.name}</span><span class="meta">${meta}</span></div>
+      <div class="track">${mark}<span class="pins">${pins}</span><span class="count">${p.games}/6</span></div>
+    </div>`;
+  };
+  const starters = roster.filter(p => !p.alt).map(line).join("");
+  const alts = roster.filter(p => p.alt).map(line).join("");
+  document.getElementById("board").innerHTML =
+    starters + `<div class="divider">Alternates</div>` + alts;
+}
+
+/* ---------- record ---------- */
+function renderRecord(){
+  const played = schedule.filter(g => g.us != null);
+  const w = played.filter(g => g.us >  g.them).length;
+  const l = played.filter(g => g.us <  g.them).length;
+  const t = played.filter(g => g.us === g.them).length;
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : "—";
+
+  document.getElementById("recRecord").textContent = t ? `${w}-${l}-${t}` : `${w}–${l}`;
+  document.getElementById("recUs").textContent   = avg(played.map(g=>g.us));
+  document.getElementById("recThem").textContent = avg(played.map(g=>g.them));
+
+  const starters = roster.filter(p => !p.alt);
+  const qual = starters.filter(p => p.games >= 6).length;
+  document.getElementById("recQual").innerHTML =
+    `${qual}<span class="of">/${starters.length}</span>`;
+
+  const lastWk = played.length ? played[played.length-1].wk : 0;
+  document.getElementById("throughNote").textContent =
+    played.length
+      ? `Through Week ${lastWk} · ${played.length} of 24 games bowled.`
+      : `No games logged yet.`;
+}
+
+/* ---------- availability ---------- */
+function col(cls, title, people){
+  return `<div class="col ${cls}"><h3>${title}</h3><ul>${
+    people && people.length
+      ? people.map(([n,tag]) => `<li>${n}${tag ? ` <span>${tag}</span>` : ""}</li>`).join("")
+      : `<li style="color:var(--dim)">—</li>`
+  }</ul></div>`;
+}
+
+function renderNight(iso){
+  const head = document.getElementById("availHead");
+  const note = document.getElementById("availNote");
+  const box  = document.getElementById("avail");
+  const data = nights[iso];
+  const games = schedule.filter(g => g.iso === iso);
+  const wk = games.length ? games[0].wk : "";
+  const matchups = games.map(g => `${g.opp} at ${fmtTime(g.time24)} on Lane ${g.lane}`).join(", ");
+
+  document.querySelectorAll("#availTabs .tab").forEach(t =>
+    t.classList.toggle("on", t.dataset.iso === iso));
+
+  if (!data){
+    const past = iso < todayISO();
+    head.textContent = `Availability · Week ${wk}`;
+    note.textContent = past
+      ? `${fmtDate(iso, true)} — ${matchups}. No lineup recorded for this night.`
+      : `${fmtDate(iso, true)} — ${matchups}. Nobody's replied for this week yet — send it in early if you already know.`;
+    box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", []);
+    return;
+  }
+
+  if (data.played){
+    head.textContent = `Who bowled · Week ${wk}`;
+    note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
+    const bowled = (data.bowled || []).map(([n,g]) => [n, `${g} ${g===1?"game":"games"}`]);
+    box.innerHTML = col("in","Bowled", bowled) + col("quiet","Sat out", data.sat);
+  } else {
+    const today = iso === todayISO();
+    head.textContent = `${today ? "Tonight" : "Availability"} · Week ${wk}`;
+    note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
+    box.innerHTML =
+      col("in","In",data.in) + col("maybe","Maybe",data.maybe) +
+      col("out","Out",data.out) + col("quiet","No reply yet",data.quiet);
+  }
+}
+
+function renderAvailability(){
+  // every bowling night in the season, not just the ones with data
+  const isos = [...new Set(schedule.map(g => g.iso))].sort();
+  const tabs = document.getElementById("availTabs");
+  const t = todayISO();
+  const active = isos.find(d => d >= t) || isos[isos.length-1];
+
+  tabs.innerHTML = isos.map(d => {
+    const g = schedule.filter(x => x.iso === d)[0];
+    const has = !!nights[d];
+    return `<button class="tab ${nightSlot(d)}${has ? "" : " empty"}" data-iso="${d}">Wk ${g.wk} · ${fmtDate(d)}</button>`;
+  }).join("");
+
+  tabs.querySelectorAll(".tab").forEach(btn =>
+    btn.addEventListener("click", () => renderNight(btn.dataset.iso)));
+
+  renderNight(active);
+
+  // bring the current week into view in the scroller
+  const on = tabs.querySelector(".tab.on");
+  if (on && on.scrollIntoView){
+    on.scrollIntoView({block:"nearest", inline:"center"});
+  }
+}
+
+/* ---------- schedule table ---------- */
+function renderLegend(){
+  const isos = [...new Set(schedule.map(g => g.iso))];
+  const early = isos.filter(d => nightSlot(d) === "early").length;
+  const late  = isos.length - early;
+  document.getElementById("legend").innerHTML =
+    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 — ${early} of ${isos.length}</span>`
+  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 — ${late} of ${isos.length}</span>`;
+}
+
+function renderSchedule(){
+  const next = nextNight();
+  document.getElementById("sched").innerHTML = schedule.map(g => {
+    const done = g.us != null;
+    let result = `<span class="pending">—</span>`;
+    if (done){
+      const win = g.us > g.them;
+      result = `<span class="chip ${win?"w":"l"}">${win?"W":"L"}</span> ${g.us}–${g.them}`;
+    }
+    return `<tr class="${done?"done":""}${g.iso===next?" next":""}">
+      <td class="wk">${g.wk}</td>
+      <td class="when">${slotBadge2(g)}${fmtDate(g.iso)} · ${fmtTime(g.time24)} · L${g.lane}</td>
+      <td>${g.opp}</td>
+      <td class="score">${result}</td>
+    </tr>`;
+  }).join("");
+}
+
+/* ---------- calendar export ---------- */
+function icsStamp(iso, t24, addMin){
+  const [y,mo,d] = iso.split("-").map(Number);
+  const [h,mi] = t24.split(":").map(Number);
+  const dt = new Date(y, mo-1, d, h, mi);
+  if (addMin) dt.setMinutes(dt.getMinutes() + addMin);
+  return `${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}`
+       + `T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+}
+
+function downloadICS(games, filename){
+  const lines = [
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Rambowls Scheduler//EN","CALSCALE:GREGORIAN"
+  ];
+  games.forEach((g,i) => {
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:rambowls-${g.iso}-${g.time24.replace(":","")}-${i}@rambowls`,
+      `DTSTART:${icsStamp(g.iso, g.time24)}`,
+      `DTEND:${icsStamp(g.iso, g.time24, 65)}`,
+      `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
+      `LOCATION:The Gutter — Lane ${g.lane}`,
+      `DESCRIPTION:Week ${g.wk} — 2026 Fall Wednesday League. Lane ${g.lane}.`,
+      "BEGIN:VALARM","TRIGGER:-PT60M","ACTION:DISPLAY",
+      "DESCRIPTION:Rambowls in 1 hour","END:VALARM",
+      "END:VEVENT"
+    );
+  });
+  lines.push("END:VCALENDAR");
+
+  const blob = new Blob([lines.join("\r\n")], {type:"text/calendar;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `${filename}.ics`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ---------- boot ---------- */
+document.getElementById("updated").textContent =
+  `Updated ${fmtDate(LAST_UPDATED)}`;
+document.getElementById("sheetLink").href = SHEET_URL;
+renderNextUp();
+renderRecord();
+renderBoard();
+renderAvailability();
+renderLegend();
+renderSchedule();
+document.getElementById("icsAll").onclick  = () => downloadICS(schedule, "rambowls-fall-2026");
+document.getElementById("icsRest").onclick = () => {
+  const t = todayISO();
+  downloadICS(schedule.filter(g => g.iso >= t), "rambowls-remaining");
+};
+</script>
+</body>
+</html>
