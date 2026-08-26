@@ -10,6 +10,12 @@
 <meta property="og:title" content="Rambowls Scheduler">
 <meta property="og:description" content="Every matchup, lane and start time for Fall 2026 — plus who's in each week and who still needs games to qualify.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='9.4' cy='8.4' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='14' cy='7.7' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='12.6' cy='11.9' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rambowls">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -702,6 +708,13 @@ document.getElementById("icsRest").onclick = () => {
   const t = todayISO();
   downloadICS(schedule.filter(g => g.iso >= t), "rambowls-remaining");
 };
+
+// offline support — safe to fail, the page works without it
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
