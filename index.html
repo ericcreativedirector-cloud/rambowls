@@ -29,9 +29,24 @@
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
   *{box-sizing:border-box}
+  html{
+    scroll-snap-type:y proximity;   /* gentle: never fights a deliberate scroll */
+    scroll-behavior:smooth;
+    scroll-padding-top:14px;
+    -webkit-text-size-adjust:100%;
+  }
   body{margin:0; background:var(--lane); color:var(--bone);
-    font-family:var(--body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased}
-  .wrap{max-width:900px; margin:0 auto; padding:28px 20px 80px}
+    font-family:var(--body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;                    /* no rubber-band past the ends */
+    -webkit-tap-highlight-color:transparent;       /* no grey flash on tap */
+  }
+  section, .masthead{scroll-snap-align:start}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-snap-type:none; scroll-behavior:auto}
+  }
+  .wrap{max-width:900px; margin:0 auto;
+    padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+            calc(64px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
 
   /* icons */
   .ico{width:15px; height:15px; flex:0 0 auto; stroke:var(--maple); fill:none;
@@ -39,19 +54,21 @@
 
   .ico.ball{width:23px; height:23px; stroke-width:1.3}
 
-  .topbar{font-family:var(--data); font-size:11px; letter-spacing:.22em;
+  .topbar{font-family:var(--data); font-size:11px; letter-spacing:.2em;
     text-transform:uppercase; color:var(--maple); margin:0 0 18px;
-    display:flex; align-items:center; gap:9px}
+    display:flex; align-items:center; gap:10px; line-height:1.7}
 
   .masthead{display:flex; flex-direction:row; align-items:stretch; gap:12px;
     border-bottom:3px solid var(--maple); padding-bottom:18px}
-  .masthead header{flex:1 1 42%; min-width:0}
+  .masthead header{flex:1 1 42%; min-width:0;
+    display:flex; flex-direction:column; justify-content:space-between}
   .masthead .nextup{flex:1 1 58%; min-width:0; align-self:flex-start}
   header{min-width:0}
   h1{font-family:var(--display); font-size:clamp(27px,7.6vw,76px); line-height:.86;
-    margin:0; text-transform:uppercase; word-break:break-word}
-  .sub{font-family:var(--data); font-size:10px; color:var(--dim); margin-top:8px; line-height:1.6}
-  .stamps{margin-top:10px; display:flex; gap:5px; flex-wrap:wrap}
+    margin:0 0 auto; text-transform:uppercase; word-break:break-word}
+  .sub{font-family:var(--data); font-size:10px; color:var(--dim);
+    margin:14px 0 0; line-height:1.7}
+  .stamps{margin-top:12px; display:flex; gap:5px; flex-wrap:wrap}
   .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:3px;
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim)}
@@ -198,7 +215,6 @@
   .venue span{font-size:11.5px; color:var(--dim); line-height:1.6}
 
   /* ===== base = mobile ===== */
-  .wrap{max-width:900px; margin:0 auto; padding:20px 16px 64px}
   .record{grid-template-columns:repeat(2,1fr)}
   .row{grid-template-columns:1fr; gap:8px}
   .track{justify-content:flex-start}
@@ -223,8 +239,9 @@
 
   @media (min-width:640px){
     .wrap{padding:28px 20px 80px}
+    .topbar{font-size:11px}
     .masthead{gap:28px; padding-bottom:22px}
-    .sub{font-size:12px; margin-top:10px}
+    .sub{font-size:12px; margin-top:14px}
     .stamps{gap:8px; margin-top:12px}
     .tag{padding:4px 10px; font-size:10.5px; letter-spacing:.13em}
     .nextup{padding:18px 20px}
@@ -255,7 +272,7 @@
 
   <p class="topbar">
     <svg class="ico ball" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
-    2026 Fall Wednesday League · The Gutter
+    <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
   </p>
 
   <div class="masthead">
@@ -620,10 +637,11 @@ function renderAvailability(){
 
   renderNight(active);
 
-  // bring the current week into view in the scroller
+  // centre the current week inside the tab strip only —
+  // scrollIntoView would scroll the whole page, landing the user mid-page
   const on = tabs.querySelector(".tab.on");
-  if (on && on.scrollIntoView){
-    on.scrollIntoView({block:"nearest", inline:"center"});
+  if (on){
+    tabs.scrollLeft = on.offsetLeft - (tabs.clientWidth - on.offsetWidth) / 2;
   }
 }
 
