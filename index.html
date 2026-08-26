@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rambowls Scheduler — Fall 2026</title>
 <meta name="description" content="Schedule, availability and playoff eligibility for the Rambowls, 2026 Fall Wednesday League at The Gutter.">
 <meta name="theme-color" content="#0E1116">
@@ -45,8 +45,10 @@
     html{scroll-snap-type:none; scroll-behavior:auto}
   }
   .wrap{max-width:900px; margin:0 auto;
-    padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
-            calc(64px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+    padding-top:max(20px, calc(env(safe-area-inset-top) + 14px));
+    padding-right:max(16px, env(safe-area-inset-right));
+    padding-bottom:max(64px, calc(env(safe-area-inset-bottom) + 44px));
+    padding-left:max(16px, env(safe-area-inset-left))}
 
   /* icons */
   .ico{width:15px; height:15px; flex:0 0 auto; stroke:var(--maple); fill:none;
@@ -231,7 +233,8 @@
   .transit:hover .txt{color:var(--maple)}
 
   /* pull to refresh */
-  .ptr{position:fixed; top:-46px; left:50%; transform:translate(-50%,0);
+  .ptr{position:fixed; top:calc(-46px + env(safe-area-inset-top)); left:50%;
+    transform:translate(-50%,0);
     z-index:50; display:flex; align-items:center; gap:9px; opacity:0;
     padding:8px 14px; border-radius:999px; pointer-events:none;
     background:var(--lane-2); border:1px solid var(--rule);
@@ -279,7 +282,10 @@
   td.score{text-align:left; padding-top:5px}
 
   @media (min-width:640px){
-    .wrap{padding:28px 20px 80px}
+    .wrap{padding-top:max(28px, calc(env(safe-area-inset-top) + 20px));
+          padding-right:max(20px, env(safe-area-inset-right));
+          padding-bottom:80px;
+          padding-left:max(20px, env(safe-area-inset-left))}
     .topbar{font-size:11px}
     .masthead{gap:28px; padding-bottom:22px}
     .sub{font-size:12px; margin-top:14px}
