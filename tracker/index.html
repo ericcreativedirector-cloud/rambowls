@@ -71,7 +71,7 @@ button:hover{border-color:var(--maple);color:var(--maple)}
 .baseline{position:absolute;left:0;right:0;border-top:2px dashed rgba(232,90,82,.55);pointer-events:none}
 .baseline i{position:absolute;right:2px;top:-14px;font-style:normal;font-family:var(--data);font-size:8.5px;color:var(--strike)}
 .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
-.chart .bar{width:100%;max-width:44px;background:var(--maple);border-radius:2px 2px 0 0;min-height:4px}
+.chart .bar{width:100%;max-width:44px;background:var(--maple);border-radius:2px 2px 0 0;min-height:4px;flex-shrink:0}
 .chart .bar.dim{background:var(--lane);border:1px solid var(--rule)}
 .chart .val{font-family:var(--data);font-size:11px;color:var(--bone)}
 .chart .lab{font-family:var(--data);font-size:8.5px;letter-spacing:.06em;color:var(--dim)}
@@ -205,7 +205,7 @@ function render(){
   const v=(s.g1&&s.g2)?(+s.g1+ +s.g2)/2:(+s.g1||+s.g2||0);
   const col=document.createElement("div");col.className="col";
   col.innerHTML=`<div class="val">${v?v.toFixed(0):""}</div>
-   <div class="bar ${v?"":"dim"}" style="height:${v?Math.max(4,v/maxV*100):3}%"></div>
+   <div class="bar ${v?"":"dim"}" style="height:${v?Math.max(4,Math.round(v/maxV*112)):3}px"></div>
    <div class="lab">${w.date}</div>`;
   ch.appendChild(col);
  }
