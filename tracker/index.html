@@ -123,7 +123,7 @@ footer{font-family:var(--data);font-size:9px;letter-spacing:.15em;text-transform
       <div class="card full">
         <h2>Weekly trend</h2>
         <div class="chart" id="chart"></div>
-        <div class="note">Dashed red line = your average from last season. Scores you type here save on this device; official numbers get baked in weekly from the scorecards.</div>
+        <div class="note">Dashed red line = your average from last season. Scores you type here save on this device; official numbers get baked in weekly from the league sheet.</div>
       </div>
     </div>
   </div>
@@ -149,11 +149,13 @@ const SCHEDULE=[
 // goal: Eric's stated 138; everyone else gets prev+10 as a default stretch goal.
 const PLAYERS={
  Eric:   {prev:112, goal:138, scores:{1:[136,124],2:[125,97]}},
- Ken:    {prev:138, scores:{}, note:"Bowled both Week 1 games — scores not logged yet. Text them to Eric and they'll show up here."},
- Ron:    {prev:116, scores:{1:[88,null],2:[121,120]}},
- Michael:{prev:126, scores:{}, note:"Bowled Week 1 Game 2 — score not logged yet. Text it to Eric and it'll show up here."},
+ Ken:    {prev:140, scores:{1:[149,122]}},
+ Ron:    {prev:116, scores:{1:[86,null],2:[121,120]}},
+ Michael:{prev:129, scores:{1:[null,116]}},
  Phil:   {prev:134, scores:{}, note:"No games yet this season."},
- Prah:   {prev:138, scores:{2:[144,180]}}
+ Prah:   {prev:138, scores:{2:[144,180]}},
+ Kelvyn: {prev:138, scores:{}, note:"Alternate — no games yet this season."},
+ Jamiqve:{prev:120, scores:{}, note:"Alternate — no games yet this season."}
 };
 const NAMES=Object.keys(PLAYERS);
 const WHOKEY="rambowls_who";
