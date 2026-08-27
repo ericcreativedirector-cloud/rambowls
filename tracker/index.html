@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rambowls · Fall 2026 Tracker</title>
+<title>Rambowls · Player Stats</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -19,16 +19,27 @@
 body{background:var(--lane);color:var(--bone);font-family:var(--body);font-size:15px;
   line-height:1.5;-webkit-font-smoothing:antialiased;padding:26px 20px 60px}
 .wrap{max-width:1080px;margin:0 auto}
-.topbar{font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+.topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--maple);margin:0 0 14px}
+.topbar a{color:var(--dim);text-decoration:none}
+.topbar a:hover{color:var(--maple)}
 header{border-bottom:3px solid var(--maple);padding-bottom:16px;margin-bottom:6px}
 h1{font-family:var(--display);font-size:clamp(34px,7.6vw,72px);line-height:.9;
-  letter-spacing:.01em;color:var(--bone)}
+  letter-spacing:.01em;color:var(--bone);text-transform:uppercase}
 h1 span{color:var(--maple)}
 .sub{font-family:var(--data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--dim);margin-top:8px}
 h2{font-family:var(--display);font-size:21px;letter-spacing:.06em;color:var(--bone);
   margin-bottom:12px;text-transform:uppercase}
+.who{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.who button{cursor:pointer;border-radius:3px;border:1px solid var(--rule);background:var(--lane-2);
+  color:var(--dim);font-family:var(--data);font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;padding:8px 14px}
+.who button:hover{border-color:var(--maple);color:var(--maple)}
+.who button.on{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.15);font-weight:700}
+.whoask{font-family:var(--data);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--strike);margin-top:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:16px}
 .card{background:var(--lane-2);border:1px solid var(--rule);border-radius:5px;padding:16px 18px}
 .card.full{grid-column:1/-1}
@@ -37,6 +48,7 @@ h2{font-family:var(--display);font-size:21px;letter-spacing:.06em;color:var(--bo
 .stat b{display:block;font-family:var(--display);font-size:30px;font-weight:400;
   letter-spacing:.02em;color:var(--bone)}
 .stat b small{font-size:14px;color:var(--dim)}
+.stat b.up{color:var(--signal)} .stat b.down{color:var(--strike)}
 .stat span{font-family:var(--data);font-size:8.5px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--maple)}
 /* lane progress: the one deliberately non-blue element — it's a bowling lane */
@@ -59,14 +71,6 @@ tr:last-child td{border-bottom:none}
 input[type=number]{width:62px;background:var(--lane);border:1px solid var(--rule);border-radius:3px;
   color:var(--bone);padding:6px 8px;font-family:var(--data);font-size:13px;text-align:center}
 input[type=number]:focus{outline:none;border-color:var(--maple)}
-.W{color:var(--signal)} .L{color:var(--strike)} .T{color:var(--maple)}
-button{cursor:pointer;border-radius:3px;font-family:var(--data);letter-spacing:.08em;
-  text-transform:uppercase;border:1px solid var(--rule);background:var(--lane);color:var(--dim)}
-button:hover{border-color:var(--maple);color:var(--maple)}
-.wlbtn{padding:5px 9px;margin-right:4px;font-size:10px}
-.wlbtn.on.W{border-color:var(--signal);color:var(--signal);background:rgba(53,167,155,.12)}
-.wlbtn.on.L{border-color:var(--strike);color:var(--strike);background:rgba(232,90,82,.12)}
-.wlbtn.on.T{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.12)}
 .chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;position:relative}
 .baseline{position:absolute;left:0;right:0;border-top:2px dashed rgba(232,90,82,.55);pointer-events:none}
 .baseline i{position:absolute;right:2px;top:-14px;font-style:normal;font-family:var(--data);font-size:8.5px;color:var(--strike)}
@@ -82,49 +86,51 @@ footer{font-family:var(--data);font-size:9px;letter-spacing:.15em;text-transform
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">Personal Stats · Fall 2026</div>
+  <div class="topbar"><span>Player Stats · Fall 2026</span><a href="../">← Scheduler</a></div>
   <header>
-    <h1>ERIC'S <span>TRACKER</span></h1>
-    <div class="sub">Rambowls · Wednesday League · The Gutter, Lanes 5–8</div>
+    <h1 id="pageTitle">RAMBOWLS <span>STATS</span></h1>
+    <div class="sub">Wednesday League · The Gutter, Lanes 5–8 · pick your name — this device remembers</div>
+    <div class="who" id="whoRow"></div>
+    <div class="whoask" id="whoAsk">👇 Who are you?</div>
   </header>
 
-  <div class="stats" id="statRow"></div>
+  <div id="page" style="display:none">
+    <div class="stats" id="statRow"></div>
 
-  <div class="grid">
-    <div class="card full">
-      <h2>Road to 138 — Eric's season average</h2>
-      <div class="lane" id="lane">
-        <div class="oil"></div>
-        <div class="marker" style="left:0"><i>112 baseline</i></div>
-        <div class="marker" style="right:0;left:auto"><i style="left:auto;right:5px">138 goal</i></div>
-        <div class="ball" id="ball">🎳</div>
-        <div class="pins">🔟</div>
+    <div class="grid">
+      <div class="card full">
+        <h2 id="laneTitle">Season goal</h2>
+        <div class="lane">
+          <div class="oil"></div>
+          <div class="marker" style="left:0"><i id="laneLo"></i></div>
+          <div class="marker" style="right:0;left:auto"><i id="laneHi" style="left:auto;right:5px"></i></div>
+          <div class="ball" id="ball">🎳</div>
+          <div class="pins">🔟</div>
+        </div>
+        <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
       </div>
-      <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
-    </div>
 
-    <div class="card full">
-      <h2>Score log — Eric</h2>
-      <table id="scoreTable">
-        <thead><tr><th>Wk</th><th>Date</th><th>Game 1 opponent</th><th>Score</th><th>W/L</th>
-        <th>Game 2 opponent</th><th>Score</th><th>W/L</th><th>Night avg</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="note">Handicap adds to scratch scores on league night — currently <b id="hcapNote"></b> (league formula: ballast = 4 − games played; avg = (scratch total + ballast × 112) ÷ (games + ballast); handicap = 70% of 200 − avg).</div>
-    </div>
+      <div class="card full">
+        <h2>Score log</h2>
+        <table id="scoreTable">
+          <thead><tr><th>Wk</th><th>Date</th><th>Game 1 opponent</th><th>Score</th>
+          <th>Game 2 opponent</th><th>Score</th><th>Night avg</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="note" id="hcapLine"></div>
+      </div>
 
-    <div class="card full">
-      <h2>Weekly trend — Eric's night average</h2>
-      <div class="chart" id="chart"></div>
-      <div class="note">Dashed red line = your 112 baseline from last season. Pace = what you must average over remaining games to finish at 138 (assumes all 24 bowled).</div>
+      <div class="card full">
+        <h2>Weekly trend</h2>
+        <div class="chart" id="chart"></div>
+        <div class="note">Dashed red line = your average from last season. Scores you type here save on this device; official numbers get baked in weekly from the scorecards.</div>
+      </div>
     </div>
-
   </div>
-  <footer>Rambowls Tracker · rebuilt 8/27/26 · team stuff lives in the Scheduler — this page is just your numbers</footer>
+  <footer>Rambowls Stats · one page per bowler · team schedule &amp; lineups live in the Scheduler</footer>
 </div>
 
 <script>
-const GOAL=138, BASE=112;
 const SCHEDULE=[
  {wk:1,date:"8/19",g1:"The Pinheads",g2:"The Lane 5 Pole Dancers"},
  {wk:2,date:"8/26",g1:"Peanut Gutter & Jelly",g2:"The Milk Duds"},
@@ -139,83 +145,123 @@ const SCHEDULE=[
  {wk:11,date:"10/28",g1:"2 Legit 2 Split",g2:"Glory Bowl"},
  {wk:12,date:"11/4",g1:"WHO DO YOU THINK YOU ARE I AM",g2:"Tokyo Drifters"}
 ];
-// Seeded through Week 2 (scorecards 8/26): G1 W 552-541 PG&J, G2 W 559-488 Milk Duds
-const SEED={
- scores:{1:{g1:136,g2:124},2:{g1:125,g2:97}},
- results:{1:{g1:"W",g2:"L"},2:{g1:"W",g2:"W"}}
+// Baked from scorecards through Week 2. prev = last season's average (ballast anchor).
+// goal: Eric's stated 138; everyone else gets prev+10 as a default stretch goal.
+const PLAYERS={
+ Eric:   {prev:112, goal:138, scores:{1:[136,124],2:[125,97]}},
+ Ken:    {prev:138, scores:{}, note:"Bowled both Week 1 games — scores not logged yet. Text them to Eric and they'll show up here."},
+ Ron:    {prev:116, scores:{1:[88,null],2:[121,120]}},
+ Michael:{prev:126, scores:{}, note:"Bowled Week 1 Game 2 — score not logged yet. Text it to Eric and it'll show up here."},
+ Phil:   {prev:134, scores:{}, note:"No games yet this season."},
+ Prah:   {prev:138, scores:{2:[144,180]}}
 };
-const KEY="rambowls_fall26_v5";
-let S;
-try{const raw=localStorage.getItem(KEY);S=raw?JSON.parse(raw):structuredClone(SEED);}
-catch(e){S=structuredClone(SEED);}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const NAMES=Object.keys(PLAYERS);
+const WHOKEY="rambowls_who";
+let who=null;
+try{who=localStorage.getItem(WHOKEY);}catch(e){}
+if(!NAMES.includes(who))who=null;
 
-function ericGames(){const out=[];for(const w of SCHEDULE){const s=S.scores[w.wk]||{};
- if(s.g1!=null&&s.g1!=="")out.push(+s.g1); if(s.g2!=null&&s.g2!=="")out.push(+s.g2);}return out;}
-function avg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:null;}
+function store(name){
+ try{const raw=localStorage.getItem("rambowls_stats_v1_"+name);
+  return raw?JSON.parse(raw):{scores:{}};}catch(e){return {scores:{}};}
+}
+function saveStore(name,S){try{localStorage.setItem("rambowls_stats_v1_"+name,JSON.stringify(S));}catch(e){}}
+function mergedScores(name){
+ const base=PLAYERS[name].scores||{}, over=store(name).scores||{}, out={};
+ for(const w of SCHEDULE){
+  const b=base[w.wk]||[null,null], o=over[w.wk]||[undefined,undefined];
+  out[w.wk]=[o[0]!==undefined?o[0]:b[0], o[1]!==undefined?o[1]:b[1]];
+ }
+ return out;
+}
+function flatGames(sc){const out=[];for(const w of SCHEDULE){for(const v of sc[w.wk])
+ if(v!=null&&v!=="")out.push(+v);}return out;}
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+function leagueAvg(games,prev){const b=Math.max(0,4-games.length);
+ return (games.reduce((x,y)=>x+y,0)+b*prev)/(games.length+b);}
 
-function leagueAvg(games){const b=Math.max(0,4-games.length);
- return (games.reduce((x,y)=>x+y,0)+b*BASE)/(games.length+b);}
+function renderWho(){
+ const row=document.getElementById("whoRow");row.innerHTML="";
+ for(const n of NAMES){
+  const b=document.createElement("button");
+  b.textContent=n;if(n===who)b.classList.add("on");
+  b.addEventListener("click",()=>{who=n;try{localStorage.setItem(WHOKEY,n);}catch(e){}
+   renderWho();render();});
+  row.appendChild(b);
+ }
+ document.getElementById("whoAsk").style.display=who?"none":"block";
+ document.getElementById("page").style.display=who?"block":"none";
+ document.getElementById("pageTitle").innerHTML=who
+  ?`${who.toUpperCase()}'S <span>PAGE</span>`:`RAMBOWLS <span>STATS</span>`;
+}
+
 function render(){
- const games=ericGames(), a=avg(games);
- const la=leagueAvg(games), hcap=Math.round(0.7*(200-la));
+ if(!who)return;
+ const P=PLAYERS[who], sc=mergedScores(who), games=flatGames(sc), a=avg(games);
+ const la=leagueAvg(games,P.prev), hcap=Math.round(0.7*(200-la));
+ const goal=P.goal||P.prev+10, base=P.prev;
  const remaining=24-games.length, sum=games.reduce((x,y)=>x+y,0);
- const paceTxt=(a==null||remaining<=0)?(a!=null&&a>=GOAL?"MADE IT":"—")
-   :((GOAL*24-sum)/remaining).toFixed(1);
- // stats
+ const paceTxt=(a==null||remaining<=0)?(a!=null&&a>=goal?"MADE IT":"—")
+  :((goal*24-sum)/remaining).toFixed(1);
+ const delta=a==null?null:a-base;
  document.getElementById("statRow").innerHTML=`
   <div class="stat"><b>${a?a.toFixed(1):"—"}</b><span>Scratch avg</span></div>
   <div class="stat"><b>${la.toFixed(1)}</b><span>League avg</span></div>
+  <div class="stat"><b>+${hcap}</b><span>Est. handicap</span></div>
   <div class="stat"><b>${games.length?Math.max(...games):"—"}</b><span>High game</span></div>
   <div class="stat"><b>${games.length}<small>/24</small></b><span>Games played</span></div>
-  <div class="stat"><b>${paceTxt}</b><span>Pace for 138</span></div>
-  <div class="stat"><b>+${hcap}</b><span>Est. handicap</span></div>`;
- document.getElementById("hcapNote").textContent="+"+hcap;
+  <div class="stat"><b class="${delta==null?"":delta>=0?"up":"down"}">${delta==null?"—":(delta>=0?"+":"")+delta.toFixed(1)}</b><span>vs last season</span></div>
+  <div class="stat"><b>${paceTxt}</b><span>Pace for ${goal}</span></div>`;
  // lane
- const pct=a==null?0:Math.min(1,Math.max(0,(a-BASE)/(GOAL-BASE)));
+ document.getElementById("laneTitle").textContent=
+  P.goal?`Road to ${goal} — season average`:`Road to ${goal} (stretch: last season +10)`;
+ document.getElementById("laneLo").textContent=base+" last season";
+ document.getElementById("laneHi").textContent=goal+" goal";
+ const pct=a==null?0:Math.min(1,Math.max(0,(a-base)/(goal-base)));
  document.getElementById("ball").style.left=(4+pct*88)+"%";
- document.getElementById("goalLeft").textContent=a==null?"No games yet":
-  `Season avg ${a.toFixed(1)} — ${(pct*100).toFixed(0)}% of the way from 112 to 138`;
- document.getElementById("goalRight").textContent=a==null?"":
-  (a>=GOAL?"Goal reached! 🏆":`${(GOAL-a).toFixed(1)} pins to go`);
- // score table
+ document.getElementById("goalLeft").textContent=a==null?"No scores logged yet"
+  :`Season avg ${a.toFixed(1)} — ${(pct*100).toFixed(0)}% of the way from ${base} to ${goal}`;
+ document.getElementById("goalRight").textContent=a==null?""
+  :(a>=goal?"Goal reached! 🏆":`${(goal-a).toFixed(1)} pins to go`);
+ // score log
  const tb=document.querySelector("#scoreTable tbody");tb.innerHTML="";
  for(const w of SCHEDULE){
-  const s=S.scores[w.wk]||(S.scores[w.wk]={});
-  const r=S.results[w.wk]||(S.results[w.wk]={});
+  const s=sc[w.wk];
+  const nAvg=(s[0]!=null&&s[1]!=null&&s[0]!==""&&s[1]!=="")
+   ?((+s[0]+ +s[1])/2).toFixed(1):(s[0]??s[1]??"—")||"—";
   const tr=document.createElement("tr");
-  const nAvg=(s.g1&&s.g2)?((+s.g1+ +s.g2)/2).toFixed(1):(s.g1||s.g2||"—");
   tr.innerHTML=`<td><b>${w.wk}</b></td><td>${w.date}</td>
-   <td>${w.g1}</td><td><input type="number" min="0" max="300" value="${s.g1??""}" data-w="${w.wk}" data-g="g1"></td>
-   <td>${wlBtns(w.wk,"g1",r.g1)}</td>
-   <td>${w.g2}</td><td><input type="number" min="0" max="300" value="${s.g2??""}" data-w="${w.wk}" data-g="g2"></td>
-   <td>${wlBtns(w.wk,"g2",r.g2)}</td><td>${nAvg}</td>`;
+   <td>${w.g1}</td><td><input type="number" min="0" max="300" value="${s[0]??""}" data-w="${w.wk}" data-i="0"></td>
+   <td>${w.g2}</td><td><input type="number" min="0" max="300" value="${s[1]??""}" data-w="${w.wk}" data-i="1"></td>
+   <td>${nAvg}</td>`;
   tb.appendChild(tr);
  }
- tb.querySelectorAll("input").forEach(i=>i.addEventListener("change",e=>{
-  const{w,g}=e.target.dataset;S.scores[w][g]=e.target.value===""?null:+e.target.value;save();render();}));
- tb.querySelectorAll(".wlbtn").forEach(b=>b.addEventListener("click",e=>{
-  const{w,g,v}=e.target.dataset;S.results[w][g]=(S.results[w][g]===v)?null:v;save();render();}));
- // chart
+ tb.querySelectorAll("input").forEach(inp=>inp.addEventListener("change",e=>{
+  const{w,i}=e.target.dataset, S=store(who);
+  if(!S.scores[w])S.scores[w]=[undefined,undefined];
+  S.scores[w][+i]=e.target.value===""?null:+e.target.value;
+  saveStore(who,S);render();}));
+ document.getElementById("hcapLine").innerHTML=(P.note?P.note+" ":"")+
+  `Handicap adds to scratch on league night — currently <b>+${hcap}</b> (ballast = 4 − games; avg = (scratch + ballast × ${P.prev}) ÷ (games + ballast); handicap = 70% of 200 − avg).`;
+ // trend chart
  const ch=document.getElementById("chart");ch.innerHTML="";
- const maxV=Math.max(GOAL+10,...SCHEDULE.map(w=>{const s=S.scores[w.wk]||{};
-   return Math.max(+s.g1||0,+s.g2||0);}));
- for(const w of SCHEDULE){
-  const s=S.scores[w.wk]||{};
-  const v=(s.g1&&s.g2)?(+s.g1+ +s.g2)/2:(+s.g1||+s.g2||0);
+ const nightVals=SCHEDULE.map(w=>{const s=sc[w.wk];
+  const g=[s[0],s[1]].filter(v=>v!=null&&v!=="").map(Number);
+  return g.length?g.reduce((x,y)=>x+y,0)/g.length:0;});
+ const maxV=Math.max(goal+10,...nightVals);
+ SCHEDULE.forEach((w,ix)=>{
+  const v=nightVals[ix];
   const col=document.createElement("div");col.className="col";
   col.innerHTML=`<div class="val">${v?v.toFixed(0):""}</div>
    <div class="bar ${v?"":"dim"}" style="height:${v?Math.max(4,Math.round(v/maxV*112)):3}px"></div>
    <div class="lab">${w.date}</div>`;
   ch.appendChild(col);
- }
-  const bl=document.createElement("div");bl.className="baseline";
- bl.style.bottom=(19+112/maxV*(150-38))+"px";bl.innerHTML="<i>112</i>";ch.appendChild(bl);
+ });
+ const bl=document.createElement("div");bl.className="baseline";
+ bl.style.bottom=(19+base/maxV*112)+"px";bl.innerHTML=`<i>${base}</i>`;
+ ch.appendChild(bl);
 }
-function wlBtns(w,g,cur){return["W","L","T"].map(v=>
- `<button class="wlbtn ${v} ${cur===v?"on":""}" data-w="${w}" data-g="${g}" data-v="${v}">${v}</button>`).join("");}
-
-render();
+renderWho();render();
 </script>
 </body>
 </html>
