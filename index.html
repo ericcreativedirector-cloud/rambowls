@@ -62,11 +62,11 @@
     text-transform:uppercase; color:var(--maple); margin:0 0 18px;
     display:flex; align-items:center; gap:10px; line-height:1.7}
 
-  .masthead{display:flex; flex-direction:row; align-items:stretch; gap:12px;
+  .masthead{display:flex; flex-direction:column; align-items:stretch; gap:18px;
     border-bottom:3px solid var(--maple); padding-bottom:18px}
-  .masthead header{flex:1 1 42%; min-width:0; padding:16px 0;
-    display:flex; flex-direction:column; justify-content:space-between}
-  .masthead .nextup{flex:1 1 58%; min-width:0; align-self:flex-start}
+  .masthead header{min-width:0; padding:16px 0 0;
+    display:flex; flex-direction:column}
+  .masthead .nextup{min-width:0; width:100%}
   header{min-width:0}
   h1{font-family:var(--display); font-size:clamp(27px,7.6vw,76px); line-height:.86;
     margin:0 0 auto; text-transform:uppercase; word-break:break-word}
@@ -297,7 +297,7 @@
           padding-bottom:80px;
           padding-left:max(20px, env(safe-area-inset-left))}
     .topbar{font-size:11px}
-    .masthead{gap:28px; padding-bottom:22px}
+    .masthead{gap:22px; padding-bottom:22px}
     .sub{font-size:12px; margin-top:14px}
     .stamps{gap:8px; margin-top:12px}
     .tag{padding:4px 10px; font-size:10.5px; letter-spacing:.13em}

@@ -2,132 +2,219 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
 <title>Rambowls · Player Stats</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  /* Scheduler design system, on BLUE lanes to tell the two apps apart */
-  --lane:#0B1626; --lane-2:#12213A; --maple:#C8873C; --bone:#F3EEE3;
-  --strike:#E85A52; --signal:#35A79B; --dim:#8A94A8; --rule:#26395A;
-  --display:"Anton", Impact, Haettenschweiler, sans-serif;
-  --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --data:"Roboto Mono", ui-monospace, Menlo, monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--lane);color:var(--bone);font-family:var(--body);font-size:15px;
-  line-height:1.5;-webkit-font-smoothing:antialiased;padding:26px 20px 60px}
-.wrap{max-width:1080px;margin:0 auto}
-.topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-  font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--maple);margin:0 0 14px}
-.topbar a{color:var(--dim);text-decoration:none}
-.topbar a:hover{color:var(--maple)}
-header{border-bottom:3px solid var(--maple);padding-bottom:16px;margin-bottom:6px}
-h1{font-family:var(--display);font-size:clamp(34px,7.6vw,72px);line-height:.9;
-  letter-spacing:.01em;color:var(--bone);text-transform:uppercase}
-h1 span{color:var(--maple)}
-.sub{font-family:var(--data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);margin-top:8px}
-h2{font-family:var(--display);font-size:21px;letter-spacing:.06em;color:var(--bone);
-  margin-bottom:12px;text-transform:uppercase}
-.who{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.who button{cursor:pointer;border-radius:3px;border:1px solid var(--rule);background:var(--lane-2);
-  color:var(--dim);font-family:var(--data);font-size:11px;letter-spacing:.08em;
-  text-transform:uppercase;padding:8px 14px}
-.who button:hover{border-color:var(--maple);color:var(--maple)}
-.who button.on{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.15);font-weight:700}
-.whoask{font-family:var(--data);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--strike);margin-top:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:16px}
-.card{background:var(--lane-2);border:1px solid var(--rule);border-radius:5px;padding:16px 18px}
-.card.full{grid-column:1/-1}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:16px}
-.stat{background:var(--lane-2);border:1px solid var(--rule);border-radius:5px;padding:12px 14px}
-.stat b{display:block;font-family:var(--display);font-size:30px;font-weight:400;
-  letter-spacing:.02em;color:var(--bone)}
-.stat b small{font-size:14px;color:var(--dim)}
-.stat b.up{color:var(--signal)} .stat b.down{color:var(--strike)}
-.stat span{font-family:var(--data);font-size:8.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--maple)}
-/* lane progress: the one deliberately non-blue element — it's a bowling lane */
-.lane{position:relative;height:56px;border-radius:5px;overflow:hidden;margin-top:8px;
-  background:repeating-linear-gradient(90deg,#3d2f1c 0 34px,#4a3922 34px 68px);
-  border:1px solid #00000066}
-.lane .oil{position:absolute;inset:0;background:linear-gradient(90deg,#ffffff14,transparent 70%)}
-.lane .pins{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:26px}
-.lane .ball{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:30px;transition:left .6s ease}
-.lane .marker{position:absolute;top:0;bottom:0;width:2px;background:#f3eee355}
-.lane .marker i{position:absolute;top:2px;left:5px;font-style:normal;font-size:8.5px;color:var(--bone);
-  font-family:var(--data);letter-spacing:.08em;text-transform:uppercase}
-.goalnote{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-  font-family:var(--data);font-size:10.5px;color:var(--dim);margin-top:7px}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{font-family:var(--data);font-weight:500;letter-spacing:.12em;text-transform:uppercase;
-  font-size:8.5px;color:var(--maple);text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule)}
-td{padding:7px 8px;border-bottom:1px solid var(--rule)}
-tr:last-child td{border-bottom:none}
-input[type=number]{width:62px;background:var(--lane);border:1px solid var(--rule);border-radius:3px;
-  color:var(--bone);padding:6px 8px;font-family:var(--data);font-size:13px;text-align:center}
-input[type=number]:focus{outline:none;border-color:var(--maple)}
-.chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;position:relative}
-.baseline{position:absolute;left:0;right:0;border-top:2px dashed rgba(232,90,82,.55);pointer-events:none}
-.baseline i{position:absolute;right:2px;top:-14px;font-style:normal;font-family:var(--data);font-size:8.5px;color:var(--strike)}
-.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
-.chart .bar{width:100%;max-width:44px;background:var(--maple);border-radius:2px 2px 0 0;min-height:4px;flex-shrink:0}
-.chart .bar.dim{background:var(--lane);border:1px solid var(--rule)}
-.chart .val{font-family:var(--data);font-size:11px;color:var(--bone)}
-.chart .lab{font-family:var(--data);font-size:8.5px;letter-spacing:.06em;color:var(--dim)}
-.note{font-size:12.5px;color:var(--dim);margin-top:10px;max-width:70ch}
-footer{font-family:var(--data);font-size:9px;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--dim);opacity:.6;margin-top:34px;text-align:center}
+  :root{
+    --lane:#0E1116; --lane-2:#161B22; --maple:#C8873C; --bone:#F3EEE3;
+    --strike:#E85A52; --signal:#35A79B; --dim:#7A828E; --rule:#242B34;
+    --display:"Anton", Impact, Haettenschweiler, sans-serif;
+    --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --data:"Roboto Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  html{
+    scroll-snap-type:y proximity; scroll-behavior:smooth;
+    scroll-padding-top:max(56px, calc(env(safe-area-inset-top) + 20px));
+    -webkit-text-size-adjust:100%;
+  }
+  body{margin:0; background:var(--lane); color:var(--bone);
+    font-family:var(--body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none; -webkit-tap-highlight-color:transparent;}
+  section{scroll-snap-align:start}
+  @media (prefers-reduced-motion:reduce){ html{scroll-snap-type:none; scroll-behavior:auto} }
+  .wrap{max-width:900px; margin:0 auto;
+    padding-top:max(52px, calc(env(safe-area-inset-top) + 16px));
+    padding-right:max(16px, env(safe-area-inset-right));
+    padding-bottom:max(64px, calc(env(safe-area-inset-bottom) + 44px));
+    padding-left:max(16px, env(safe-area-inset-left))}
+
+  .ico{width:15px; height:15px; flex:0 0 auto; stroke:var(--maple); fill:none;
+    stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px}
+  .ico.ball{width:23px; height:23px; stroke-width:1.3}
+
+  .topbar{font-family:var(--data); font-size:11px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--maple); margin:0 0 18px;
+    display:flex; align-items:center; gap:10px; line-height:1.7}
+  .topbar a{margin-left:auto; color:var(--dim); text-decoration:none; letter-spacing:.14em}
+  .topbar a:hover{color:var(--maple)}
+
+  /* STACKED masthead — no two-column split */
+  .masthead{border-bottom:3px solid var(--maple); padding:16px 0 18px}
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
+    font-size:clamp(40px,13vw,68px); line-height:.88; letter-spacing:.01em; margin:0}
+  h1 span{color:var(--maple)}
+  .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--dim); margin:10px 0 0}
+  .stamps{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .tag{font-family:var(--data); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    border:1px solid var(--rule); border-radius:3px; padding:3px 8px; color:var(--dim)}
+
+  .who{display:flex; flex-wrap:wrap; gap:7px; margin-top:16px}
+  .who button{cursor:pointer; border-radius:3px; border:1px solid var(--rule); background:var(--lane-2);
+    color:var(--bone); font-family:var(--data); font-size:11px; letter-spacing:.1em;
+    text-transform:uppercase; padding:9px 13px}
+  .who button:hover{border-color:var(--maple); color:var(--maple)}
+  .who button.on{border-color:var(--maple); color:#140C03; background:var(--maple); font-weight:700}
+  .whoask{font-family:var(--data); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--maple); margin:14px 0 0}
+
+  section{margin-top:44px}
+  h2{font-family:var(--display); font-size:22px; letter-spacing:.06em;
+    text-transform:uppercase; margin:0 0 4px; font-weight:400;
+    display:flex; align-items:center; gap:9px}
+  h2 .ico{width:17px; height:17px}
+  .note{font-size:13.5px; color:var(--dim); margin:0 0 18px; max-width:62ch}
+  .note b{color:var(--bone); font-weight:500}
+
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+  .stat{background:var(--lane-2); border:1px solid var(--rule); border-radius:5px; padding:13px 14px}
+  .stat b{display:block; font-family:var(--display); font-size:30px; font-weight:400;
+    letter-spacing:.02em; color:var(--bone); line-height:1}
+  .stat b small{font-size:14px; color:var(--dim)}
+  .stat b.up{color:var(--signal)} .stat b.down{color:var(--strike)}
+  .stat span{display:block; font-family:var(--data); font-size:9px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--maple); margin-top:7px}
+
+  .lane{position:relative; height:56px; border-radius:5px; overflow:hidden; margin-top:4px;
+    background:repeating-linear-gradient(90deg,#3d2f1c 0 34px,#4a3922 34px 68px);
+    border:1px solid #00000066}
+  .lane .oil{position:absolute; inset:0; background:linear-gradient(90deg,#ffffff14,transparent 70%)}
+  .lane .pins{position:absolute; right:9px; top:50%; transform:translateY(-50%); font-size:24px}
+  .lane .ball{position:absolute; top:50%; transform:translate(-50%,-50%); font-size:28px; transition:left .6s ease}
+  .lane .mark{position:absolute; top:0; bottom:0; width:2px; background:#f3eee355}
+  .lane .mark i{position:absolute; top:3px; left:5px; font-style:normal; font-size:9px; color:var(--bone);
+    font-family:var(--data); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap}
+  .goalnote{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    font-family:var(--data); font-size:11px; color:var(--dim); margin-top:9px}
+
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th{font-family:var(--data); font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+    font-size:9px; color:var(--maple); text-align:left; padding:7px 8px; border-bottom:1px solid var(--rule)}
+  td{padding:8px; border-bottom:1px solid var(--rule); vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  td.wkn{font-family:var(--data); font-size:12px; color:var(--dim); white-space:nowrap}
+  td.opp{font-size:14px}
+  input[type=number]{width:66px; background:var(--lane); border:1px solid var(--rule); border-radius:3px;
+    color:var(--bone); padding:9px 8px; font-family:var(--data); font-size:15px; text-align:center;
+    -moz-appearance:textfield}
+  input[type=number]:focus{outline:none; border-color:var(--maple)}
+  /* stacked score rows on phones */
+  @media (max-width:639px){
+    table,tbody,tr,td,th{display:block}
+    thead{display:none}
+    tr{border-bottom:1px solid var(--rule); padding:12px 0}
+    tr:last-child{border-bottom:none}
+    td{border:none; padding:2px 0}
+    td.game{display:flex; align-items:center; gap:10px; padding:5px 0}
+    td.game .g{font-family:var(--data); font-size:9px; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--maple); width:22px; flex:0 0 auto}
+    td.game .oppname{font-size:13.5px; color:var(--dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  }
+
+  .chart{display:flex; align-items:flex-end; gap:6px; height:158px; padding-top:10px; position:relative}
+  .baseline{position:absolute; left:0; right:0; border-top:2px dashed rgba(232,90,82,.6); pointer-events:none}
+  .baseline i{position:absolute; right:2px; top:-15px; font-style:normal; font-family:var(--data);
+    font-size:9px; color:var(--strike)}
+  .chart .col{flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:5px;
+    height:100%; justify-content:flex-end}
+  .chart .bar{width:100%; max-width:40px; background:var(--maple); border-radius:2px 2px 0 0; flex-shrink:0}
+  .chart .bar.dim{background:transparent; border:1px solid var(--rule)}
+  .chart .val{font-family:var(--data); font-size:10.5px; color:var(--bone)}
+  .chart .lab{font-family:var(--data); font-size:8.5px; letter-spacing:.04em; color:var(--dim)}
+
+  .explain{border:1px solid var(--rule); border-radius:5px; background:var(--lane-2); padding:16px 18px}
+  .explain dt{font-family:var(--data); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--maple); margin-top:14px}
+  .explain dt:first-child{margin-top:0}
+  .explain dd{margin:5px 0 0; font-size:13.5px; color:var(--dim)}
+  .explain dd b{color:var(--bone); font-weight:500}
+
+  footer{font-family:var(--data); font-size:9px; letter-spacing:.15em; text-transform:uppercase;
+    color:var(--dim); opacity:.6; margin-top:44px; text-align:center; line-height:1.9}
+
+  @media (min-width:640px){
+    .wrap{padding-top:max(28px, calc(env(safe-area-inset-top) + 20px));
+          padding-right:max(20px, env(safe-area-inset-right));
+          padding-bottom:80px;
+          padding-left:max(20px, env(safe-area-inset-left))}
+    .masthead{padding-bottom:22px}
+    .sub{font-size:12px; margin-top:14px}
+    .stats{grid-template-columns:repeat(4,1fr); gap:12px}
+    .stat b{font-size:34px}
+    .chart{gap:8px; height:172px}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><span>Player Stats · Fall 2026</span><a href="../">← Scheduler</a></div>
-  <header>
-    <h1 id="pageTitle">RAMBOWLS <span>STATS</span></h1>
-    <div class="sub">Wednesday League · The Gutter, Lanes 5–8 · pick your name — this device remembers</div>
+
+  <p class="topbar">
+    <svg class="ico ball" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
+    <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
+    <a href="../">← Scheduler</a>
+  </p>
+
+  <div class="masthead">
+    <h1 id="pageTitle">Player<br><span>Stats</span></h1>
+    <p class="sub" id="pageSub">Pick your name — this phone will remember it</p>
+    <div class="stamps">
+      <span class="tag">Through Week 2</span>
+      <span class="tag">Handicap est.</span>
+      <noscript><span class="tag">JavaScript required — data won't load without it</span></noscript>
+    </div>
     <div class="who" id="whoRow"></div>
-    <div class="whoask" id="whoAsk">👇 Who are you?</div>
-  </header>
+    <p class="whoask" id="whoAsk">↑ Tap your name to start</p>
+  </div>
 
   <div id="page" style="display:none">
-    <div class="stats" id="statRow"></div>
 
-    <div class="grid">
-      <div class="card full">
-        <h2 id="laneTitle">Season goal</h2>
-        <div class="lane">
-          <div class="oil"></div>
-          <div class="marker" style="left:0"><i id="laneLo"></i></div>
-          <div class="marker" style="right:0;left:auto"><i id="laneHi" style="left:auto;right:5px"></i></div>
-          <div class="ball" id="ball">🎳</div>
-          <div class="pins">🔟</div>
-        </div>
-        <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
-      </div>
+    <section>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>The numbers</h2>
+      <p class="note" id="numbersNote"></p>
+      <div class="stats" id="statRow"></div>
+    </section>
 
-      <div class="card full">
-        <h2>Score log</h2>
-        <table id="scoreTable">
-          <thead><tr><th>Wk</th><th>Date</th><th>Game 1 opponent</th><th>Score</th>
-          <th>Game 2 opponent</th><th>Score</th><th>Night avg</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <div class="note" id="hcapLine"></div>
+    <section>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/></svg><span id="laneTitle">Season goal</span></h2>
+      <p class="note" id="goalNote"></p>
+      <div class="lane">
+        <div class="oil"></div>
+        <div class="mark" style="left:0"><i id="laneLo"></i></div>
+        <div class="mark" style="right:0"><i id="laneHi" style="left:auto; right:5px"></i></div>
+        <div class="ball" id="ball">🎳</div>
+        <div class="pins">🔟</div>
       </div>
+      <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
+    </section>
 
-      <div class="card full">
-        <h2>Weekly trend</h2>
-        <div class="chart" id="chart"></div>
-        <div class="note">Dashed red line = your average from last season. Scores you type here save on this device; official numbers get baked in weekly from the league sheet.</div>
-      </div>
-    </div>
+    <section>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8.5 9h7M8.5 13h7M8.5 17h4"/></svg>Score log</h2>
+      <p class="note">Official scores come from the league sheet each week. Anything you type here saves on this phone only — handy for logging tonight before the sheet updates.</p>
+      <table id="scoreTable">
+        <thead><tr><th>Wk</th><th>Game 1</th><th>Score</th><th>Game 2</th><th>Score</th><th>Night</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5 9 11l3.5 3.5L20 6.5"/></svg>Night by night</h2>
+      <p class="note">Each bar is that night's average. The dashed line is <b id="baseLabel">last season's average</b>.</p>
+      <div class="chart" id="chart"></div>
+    </section>
+
+    <section>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.9"/></svg>What these mean</h2>
+      <dl class="explain" id="explain"></dl>
+    </section>
+
   </div>
-  <footer>Rambowls Stats · one page per bowler · team schedule &amp; lineups live in the Scheduler</footer>
+
+  <footer>Rambowls · one page per bowler<br>Schedule &amp; lineups live in the Scheduler</footer>
 </div>
 
 <script>
@@ -145,8 +232,8 @@ const SCHEDULE=[
  {wk:11,date:"10/28",g1:"2 Legit 2 Split",g2:"Glory Bowl"},
  {wk:12,date:"11/4",g1:"WHO DO YOU THINK YOU ARE I AM",g2:"Tokyo Drifters"}
 ];
-// Baked from scorecards through Week 2. prev = last season's average (ballast anchor).
-// goal: Eric's stated 138; everyone else gets prev+10 as a default stretch goal.
+// prev = last season's average from the league sheet (the ballast anchor).
+// goal = season target. Set one explicitly here or leave it out for prev+10.
 const PLAYERS={
  Eric:   {prev:112, goal:138, scores:{1:[136,124],2:[125,97]}},
  Ken:    {prev:140, scores:{1:[149,122]}},
@@ -155,7 +242,8 @@ const PLAYERS={
  Phil:   {prev:134, scores:{}, note:"No games yet this season."},
  Prah:   {prev:138, scores:{2:[144,180]}},
  Kelvyn: {prev:138, scores:{}, note:"Alternate — no games yet this season."},
- Jamiqve:{prev:120, scores:{}, note:"Alternate — no games yet this season."}
+ Jamiqve:{prev:120, scores:{}, note:"Alternate — no games yet this season."},
+ Pete:   {prev:120, scores:{}, note:"Alternate — not on the league sheet yet, so 120 (the league standard average) is a placeholder until his real average is on file."}
 };
 const NAMES=Object.keys(PLAYERS);
 const WHOKEY="rambowls_who";
@@ -181,89 +269,114 @@ function flatGames(sc){const out=[];for(const w of SCHEDULE){for(const v of sc[w
 const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
 function leagueAvg(games,prev){const b=Math.max(0,4-games.length);
  return (games.reduce((x,y)=>x+y,0)+b*prev)/(games.length+b);}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function renderWho(){
- const row=document.getElementById("whoRow");row.innerHTML="";
+ const row=document.getElementById("whoRow"); row.innerHTML="";
  for(const n of NAMES){
   const b=document.createElement("button");
-  b.textContent=n;if(n===who)b.classList.add("on");
-  b.addEventListener("click",()=>{who=n;try{localStorage.setItem(WHOKEY,n);}catch(e){}
-   renderWho();render();});
+  b.type="button"; b.textContent=n; if(n===who)b.classList.add("on");
+  b.addEventListener("click",()=>{who=n; try{localStorage.setItem(WHOKEY,n);}catch(e){}
+   renderWho(); render();});
   row.appendChild(b);
  }
  document.getElementById("whoAsk").style.display=who?"none":"block";
  document.getElementById("page").style.display=who?"block":"none";
  document.getElementById("pageTitle").innerHTML=who
-  ?`${who.toUpperCase()}'S <span>PAGE</span>`:`RAMBOWLS <span>STATS</span>`;
+  ? esc(who)+"'s<br><span>Stats</span>" : "Player<br><span>Stats</span>";
+ document.getElementById("pageSub").textContent=who
+  ? "Tap a different name any time — this phone remembers the last one"
+  : "Pick your name — this phone will remember it";
 }
 
 function render(){
  if(!who)return;
  const P=PLAYERS[who], sc=mergedScores(who), games=flatGames(sc), a=avg(games);
  const la=leagueAvg(games,P.prev), hcap=Math.round(0.7*(200-la));
+ const ballast=Math.max(0,4-games.length);
  const goal=P.goal||P.prev+10, base=P.prev;
  const remaining=24-games.length, sum=games.reduce((x,y)=>x+y,0);
- const paceTxt=(a==null||remaining<=0)?(a!=null&&a>=goal?"MADE IT":"—")
-  :((goal*24-sum)/remaining).toFixed(1);
+ const paceNum=remaining>0?(goal*24-sum)/remaining:null;
+ const paceTxt=paceNum==null?(a!=null&&a>=goal?"MADE":"—"):paceNum.toFixed(0);
  const delta=a==null?null:a-base;
+
+ document.getElementById("numbersNote").innerHTML=(P.note?esc(P.note)+" ":"")+
+  (games.length?`<b>${games.length}</b> game${games.length>1?"s":""} in.`:"");
  document.getElementById("statRow").innerHTML=`
   <div class="stat"><b>${a?a.toFixed(1):"—"}</b><span>Scratch avg</span></div>
   <div class="stat"><b>${la.toFixed(1)}</b><span>League avg</span></div>
-  <div class="stat"><b>+${hcap}</b><span>Est. handicap</span></div>
+  <div class="stat"><b>+${hcap}</b><span>Handicap</span></div>
   <div class="stat"><b>${games.length?Math.max(...games):"—"}</b><span>High game</span></div>
   <div class="stat"><b>${games.length}<small>/24</small></b><span>Games played</span></div>
   <div class="stat"><b class="${delta==null?"":delta>=0?"up":"down"}">${delta==null?"—":(delta>=0?"+":"")+delta.toFixed(1)}</b><span>vs last season</span></div>
-  <div class="stat"><b>${paceTxt}</b><span>Pace for ${goal}</span></div>`;
- // lane
- document.getElementById("laneTitle").textContent=
-  P.goal?`Road to ${goal} — season average`:`Road to ${goal} (stretch: last season +10)`;
+  <div class="stat"><b>${paceTxt}</b><span>Pace for ${goal}</span></div>
+  <div class="stat"><b>${games.length>=6?"YES":games.length+"<small>/6</small>"}</b><span>Playoff eligible</span></div>`;
+
+ document.getElementById("laneTitle").textContent="Road to "+goal;
+ document.getElementById("goalNote").innerHTML=P.goal
+  ? `Your stated season target: <b>${goal}</b>.`
+  : `No target set yet, so this is <b>last season + 10</b> (${base} → ${goal}). Tell Eric a number and he'll set it.`;
  document.getElementById("laneLo").textContent=base+" last season";
  document.getElementById("laneHi").textContent=goal+" goal";
  const pct=a==null?0:Math.min(1,Math.max(0,(a-base)/(goal-base)));
- document.getElementById("ball").style.left=(4+pct*88)+"%";
- document.getElementById("goalLeft").textContent=a==null?"No scores logged yet"
-  :`Season avg ${a.toFixed(1)} — ${(pct*100).toFixed(0)}% of the way from ${base} to ${goal}`;
+ document.getElementById("ball").style.left=(5+pct*84)+"%";
+ document.getElementById("goalLeft").textContent=a==null?"No scores yet"
+  :`Season avg ${a.toFixed(1)} — ${(pct*100).toFixed(0)}% of the way there`;
  document.getElementById("goalRight").textContent=a==null?""
-  :(a>=goal?"Goal reached! 🏆":`${(goal-a).toFixed(1)} pins to go`);
- // score log
- const tb=document.querySelector("#scoreTable tbody");tb.innerHTML="";
+  :(a>=goal?"Goal reached 🏆":`${(goal-a).toFixed(1)} pins to go`);
+
+ const tb=document.querySelector("#scoreTable tbody"); tb.innerHTML="";
  for(const w of SCHEDULE){
   const s=sc[w.wk];
-  const nAvg=(s[0]!=null&&s[1]!=null&&s[0]!==""&&s[1]!=="")
-   ?((+s[0]+ +s[1])/2).toFixed(1):(s[0]??s[1]??"—")||"—";
+  const both=s[0]!=null&&s[0]!==""&&s[1]!=null&&s[1]!=="";
+  const nAvg=both?((+s[0]+ +s[1])/2).toFixed(1):"—";
   const tr=document.createElement("tr");
-  tr.innerHTML=`<td><b>${w.wk}</b></td><td>${w.date}</td>
-   <td>${w.g1}</td><td><input type="number" min="0" max="300" value="${s[0]??""}" data-w="${w.wk}" data-i="0"></td>
-   <td>${w.g2}</td><td><input type="number" min="0" max="300" value="${s[1]??""}" data-w="${w.wk}" data-i="1"></td>
-   <td>${nAvg}</td>`;
+  tr.innerHTML=`<td class="wkn">Wk ${w.wk} · ${w.date}</td>
+   <td class="game"><span class="g">G1</span><span class="oppname opp">${esc(w.g1)}</span></td>
+   <td class="game"><input type="number" inputmode="numeric" min="0" max="300" value="${s[0]??""}" data-w="${w.wk}" data-i="0" aria-label="Week ${w.wk} game 1"></td>
+   <td class="game"><span class="g">G2</span><span class="oppname opp">${esc(w.g2)}</span></td>
+   <td class="game"><input type="number" inputmode="numeric" min="0" max="300" value="${s[1]??""}" data-w="${w.wk}" data-i="1" aria-label="Week ${w.wk} game 2"></td>
+   <td class="wkn">${both?"Night avg "+nAvg:""}</td>`;
   tb.appendChild(tr);
  }
  tb.querySelectorAll("input").forEach(inp=>inp.addEventListener("change",e=>{
-  const{w,i}=e.target.dataset, S=store(who);
+  const w=e.target.dataset.w, i=+e.target.dataset.i, S=store(who);
   if(!S.scores[w])S.scores[w]=[undefined,undefined];
-  S.scores[w][+i]=e.target.value===""?null:+e.target.value;
-  saveStore(who,S);render();}));
- document.getElementById("hcapLine").innerHTML=(P.note?P.note+" ":"")+
-  `Handicap adds to scratch on league night — currently <b>+${hcap}</b> (ballast = 4 − games; avg = (scratch + ballast × ${P.prev}) ÷ (games + ballast); handicap = 70% of 200 − avg).`;
- // trend chart
- const ch=document.getElementById("chart");ch.innerHTML="";
+  S.scores[w][i]=e.target.value===""?null:+e.target.value;
+  saveStore(who,S); render();}));
+
+ document.getElementById("baseLabel").textContent="last season's average ("+base+")";
+ const ch=document.getElementById("chart"); ch.innerHTML="";
  const nightVals=SCHEDULE.map(w=>{const s=sc[w.wk];
   const g=[s[0],s[1]].filter(v=>v!=null&&v!=="").map(Number);
   return g.length?g.reduce((x,y)=>x+y,0)/g.length:0;});
- const maxV=Math.max(goal+10,...nightVals);
+ const maxV=Math.max(goal+10,base+10,...nightVals);
+ const H=112;
  SCHEDULE.forEach((w,ix)=>{
   const v=nightVals[ix];
-  const col=document.createElement("div");col.className="col";
+  const col=document.createElement("div"); col.className="col";
   col.innerHTML=`<div class="val">${v?v.toFixed(0):""}</div>
-   <div class="bar ${v?"":"dim"}" style="height:${v?Math.max(4,Math.round(v/maxV*112)):3}px"></div>
+   <div class="bar ${v?"":"dim"}" style="height:${v?Math.max(4,Math.round(v/maxV*H)):3}px"></div>
    <div class="lab">${w.date}</div>`;
   ch.appendChild(col);
  });
- const bl=document.createElement("div");bl.className="baseline";
- bl.style.bottom=(19+base/maxV*112)+"px";bl.innerHTML=`<i>${base}</i>`;
+ const bl=document.createElement("div"); bl.className="baseline";
+ bl.style.bottom=(19+base/maxV*H)+"px"; bl.innerHTML=`<i>${base}</i>`;
  ch.appendChild(bl);
+
+ document.getElementById("explain").innerHTML=`
+  <dt>Scratch average</dt>
+  <dd>The plain average of the games you have actually rolled this season — nothing added, nothing borrowed. ${games.length?`Yours: <b>${a.toFixed(1)}</b> across ${games.length} game${games.length>1?"s":""}.`:"No games yet, so there is nothing to average."}</dd>
+  <dt>League average</dt>
+  <dd>The number the league actually uses. Early in the season it blends your real games with last season's average so one bad night cannot tank you. Right now the blend uses <b>${ballast||"no"}</b> ballast game${ballast===1?"":"s"} of ${base}${ballast?` alongside your ${games.length} real one${games.length===1?"":"s"}`:""}. The ballast drops by one with each game bowled and is gone at 4 games — after that, league average and scratch average are the same number.</dd>
+  <dt>Handicap</dt>
+  <dd>70% of the gap between your league average and 200, rounded. Yours is <b>+${hcap}</b>, added to every game you roll. It shrinks as you improve.</dd>
+  <dt>Pace for ${goal}</dt>
+  <dd>What you would need to average across your remaining ${Math.max(0,remaining)} games to finish the season at ${goal}.</dd>
+  <dt>Playoff eligible</dt>
+  <dd>Six games logged is the league threshold. ${games.length>=6?"You are in.":`You need <b>${6-games.length}</b> more.`}</dd>`;
 }
-renderWho();render();
+renderWho(); render();
 </script>
 </body>
 </html>
