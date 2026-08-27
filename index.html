@@ -159,6 +159,11 @@
   .elig-summary{font-family:var(--data); font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
     color:var(--strike); padding:12px 2px; border-bottom:1px solid var(--rule)}
   .elig-summary.ok{color:var(--signal)}
+  .headcount{font-family:var(--data); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    font-weight:700; border:1px solid; border-radius:2px; padding:3px 7px; margin-left:10px;
+    vertical-align:2px; white-space:nowrap}
+  .headcount.ok{color:var(--signal); border-color:var(--signal)}
+  .headcount.warn{color:var(--strike); border-color:var(--strike)}
 
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
   .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
@@ -376,7 +381,7 @@
 
   <section>
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>Full schedule</h2>
-    <p class="note" id="schedNote">Every matchup, lane and start time for the season. All start times are PM.</p>
+    <p class="note" id="schedNote">Every matchup, lane and start time for the season.</p>
     <div class="legend" id="legend"></div>
     <table>
       <thead><tr><th>Wk</th><th>When</th><th>Opponent</th><th style="text-align:right">Result</th></tr></thead>
@@ -519,9 +524,10 @@ function nightSlot(iso){
 function slotBadge(iso){
   const slot = nightSlot(iso);
   if (!slot) return "";
-  const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24));
+  // all league games are PM, so show it once: "7:00 & 8:10 PM"
+  const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
   return `<span class="slot ${slot}">${slot === "early" ? SUN : MOON}`
-       + `${slot} · ${times.join(" & ")}</span>`;
+       + `${slot} · ${times.join(" & ")} PM</span>`;
 }
 
 // compact icon-only marker for schedule rows
@@ -537,7 +543,7 @@ const pad = n => String(n).padStart(2,"0");
 function fmtTime(t24){
   let [h,m] = t24.split(":").map(Number);
   const h12 = h > 12 ? h - 12 : h;
-  return `${h12}:${pad(m)}`;
+  return `${h12}:${pad(m)} PM`;
 }
 function fmtDate(iso, long){
   const [y,mo,d] = iso.split("-").map(Number);
@@ -642,6 +648,17 @@ function renderRecord(){
 }
 
 /* ---------- availability ---------- */
+// We aim for 3 bowlers a game — this badge answers "do we have enough?"
+const NEED = 3;
+function headcount(inN, maybeN){
+  const ok = inN >= NEED;
+  const txt = ok
+    ? `${inN} in ✓`
+    : `${inN} in · need ${NEED - inN} more`;
+  const maybe = maybeN ? ` · ${maybeN} maybe` : "";
+  return `<span class="headcount ${ok ? "ok" : "warn"}">${txt}${maybe}</span>`;
+}
+
 function col(cls, title, people){
   return `<div class="col ${cls}"><h3>${title}</h3><ul>${
     people && people.length
@@ -664,7 +681,7 @@ function renderNight(iso){
 
   if (!data){
     const past = iso < todayISO();
-    head.textContent = `Availability · Week ${wk}`;
+    head.innerHTML = `Availability · Week ${wk}` + (past ? "" : headcount(0, 0));
     note.textContent = past
       ? `${fmtDate(iso, true)} — ${matchups}. No lineup recorded for this night.`
       : `${fmtDate(iso, true)} — ${matchups}. Nobody's replied for this week yet — send it in early if you already know.`;
@@ -679,7 +696,8 @@ function renderNight(iso){
     box.innerHTML = col("in","Bowled", bowled) + col("quiet","Sat out", data.sat);
   } else {
     const today = iso === todayISO();
-    head.textContent = `${today ? "Tonight" : "Availability"} · Week ${wk}`;
+    head.innerHTML = `${today ? "Tonight" : "Availability"} · Week ${wk}`
+      + headcount((data.in || []).length, (data.maybe || []).length);
     note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
     box.innerHTML =
       col("in","In",data.in) + col("maybe","Maybe",data.maybe) +
@@ -719,8 +737,8 @@ function renderLegend(){
   const early = isos.filter(d => nightSlot(d) === "early").length;
   const late  = isos.length - early;
   document.getElementById("legend").innerHTML =
-    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 — ${early} of ${isos.length}</span>`
-  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 — ${late} of ${isos.length}</span>`;
+    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 PM — ${early} of ${isos.length}</span>`
+  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 PM — ${late} of ${isos.length}</span>`;
 }
 
 function renderSchedule(){
