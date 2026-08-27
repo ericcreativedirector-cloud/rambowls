@@ -68,10 +68,19 @@
     display:flex; flex-direction:column}
   .masthead .nextup{min-width:0; width:100%}
   header{min-width:0}
-  h1{font-family:var(--display); font-size:clamp(27px,7.6vw,76px); line-height:.86;
-    margin:0 0 auto; text-transform:uppercase; word-break:break-word}
+  h1{font-family:var(--display); font-size:clamp(40px,13vw,68px); line-height:.88;
+    margin:0 0 auto; text-transform:uppercase; word-break:break-word; letter-spacing:.01em}
+  h1 span{color:var(--maple)}
   .sub{font-family:var(--data); font-size:10px; color:var(--dim);
     margin:14px 0 0; line-height:1.7}
+  .navbox{display:flex; align-items:center; gap:10px; margin-top:18px; text-decoration:none;
+    border:1px solid var(--maple); border-radius:5px; padding:13px 15px; background:var(--lane-2)}
+  .navbox:hover{background:rgba(200,135,60,.13)}
+  .navlab{font-family:var(--data); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--dim)}
+  .navname{font-family:var(--display); font-size:19px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--maple)}
+  .navarrow{margin-left:auto; color:var(--maple); font-size:17px}
   .stamps{margin-top:12px; display:flex; gap:5px; flex-wrap:wrap}
   .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:3px;
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
@@ -334,14 +343,18 @@
 
   <div class="masthead">
     <header>
-      <h1>Rambowls<br>Scheduler</h1>
+      <h1>Rambowls<br><span>Scheduler</span></h1>
       <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
-      <p class="sub"><a href="tracker/" style="color:var(--maple);text-decoration:none">MY STATS →</a></p>
       <div class="stamps">
         <span class="tag">Read only</span>
         <span class="tag" id="updated">Updated —</span>
         <noscript><span class="tag">JavaScript required — data won't load without it</span></noscript>
       </div>
+      <a class="navbox" href="tracker/">
+        <span class="navlab">Go to</span>
+        <span class="navname">My Stats</span>
+        <span class="navarrow">→</span>
+      </a>
     </header>
     <div class="nextup" id="nextup"></div>
   </div>

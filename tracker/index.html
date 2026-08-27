@@ -45,9 +45,25 @@
 
   /* STACKED masthead — no two-column split */
   .masthead{border-bottom:3px solid var(--maple); padding:16px 0 18px}
+  .herotop{display:flex; align-items:flex-start; gap:14px}
   h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(40px,13vw,68px); line-height:.88; letter-spacing:.01em; margin:0}
+    font-size:clamp(40px,13vw,68px); line-height:.88; letter-spacing:.01em; margin:0;
+    word-break:break-word}
   h1 span{color:var(--maple)}
+  .whoami{margin-left:auto; text-align:right; min-width:0; padding-top:5px}
+  .whoami .lab{display:block; font-family:var(--data); font-size:9px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--dim)}
+  .whoami .nm{display:block; font-family:var(--display); font-size:clamp(22px,7vw,38px);
+    line-height:1; letter-spacing:.03em; text-transform:uppercase; color:var(--maple);
+    margin-top:5px; word-break:break-word}
+  .navbox{display:flex; align-items:center; gap:10px; margin-top:18px; text-decoration:none;
+    border:1px solid var(--maple); border-radius:5px; padding:13px 15px; background:var(--lane-2)}
+  .navbox:hover{background:rgba(200,135,60,.13)}
+  .navlab{font-family:var(--data); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--dim)}
+  .navname{font-family:var(--display); font-size:19px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--maple)}
+  .navarrow{margin-left:auto; color:var(--maple); font-size:17px}
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:10px 0 0}
   .stamps{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
@@ -71,7 +87,9 @@
   .note{font-size:13.5px; color:var(--dim); margin:0 0 18px; max-width:62ch}
   .note b{color:var(--bone); font-weight:500}
 
-  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+  .stats{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+    grid-auto-flow:row dense; gap:10px}
+  .stat.wide{grid-column:span 2}
   .stat{background:var(--lane-2); border:1px solid var(--rule); border-radius:5px; padding:13px 14px}
   .stat b{display:block; font-family:var(--display); font-size:30px; font-weight:400;
     letter-spacing:.02em; color:var(--bone); line-height:1}
@@ -127,6 +145,12 @@
   .chart .val{font-family:var(--data); font-size:10.5px; color:var(--bone)}
   .chart .lab{font-family:var(--data); font-size:8.5px; letter-spacing:.04em; color:var(--dim)}
 
+  details.rest{margin-top:6px}
+  details.rest summary{list-style:none; cursor:pointer; font-family:var(--data); font-size:10px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--maple);
+    border:1px solid var(--rule); border-radius:5px; padding:12px 14px; text-align:center}
+  details.rest summary::-webkit-details-marker{display:none}
+  details.rest[open] summary{margin-bottom:10px}
   .explain{border:1px solid var(--rule); border-radius:5px; background:var(--lane-2); padding:16px 18px}
   .explain dt{font-family:var(--data); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--maple); margin-top:14px}
@@ -144,7 +168,7 @@
           padding-left:max(20px, env(safe-area-inset-left))}
     .masthead{padding-bottom:22px}
     .sub{font-size:12px; margin-top:14px}
-    .stats{grid-template-columns:repeat(4,1fr); gap:12px}
+    .stats{grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:12px}
     .stat b{font-size:34px}
     .chart{gap:8px; height:172px}
   }
@@ -160,7 +184,12 @@
   </p>
 
   <div class="masthead">
-    <h1 id="pageTitle">Player<br><span>Stats</span></h1>
+    <div class="herotop">
+      <h1>Rambowls<br><span>Stats</span></h1>
+      <div class="whoami" id="whoami" style="display:none">
+        <span class="lab">Viewing</span><span class="nm" id="whoName"></span>
+      </div>
+    </div>
     <p class="sub" id="pageSub">Pick your name — this phone will remember it</p>
     <div class="stamps">
       <span class="tag">Through Week 2</span>
@@ -169,6 +198,11 @@
     </div>
     <div class="who" id="whoRow"></div>
     <p class="whoask" id="whoAsk">↑ Tap your name to start</p>
+    <a class="navbox" href="../">
+      <span class="navlab">Go to</span>
+      <span class="navname">Scheduler</span>
+      <span class="navarrow">→</span>
+    </a>
   </div>
 
   <div id="page" style="display:none">
@@ -197,8 +231,12 @@
       <p class="note">Official scores come from the league sheet each week. Anything you type here saves on this phone only — handy for logging tonight before the sheet updates.</p>
       <table id="scoreTable">
         <thead><tr><th>Wk</th><th>Game 1</th><th>Score</th><th>Game 2</th><th>Score</th><th>Night</th></tr></thead>
-        <tbody></tbody>
+        <tbody id="logNow"></tbody>
       </table>
+      <details class="rest" id="restWrap">
+        <summary id="restSummary">Show the rest of the season</summary>
+        <table><tbody id="logRest"></tbody></table>
+      </details>
     </section>
 
     <section>
@@ -282,8 +320,8 @@ function renderWho(){
  }
  document.getElementById("whoAsk").style.display=who?"none":"block";
  document.getElementById("page").style.display=who?"block":"none";
- document.getElementById("pageTitle").innerHTML=who
-  ? esc(who)+"'s<br><span>Stats</span>" : "Player<br><span>Stats</span>";
+ document.getElementById("whoami").style.display=who?"block":"none";
+ if(who)document.getElementById("whoName").textContent=who;
  document.getElementById("pageSub").textContent=who
   ? "Tap a different name any time — this phone remembers the last one"
   : "Pick your name — this phone will remember it";
@@ -304,12 +342,12 @@ function render(){
   (games.length?`<b>${games.length}</b> game${games.length>1?"s":""} in.`:"");
  document.getElementById("statRow").innerHTML=`
   <div class="stat"><b>${a?a.toFixed(1):"—"}</b><span>Scratch avg</span></div>
-  <div class="stat"><b>${la.toFixed(1)}</b><span>League avg</span></div>
+  ${ballast?`<div class="stat"><b>${la.toFixed(1)}</b><span>League avg</span></div>`:""}
   <div class="stat"><b>+${hcap}</b><span>Handicap</span></div>
   <div class="stat"><b>${games.length?Math.max(...games):"—"}</b><span>High game</span></div>
   <div class="stat"><b>${games.length}<small>/24</small></b><span>Games played</span></div>
   <div class="stat"><b class="${delta==null?"":delta>=0?"up":"down"}">${delta==null?"—":(delta>=0?"+":"")+delta.toFixed(1)}</b><span>vs last season</span></div>
-  <div class="stat"><b>${paceTxt}</b><span>Pace for ${goal}</span></div>
+  <div class="stat wide"><b>${paceTxt}</b><span>Need per game to finish at ${goal}</span></div>
   <div class="stat"><b>${games.length>=6?"YES":games.length+"<small>/6</small>"}</b><span>Playoff eligible</span></div>`;
 
  document.getElementById("laneTitle").textContent="Road to "+goal;
@@ -325,7 +363,12 @@ function render(){
  document.getElementById("goalRight").textContent=a==null?""
   :(a>=goal?"Goal reached 🏆":`${(goal-a).toFixed(1)} pins to go`);
 
- const tb=document.querySelector("#scoreTable tbody"); tb.innerHTML="";
+ const tbNow=document.getElementById("logNow"), tbRest=document.getElementById("logRest");
+ tbNow.innerHTML=""; tbRest.innerHTML="";
+ let lastPlayed=0;
+ for(const w of SCHEDULE){const s=sc[w.wk]; if(s[0]!=null&&s[0]!==""||s[1]!=null&&s[1]!=="")lastPlayed=w.wk;}
+ const cutoff=lastPlayed+1;   // everything through next week stays open
+ let hidden=0;
  for(const w of SCHEDULE){
   const s=sc[w.wk];
   const both=s[0]!=null&&s[0]!==""&&s[1]!=null&&s[1]!=="";
@@ -337,9 +380,13 @@ function render(){
    <td class="game"><span class="g">G2</span><span class="oppname opp">${esc(w.g2)}</span></td>
    <td class="game"><input type="number" inputmode="numeric" min="0" max="300" value="${s[1]??""}" data-w="${w.wk}" data-i="1" aria-label="Week ${w.wk} game 2"></td>
    <td class="wkn">${both?"Night avg "+nAvg:""}</td>`;
-  tb.appendChild(tr);
+  if(w.wk<=cutoff){tbNow.appendChild(tr);}else{tbRest.appendChild(tr); hidden++;}
  }
- tb.querySelectorAll("input").forEach(inp=>inp.addEventListener("change",e=>{
+ const rw=document.getElementById("restWrap");
+ rw.style.display=hidden?"block":"none";
+ document.getElementById("restSummary").textContent=
+  "Show the rest of the season ("+hidden+" week"+(hidden===1?"":"s")+")";
+ document.querySelectorAll("#scoreTable input, #logRest input").forEach(inp=>inp.addEventListener("change",e=>{
   const w=e.target.dataset.w, i=+e.target.dataset.i, S=store(who);
   if(!S.scores[w])S.scores[w]=[undefined,undefined];
   S.scores[w][i]=e.target.value===""?null:+e.target.value;
@@ -367,12 +414,12 @@ function render(){
  document.getElementById("explain").innerHTML=`
   <dt>Scratch average</dt>
   <dd>The plain average of the games you have actually rolled this season — nothing added, nothing borrowed. ${games.length?`Yours: <b>${a.toFixed(1)}</b> across ${games.length} game${games.length>1?"s":""}.`:"No games yet, so there is nothing to average."}</dd>
-  <dt>League average</dt>
-  <dd>The number the league actually uses. Early in the season it blends your real games with last season's average so one bad night cannot tank you. Right now the blend uses <b>${ballast||"no"}</b> ballast game${ballast===1?"":"s"} of ${base}${ballast?` alongside your ${games.length} real one${games.length===1?"":"s"}`:""}. The ballast drops by one with each game bowled and is gone at 4 games — after that, league average and scratch average are the same number.</dd>
+  ${ballast?`<dt>League average</dt>
+  <dd>The number the league actually uses. Early in the season it blends your real games with last season's average so one bad night cannot tank you. Right now the blend uses <b>${ballast||"no"}</b> ballast game${ballast===1?"":"s"} of ${base}${ballast?` alongside your ${games.length} real one${games.length===1?"":"s"}`:""}. The ballast drops by one with each game bowled and is gone at 4 games — after that, league average and scratch average are the same number.</dd>`:""}
   <dt>Handicap</dt>
   <dd>70% of the gap between your league average and 200, rounded. Yours is <b>+${hcap}</b>, added to every game you roll. It shrinks as you improve.</dd>
-  <dt>Pace for ${goal}</dt>
-  <dd>What you would need to average across your remaining ${Math.max(0,remaining)} games to finish the season at ${goal}.</dd>
+  <dt>Need per game</dt>
+  <dd>What you would have to average across your remaining ${Math.max(0,remaining)} games for your season average to land on ${goal}. It assumes you bowl every remaining game — sit one out and the number climbs.</dd>
   <dt>Playoff eligible</dt>
   <dd>Six games logged is the league threshold. ${games.length>=6?"You are in.":`You need <b>${6-games.length}</b> more.`}</dd>`;
 }
