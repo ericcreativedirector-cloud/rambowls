@@ -36,6 +36,7 @@ h2{font-family:var(--display);font-size:21px;letter-spacing:.06em;color:var(--bo
 .stat{background:var(--lane-2);border:1px solid var(--rule);border-radius:5px;padding:12px 14px}
 .stat b{display:block;font-family:var(--display);font-size:30px;font-weight:400;
   letter-spacing:.02em;color:var(--bone)}
+.stat b small{font-size:14px;color:var(--dim)}
 .stat span{font-family:var(--data);font-size:8.5px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--maple)}
 /* lane progress: the one deliberately non-blue element — it's a bowling lane */
@@ -66,32 +67,14 @@ button:hover{border-color:var(--maple);color:var(--maple)}
 .wlbtn.on.W{border-color:var(--signal);color:var(--signal);background:rgba(53,167,155,.12)}
 .wlbtn.on.L{border-color:var(--strike);color:var(--strike);background:rgba(232,90,82,.12)}
 .wlbtn.on.T{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.12)}
-.chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px}
+.chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;position:relative}
+.baseline{position:absolute;left:0;right:0;border-top:2px dashed rgba(232,90,82,.55);pointer-events:none}
+.baseline i{position:absolute;right:2px;top:-14px;font-style:normal;font-family:var(--data);font-size:8.5px;color:var(--strike)}
 .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
 .chart .bar{width:100%;max-width:44px;background:var(--maple);border-radius:2px 2px 0 0;min-height:4px}
 .chart .bar.dim{background:var(--lane);border:1px solid var(--rule)}
 .chart .val{font-family:var(--data);font-size:11px;color:var(--bone)}
 .chart .lab{font-family:var(--data);font-size:8.5px;letter-spacing:.06em;color:var(--dim)}
-.week-pick{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-.week-pick label{font-family:var(--data);font-size:8.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--maple)}
-select{background:var(--lane);color:var(--bone);border:1px solid var(--rule);border-radius:3px;
-  padding:7px 10px;font-family:var(--data);font-size:12px}
-.avail button{padding:5px 11px;margin-right:4px;font-size:10px}
-.avail button.on.In{border-color:var(--signal);color:var(--signal);background:rgba(53,167,155,.12)}
-.avail button.on.Out{border-color:var(--strike);color:var(--strike);background:rgba(232,90,82,.12)}
-.avail button.on.Maybe{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.12)}
-.gbtn{width:40px;padding:5px 0;margin-right:4px;font-size:10px}
-.gbtn.on{border-color:var(--maple);color:var(--maple);background:rgba(200,135,60,.15)}
-.copybtn{background:var(--maple);color:#140C03;border-color:var(--maple);font-weight:700;
-  padding:9px 16px;font-size:11px;margin-top:12px}
-.copybtn:hover{color:#140C03;filter:brightness(1.08)}
-.copybtn:active{transform:translateY(1px)}
-.tallybar{height:14px;border-radius:2px;background:var(--maple);min-width:2px}
-.tallyrow{display:grid;grid-template-columns:110px 1fr 90px;align-items:center;gap:10px;
-  margin-bottom:8px;font-size:13.5px}
-.eligible{color:var(--signal);font-family:var(--data);font-size:11px;letter-spacing:.05em}
-.alt{color:var(--dim)}
 .note{font-size:12.5px;color:var(--dim);margin-top:10px;max-width:70ch}
 footer{font-family:var(--data);font-size:9px;letter-spacing:.15em;text-transform:uppercase;
   color:var(--dim);opacity:.6;margin-top:34px;text-align:center}
@@ -133,34 +116,15 @@ footer{font-family:var(--data);font-size:9px;letter-spacing:.15em;text-transform
     <div class="card full">
       <h2>Weekly trend — Eric's night average</h2>
       <div class="chart" id="chart"></div>
-      <div class="note">Dashed markers: red = 112 baseline. Gold bars are bowled weeks.</div>
+      <div class="note">Dashed red line = your 112 baseline from last season. Pace = what you must average over remaining games to finish at 138 (assumes all 24 bowled).</div>
     </div>
 
-    <div class="card full">
-      <h2>Lineup board</h2>
-      <div class="week-pick">
-        <label for="weekSel" style="color:var(--dim);font-size:14px">Week</label>
-        <select id="weekSel"></select>
-        <span class="sub" id="weekOpp"></span>
-      </div>
-      <table id="lineupTable">
-        <thead><tr><th>Player</th><th>Availability</th><th>Bowled</th></tr></thead><tbody></tbody>
-      </table>
-      <button class="copybtn" id="copyBtn">Copy availability ping for group chat</button>
-    </div>
-
-    <div class="card full">
-      <h2>Games played — playoff eligibility (6 needed)</h2>
-      <div id="tally"></div>
-    </div>
   </div>
-  <footer>Rambowls Tracker · rebuilt 8/27/26 · save this file — it's your latest version</footer>
+  <footer>Rambowls Tracker · rebuilt 8/27/26 · team stuff lives in the Scheduler — this page is just your numbers</footer>
 </div>
 
 <script>
 const GOAL=138, BASE=112;
-const ROSTER=["Eric","Michael","Phil","Ken","Ron","Prah"];
-const ALTS=["Kelvyn","Jamiqve","Pete"];
 const SCHEDULE=[
  {wk:1,date:"8/19",g1:"The Pinheads",g2:"The Lane 5 Pole Dancers"},
  {wk:2,date:"8/26",g1:"Peanut Gutter & Jelly",g2:"The Milk Duds"},
@@ -178,12 +142,9 @@ const SCHEDULE=[
 // Seeded through Week 2 (scorecards 8/26): G1 W 552-541 PG&J, G2 W 559-488 Milk Duds
 const SEED={
  scores:{1:{g1:136,g2:124},2:{g1:125,g2:97}},
- results:{1:{g1:"W",g2:"L"},2:{g1:"W",g2:"W"}},
- bowled:{1:{Eric:[1,1],Ken:[1,1],Ron:[1,0],Michael:[0,1]},
-         2:{Eric:[1,1],Prah:[1,1],Ron:[1,1]}},
- avail:{}
+ results:{1:{g1:"W",g2:"L"},2:{g1:"W",g2:"W"}}
 };
-const KEY="rambowls_fall26_v4";
+const KEY="rambowls_fall26_v5";
 let S;
 try{const raw=localStorage.getItem(KEY);S=raw?JSON.parse(raw):structuredClone(SEED);}
 catch(e){S=structuredClone(SEED);}
@@ -192,24 +153,22 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function ericGames(){const out=[];for(const w of SCHEDULE){const s=S.scores[w.wk]||{};
  if(s.g1!=null&&s.g1!=="")out.push(+s.g1); if(s.g2!=null&&s.g2!=="")out.push(+s.g2);}return out;}
 function avg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:null;}
-function record(){let w=0,l=0,t=0;for(const k in S.results){const r=S.results[k];
- for(const g of["g1","g2"]){if(r[g]==="W")w++;else if(r[g]==="L")l++;else if(r[g]==="T")t++;}}
- return{w,l,t};}
-function gamesPlayed(name){let n=0;for(const k in S.bowled){const b=S.bowled[k][name];
- if(b){n+=(b[0]?1:0)+(b[1]?1:0);}}return n;}
 
 function leagueAvg(games){const b=Math.max(0,4-games.length);
  return (games.reduce((x,y)=>x+y,0)+b*BASE)/(games.length+b);}
 function render(){
- const games=ericGames(), a=avg(games), rec=record(), tot=rec.w+rec.l+rec.t;
+ const games=ericGames(), a=avg(games);
  const la=leagueAvg(games), hcap=Math.round(0.7*(200-la));
+ const remaining=24-games.length, sum=games.reduce((x,y)=>x+y,0);
+ const paceTxt=(a==null||remaining<=0)?(a!=null&&a>=GOAL?"MADE IT":"—")
+   :((GOAL*24-sum)/remaining).toFixed(1);
  // stats
  document.getElementById("statRow").innerHTML=`
   <div class="stat"><b>${a?a.toFixed(1):"—"}</b><span>Scratch avg</span></div>
   <div class="stat"><b>${la.toFixed(1)}</b><span>League avg</span></div>
   <div class="stat"><b>${games.length?Math.max(...games):"—"}</b><span>High game</span></div>
-  <div class="stat"><b>${rec.w}-${rec.l}${rec.t?"-"+rec.t:""}</b><span>Team record</span></div>
-  <div class="stat"><b>${tot?("."+Math.round(rec.w/tot*1000).toString().padStart(3,"0")):"—"}</b><span>Win rate</span></div>
+  <div class="stat"><b>${games.length}<small>/24</small></b><span>Games played</span></div>
+  <div class="stat"><b>${paceTxt}</b><span>Pace for 138</span></div>
   <div class="stat"><b>+${hcap}</b><span>Est. handicap</span></div>`;
  document.getElementById("hcapNote").textContent="+"+hcap;
  // lane
@@ -250,55 +209,12 @@ function render(){
    <div class="lab">${w.date}</div>`;
   ch.appendChild(col);
  }
- renderLineup(); renderTally();
+  const bl=document.createElement("div");bl.className="baseline";
+ bl.style.bottom=(19+112/maxV*(150-38))+"px";bl.innerHTML="<i>112</i>";ch.appendChild(bl);
 }
 function wlBtns(w,g,cur){return["W","L","T"].map(v=>
  `<button class="wlbtn ${v} ${cur===v?"on":""}" data-w="${w}" data-g="${g}" data-v="${v}">${v}</button>`).join("");}
 
-function renderLineup(){
- const sel=document.getElementById("weekSel");
- if(!sel.options.length){SCHEDULE.forEach(w=>{const o=document.createElement("option");
-  o.value=w.wk;o.textContent=`Wk ${w.wk} — ${w.date}`;sel.appendChild(o);});
-  sel.value=S.ui_week||3; sel.addEventListener("change",()=>{S.ui_week=+sel.value;save();renderLineup();});}
- const wk=+sel.value, w=SCHEDULE.find(x=>x.wk===wk);
- document.getElementById("weekOpp").textContent=`vs ${w.g1} · then ${w.g2}`;
- if(!S.avail[wk])S.avail[wk]={};
- if(!S.bowled[wk])S.bowled[wk]={};
- const tb=document.querySelector("#lineupTable tbody");tb.innerHTML="";
- for(const p of[...ROSTER,...ALTS]){
-  const av=S.avail[wk][p]||null, b=S.bowled[wk][p]||[0,0];
-  const tr=document.createElement("tr");
-  tr.innerHTML=`<td class="${ALTS.includes(p)?"alt":""}">${p}${ALTS.includes(p)?" (alt)":""}</td>
-   <td class="avail">${["In","Maybe","Out"].map(v=>
-     `<button class="${v} ${av===v?"on":""}" data-p="${p}" data-v="${v}">${v}</button>`).join("")}</td>
-   <td>${[0,1].map(i=>`<button class="gbtn ${b[i]?"on":""}" data-p="${p}" data-i="${i}">G${i+1}</button>`).join("")}</td>`;
-  tb.appendChild(tr);
- }
- tb.querySelectorAll(".avail button").forEach(btn=>btn.addEventListener("click",e=>{
-  const{p,v}=e.target.dataset;S.avail[wk][p]=(S.avail[wk][p]===v)?null:v;save();renderLineup();}));
- tb.querySelectorAll(".gbtn").forEach(btn=>btn.addEventListener("click",e=>{
-  const{p,i}=e.target.dataset;if(!S.bowled[wk][p])S.bowled[wk][p]=[0,0];
-  S.bowled[wk][p][+i]=S.bowled[wk][p][+i]?0:1;save();render();}));
-}
-function renderTally(){
- const el=document.getElementById("tally");el.innerHTML="";
- const all=[...ROSTER,...ALTS].map(p=>({p,n:gamesPlayed(p)})).sort((a,b)=>b.n-a.n);
- const max=Math.max(6,...all.map(x=>x.n));
- for(const{p,n}of all){
-  const row=document.createElement("div");row.className="tallyrow";
-  row.innerHTML=`<div class="${ALTS.includes(p)?"alt":""}">${p}</div>
-   <div><div class="tallybar" style="width:${n/max*100}%"></div></div>
-   <div class="${n>=6?"eligible":""}">${n} ${n>=6?"✓ eligible":"/ 6"}</div>`;
-  el.appendChild(row);
- }
-}
-document.getElementById("copyBtn").addEventListener("click",()=>{
- const wk=+document.getElementById("weekSel").value,w=SCHEDULE.find(x=>x.wk===wk);
- const msg=`🎳 Rambowls — Week ${w.wk} (${w.date}) at The Gutter!\nGame 1 vs ${w.g1}, Game 2 vs ${w.g2}.\nWho's in? Reply In / Out / Maybe 👇`;
- navigator.clipboard.writeText(msg).then(()=>{
-  const b=document.getElementById("copyBtn");b.textContent="Copied! Paste it in the chat";
-  setTimeout(()=>b.textContent="Copy availability ping for group chat",2000);});
-});
 render();
 </script>
 </body>
