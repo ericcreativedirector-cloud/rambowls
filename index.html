@@ -437,12 +437,12 @@ const PIN_OFF = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d
 // Sheet formula: ballast = 4 - games played; avg = (scratch total + ballast x
 // previous avg) / (games + ballast); hcp = 70% of (200 - avg).
 const roster = [
-  {name:"Eric Rodriguez",  avg:121, hcp:55, games:2, alt:false},
+  {name:"Eric Rodriguez",  avg:121, hcp:56, games:4, alt:false},
   {name:"Ken Yamaguchi",   avg:138, hcp:44, games:2, alt:false},
-  {name:"Ron Upperman",    avg:109, hcp:64, games:1, alt:false},
+  {name:"Ron Upperman",    avg:111, hcp:62, games:3, alt:false},
   {name:"Michael Seidler", avg:126, hcp:52, games:1, alt:false},
   {name:"Phil Marken",     avg:134, hcp:47, games:0, alt:false},
-  {name:"Dave Prah",       avg:138, hcp:43, games:0, alt:false},
+  {name:"Dave Prah",       avg:150, hcp:35, games:2, alt:false},
   {name:"Kelvyn Perez",    avg:null, hcp:56, games:0, alt:true},
   {name:"Jamiqve Mascoll", avg:null, hcp:56, games:0, alt:true},
   {name:"Pete",            avg:null, hcp:56, games:0, alt:true}
@@ -452,8 +452,8 @@ const roster = [
 const schedule = [
   {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads", us:533, them:470},
   {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",            us:514, them:532},
-  {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly"},
-  {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds"},
+  {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly",             us:552, them:541},
+  {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                     us:559, them:488},
   {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals"},
   {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts"},
   {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful"},
@@ -494,12 +494,9 @@ const nights = {
     sat:    [["Phil",""], ["Prah",""]]
   },
   "2026-08-26": {
-    played: false,
-    in:    [["Eric",""], ["Ron",""], ["Prah",""]],
-    maybe: [],
-    out:   [],
-    quiet: [["Ken",""], ["Michael",""], ["Phil",""],
-            ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
+    played: true,
+    bowled: [["Eric",2], ["Ron",2], ["Prah",2]],
+    sat:    [["Ken",""], ["Michael",""], ["Phil",""]]
   },
   "2026-09-02": {
     played: false,
