@@ -132,7 +132,7 @@
   .sheetbox .d{font-size:13px; color:var(--dim); margin-top:3px}
   .sheetbox .arw{margin-left:auto; color:var(--maple); font-size:20px; flex:0 0 auto}
 
-  .record{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:4px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:14px 12px}
   .rec-val{font-family:var(--display); font-size:30px; line-height:1}
@@ -156,6 +156,9 @@
   .row.alt .name{font-weight:500; color:#C3C9D2}
   .divider{font-family:var(--data); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--maple); padding:20px 0 8px; border-bottom:1px solid var(--rule)}
+  .elig-summary{font-family:var(--data); font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--strike); padding:12px 2px; border-bottom:1px solid var(--rule)}
+  .elig-summary.ok{color:var(--signal)}
 
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
   .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
@@ -261,7 +264,7 @@
   .venue span{font-size:11.5px; color:var(--dim); line-height:1.6}
 
   /* ===== base = mobile ===== */
-  .record{grid-template-columns:repeat(2,1fr)}
+  .record{grid-template-columns:repeat(3,1fr)}
   .row{grid-template-columns:1fr; gap:8px}
   .track{justify-content:flex-start}
   .tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
@@ -300,7 +303,7 @@
     .nextup .games{font-size:13px; line-height:1.9}
     .nextup .cta{margin-top:16px}
     .nextup .btn{font-size:11px; padding:9px 15px; letter-spacing:.1em}
-    .record{grid-template-columns:repeat(4,1fr)}
+    .record{grid-template-columns:repeat(3,1fr)}
     .row{grid-template-columns:1fr auto; gap:10px 16px}
     .tabs{flex-wrap:wrap; overflow:visible}
     table{display:table; width:100%; border-collapse:collapse; font-size:14px}
@@ -331,6 +334,7 @@
       <div class="stamps">
         <span class="tag">Read only</span>
         <span class="tag" id="updated">Updated —</span>
+        <noscript><span class="tag">JavaScript required — data won't load without it</span></noscript>
       </div>
     </header>
     <div class="nextup" id="nextup"></div>
@@ -342,7 +346,6 @@
     <div class="record">
       <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
       <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg team total</div></div>
-      <div class="rec-cell"><div class="rec-val" id="recThem">—</div><div class="rec-lab">Avg opponent</div></div>
       <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div></div>
     </div>
   </section>
@@ -604,10 +607,15 @@ function renderBoard(){
   };
   // most games first; ties keep roster order
   const byGames = list => [...list].sort((a,b) => b.games - a.games);
-  const starters = byGames(roster.filter(p => !p.alt)).map(line).join("");
+  const starterList = roster.filter(p => !p.alt);
+  const starters = byGames(starterList).map(line).join("");
   const alts = byGames(roster.filter(p => p.alt)).map(line).join("");
+  const need = starterList.filter(p => p.games < 6).length;
+  const summary = need === 0
+    ? `<div class="elig-summary ok">All ${starterList.length} starters are playoff eligible ✓</div>`
+    : `<div class="elig-summary">${need} starter${need === 1 ? "" : "s"} still need${need === 1 ? "s" : ""} games to qualify</div>`;
   document.getElementById("board").innerHTML =
-    starters + `<div class="divider">Alternates</div>` + alts;
+    summary + starters + `<div class="divider">Alternates</div>` + alts;
 }
 
 /* ---------- record ---------- */
@@ -620,7 +628,6 @@ function renderRecord(){
 
   document.getElementById("recRecord").textContent = t ? `${w}-${l}-${t}` : `${w}–${l}`;
   document.getElementById("recUs").textContent   = avg(played.map(g=>g.us));
-  document.getElementById("recThem").textContent = avg(played.map(g=>g.them));
 
   const starters = roster.filter(p => !p.alt);
   const qual = starters.filter(p => p.games >= 6).length;
@@ -768,14 +775,22 @@ function icsStamp(iso, t24, addMin){
 
 function downloadICS(games, filename){
   const lines = [
-    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Rambowls Scheduler//EN","CALSCALE:GREGORIAN"
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Rambowls Scheduler//EN","CALSCALE:GREGORIAN",
+    // Pin every event to New York wall time so the Nov 4 games (after the
+    // Nov 1 daylight-saving change) stay at 7:00/8:10 PM on every device.
+    "BEGIN:VTIMEZONE","TZID:America/New_York",
+    "BEGIN:DAYLIGHT","TZOFFSETFROM:-0500","TZOFFSETTO:-0400","TZNAME:EDT",
+    "DTSTART:19700308T020000","RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU","END:DAYLIGHT",
+    "BEGIN:STANDARD","TZOFFSETFROM:-0400","TZOFFSETTO:-0500","TZNAME:EST",
+    "DTSTART:19701101T020000","RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU","END:STANDARD",
+    "END:VTIMEZONE"
   ];
   games.forEach((g,i) => {
     lines.push(
       "BEGIN:VEVENT",
       `UID:rambowls-${g.iso}-${g.time24.replace(":","")}-${i}@rambowls`,
-      `DTSTART:${icsStamp(g.iso, g.time24)}`,
-      `DTEND:${icsStamp(g.iso, g.time24, 65)}`,
+      `DTSTART;TZID=America/New_York:${icsStamp(g.iso, g.time24)}`,
+      `DTEND;TZID=America/New_York:${icsStamp(g.iso, g.time24, 65)}`,
       `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
       `LOCATION:The Gutter — Lane ${g.lane}`,
       `DESCRIPTION:Week ${g.wk} — 2026 Fall Wednesday League. Lane ${g.lane}.`,
@@ -795,19 +810,34 @@ function downloadICS(games, filename){
 }
 
 /* ---------- boot ---------- */
-document.getElementById("updated").textContent =
-  `Updated ${fmtDate(LAST_UPDATED)}`;
-document.getElementById("sheetLink").href = SHEET_URL;
-renderNextUp();
-renderRecord();
-renderBoard();
-renderAvailability();
-renderLegend();
-renderSchedule();
+try {
+  document.getElementById("updated").textContent =
+    `Updated ${fmtDate(LAST_UPDATED)}`;
+  document.getElementById("sheetLink").href = SHEET_URL;
+  renderNextUp();
+  renderRecord();
+  renderBoard();
+  renderAvailability();
+  renderLegend();
+  renderSchedule();
+} catch (err) {
+  // Never let a silent "—" disguise a real failure.
+  const u = document.getElementById("updated");
+  if (u) u.innerHTML =
+    `Couldn't load team data — <a href="${SHEET_URL}" target="_blank" rel="noopener" style="color:inherit">use the league sheet ↗</a>`;
+  console.error("Rambowls boot failed:", err);
+}
 document.getElementById("icsAll").onclick  = () => downloadICS(schedule, "rambowls-fall-2026");
 document.getElementById("icsRest").onclick = () => {
-  const t = todayISO();
-  downloadICS(schedule.filter(g => g.iso >= t), "rambowls-remaining");
+  // A game is "remaining" until it has actually ended — so at 3 PM on a
+  // league day tonight's games are included, and at 11 PM they're not.
+  const now = new Date();
+  const gameEnd = g => {
+    const [y,mo,d] = g.iso.split("-").map(Number);
+    const [h,mi] = g.time24.split(":").map(Number);
+    return new Date(y, mo-1, d, h, mi + 65);
+  };
+  downloadICS(schedule.filter(g => gameEnd(g) > now), "rambowls-remaining");
 };
 
 // offline support — safe to fail, the page works without it
