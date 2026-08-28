@@ -93,7 +93,6 @@
   .stat b{display:block; font-family:var(--display); font-size:30px; font-weight:400;
     letter-spacing:.02em; color:var(--bone); line-height:1}
   .stat b small{font-size:14px; color:var(--dim)}
-  .stat b.up{color:var(--signal)} .stat b.down{color:var(--strike)}
   .stat span{display:block; font-family:var(--data); font-size:9px; letter-spacing:.12em;
     text-transform:uppercase; color:var(--maple); margin-top:7px}
   .stat i{display:block; font-style:normal; font-family:var(--data); font-size:10px;
@@ -133,7 +132,6 @@
   .logrow .sc.none{color:var(--dim)}
   .logrow .dot{color:var(--rule)}
   .logrow .nightavg{font-family:var(--data); font-size:11px; color:var(--dim)}
-  .logrow .oppname{font-size:12.5px; color:var(--dim)}
   .logrow.prov{background:rgba(200,135,60,.06); border-radius:4px; padding-left:9px; padding-right:9px}
   .provlab{font-family:var(--data); font-size:9px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--maple); border:1px solid var(--maple); border-radius:2px; padding:2px 6px}
@@ -292,11 +290,12 @@ function displayScore(p, prov, wk, i){
   return {v:null, provisional:false};
 }
 
-/* The only week that accepts entry: the most recent night that has happened. */
+/* Provisional entry is for TONIGHT only. On a bowling Wednesday you can fill in
+   games the league sheet hasn't posted yet; by Thursday those revert to a
+   read-only "—" until the official score lands. */
 function openWeek(){
   const t = RB.todayISO();
-  const past = RB.weeks().filter(w => w.iso <= t);
-  return past.length ? past[past.length-1] : null;
+  return RB.weeks().find(w => w.iso === t) || null;
 }
 
 function validScore(raw){

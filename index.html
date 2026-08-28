@@ -68,11 +68,15 @@
     display:flex; flex-direction:column}
   .masthead .nextup{min-width:0; width:100%}
   header{min-width:0}
-  h1{font-family:var(--display); font-size:clamp(40px,13vw,68px); line-height:.88;
-    margin:0 0 auto; text-transform:uppercase; word-break:break-word; letter-spacing:.01em}
+  /* font-weight:400 is required — Anton ships only one weight, so leaving the
+     h1 at its default bold makes the browser synthesise a faux-bold with wider
+     glyphs. Both views must set this or the mastheads won't match. */
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
+    font-size:clamp(40px,13vw,68px); line-height:.88; letter-spacing:.01em;
+    margin:0 0 auto; word-break:break-word}
   h1 span{color:var(--maple)}
-  .sub{font-family:var(--data); font-size:10px; color:var(--dim);
-    margin:14px 0 0; line-height:1.7}
+  .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--dim); margin:12px 0 0; line-height:1.7}
   /* shared Schedule · Stats nav — identical on both views */
   .nav{display:flex; gap:0; margin-top:16px; border:1px solid var(--rule);
     border-radius:4px; overflow:hidden; width:max-content; max-width:100%}
@@ -140,7 +144,6 @@
   .sheetbox .txt{min-width:0}
   .sheetbox .t{font-family:var(--data); font-size:12.5px; letter-spacing:.06em;
     text-transform:uppercase; color:var(--maple); font-weight:700}
-  .sheetbox .d{font-size:13px; color:var(--dim); margin-top:3px}
   .sheetbox .arw{margin-left:auto; color:var(--maple); font-size:20px; flex:0 0 auto}
 
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
