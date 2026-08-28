@@ -73,14 +73,16 @@
   h1 span{color:var(--maple)}
   .sub{font-family:var(--data); font-size:10px; color:var(--dim);
     margin:14px 0 0; line-height:1.7}
-  .navbox{display:flex; align-items:center; gap:10px; margin-top:18px; text-decoration:none;
-    border:1px solid var(--maple); border-radius:5px; padding:13px 15px; background:var(--lane-2)}
-  .navbox:hover{background:rgba(200,135,60,.13)}
-  .navlab{font-family:var(--data); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
-    color:var(--dim)}
-  .navname{font-family:var(--display); font-size:19px; letter-spacing:.05em;
-    text-transform:uppercase; color:var(--maple)}
-  .navarrow{margin-left:auto; color:var(--maple); font-size:17px}
+  /* shared Schedule · Stats nav — identical on both views */
+  .nav{display:flex; gap:0; margin-top:16px; border:1px solid var(--rule);
+    border-radius:4px; overflow:hidden; width:max-content; max-width:100%}
+  .nav a{font-family:var(--data); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; text-decoration:none; color:var(--dim);
+    padding:10px 16px; min-height:44px; display:flex; align-items:center;
+    background:var(--lane-2)}
+  .nav a + a{border-left:1px solid var(--rule)}
+  .nav a:hover{color:var(--bone)}
+  .nav a.on{color:#140C03; background:var(--maple); font-weight:700}
   .stamps{margin-top:12px; display:flex; gap:5px; flex-wrap:wrap}
   .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:3px;
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
@@ -344,24 +346,22 @@
   <div class="masthead">
     <header>
       <h1>Rambowls<br><span>Scheduler</span></h1>
+      <nav class="nav">
+        <a class="on" href="./" aria-current="page">Schedule</a>
+        <a href="tracker/">Stats</a>
+      </nav>
       <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
       <div class="stamps">
-        <span class="tag">Read only</span>
         <span class="tag" id="updated">Updated —</span>
         <noscript><span class="tag">JavaScript required — data won't load without it</span></noscript>
       </div>
-      <a class="navbox" href="tracker/">
-        <span class="navlab">Go to</span>
-        <span class="navname">My Stats</span>
-        <span class="navarrow">→</span>
-      </a>
     </header>
     <div class="nextup" id="nextup"></div>
   </div>
 
   <section>
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Where we stand</h2>
-    <p class="note" id="throughNote">Team record and scoring so far.</p>
+    <p class="note" id="throughNote"></p>
     <div class="record">
       <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
       <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg team total</div></div>
@@ -371,7 +371,7 @@
 
   <section>
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.1 0 3.2 2.2 3.2 4.1 0 1.5-.7 2.4-.7 3.4 0 1.5 2.1 3.6 2.1 8.2 0 3.1-2.1 4.3-4.6 4.3s-4.6-1.2-4.6-4.3c0-4.6 2.1-6.7 2.1-8.2 0-1-.7-1.9-.7-3.4C8.8 5.2 9.9 3 12 3z"/><path d="M9.2 11.2c1.8.9 3.8.9 5.6 0"/></svg>Road to eligibility</h2>
-    <p class="note">Six games logged and you're eligible for semis. One pin per game bowled. Anyone still dark is someone we need on a lane.</p>
+    <p class="note">6 games qualifies for semis.</p>
     <div class="board" id="board"></div>
   </section>
 
@@ -387,7 +387,6 @@
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.5h17M3.5 15h17M9.5 3.5v17M15 3.5v17"/></svg>
       <span class="txt">
         <span class="t">Official league sheet</span>
-        <span class="d">Every score, standing and handicap, straight from the league</span>
       </span>
       <span class="arw" aria-hidden="true">→</span>
     </a>
@@ -426,100 +425,41 @@
   </footer>
 </div>
 
+<script src="data.js"></script>
 <script>
-/* ---------- config ---------- */
-const SHEET_URL     = "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/edit?gid=62#gid=62";
-const LAST_UPDATED  = "2026-08-26";
+// If data.js failed to load there is nothing to render — say so plainly
+// rather than leaving a page of em-dashes.
+if (typeof RB === "undefined"){
+  const u = document.getElementById("updated");
+  if (u) u.textContent = "Unable to load team data";
+  throw new Error("data.js did not load");
+}
 
-/* ============================================================
-   SHIRT CALL — change the value on the right, save, push.
-   Options: "leroy"  = Leroy Jenkins
-            "aloha"  = Aloha
-            "fresh"  = Fresh Fit
-            null     = not called yet
-   ============================================================ */
-const SHIRT_CALLS = {
-  "2026-08-26": "fresh",
-  "2026-09-02": null
-};
+/* ---------- shared data ----------
+   Everything below comes from data.js so the Scheduler and Stats can never
+   drift apart. Edit season data there, not here. */
+const SHEET_URL    = RB.SEASON.sheetUrl;
+const LAST_UPDATED = RB.SEASON.lastUpdated;
+const SHIRT_CALLS  = RB.SHIRT_CALLS;
+const SHIRTS       = RB.SHIRTS;
+const schedule     = RB.SCHEDULE;
+const nights       = RB.NIGHTS;
+
+// Roster rows are derived — games, average and handicap all come from the
+// shared math, so they match the Stats page by construction.
+const roster = RB.PLAYERS.map(p => {
+  const s = RB.playerStats(p.id);
+  return {
+    name:  p.name,
+    avg:   (p.alt && s.count === 0) ? null : s.avgDisplay,
+    hcp:   s.hcp,
+    games: s.count,
+    alt:   p.alt
+  };
+});
 
 const PIN_ON  = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="#F3EEE3"/><path d="M3.4 8.6c1.7.9 3.5.9 5.2 0" stroke="#E85A52" stroke-width="1.6" fill="none"/></svg>';
 const PIN_OFF = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="none" stroke="#2E3742" stroke-width="1.2"/></svg>';
-
-/* ---------- data ---------- */
-// avg / hcp = current league figures, verified against the Rambowls tab.
-// Sheet formula: ballast = 4 - games played; avg = (scratch total + ballast x
-// previous avg) / (games + ballast); hcp = 70% of (200 - avg).
-const roster = [
-  {name:"Eric Rodriguez",  avg:121, hcp:56, games:4, alt:false},
-  {name:"Ken Yamaguchi",   avg:138, hcp:44, games:2, alt:false},
-  {name:"Ron Upperman",    avg:111, hcp:62, games:3, alt:false},
-  {name:"Michael Seidler", avg:126, hcp:52, games:1, alt:false},
-  {name:"Phil Marken",     avg:134, hcp:47, games:0, alt:false},
-  {name:"Dave Prah",       avg:150, hcp:35, games:2, alt:false},
-  {name:"Kelvyn Perez",    avg:null, hcp:56, games:0, alt:true},
-  {name:"Jamiqve Mascoll", avg:null, hcp:56, games:0, alt:true},
-  {name:"Pete",            avg:null, hcp:56, games:0, alt:true}
-];
-
-// iso = calendar date; time24 = 24h start time
-const schedule = [
-  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads", us:533, them:470},
-  {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",            us:514, them:532},
-  {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly",             us:552, them:541},
-  {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                     us:559, them:488},
-  {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals"},
-  {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts"},
-  {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful"},
-  {wk:4,  iso:"2026-09-09", time24:"20:10", lane:7, opp:"Glory Bowl"},
-  {wk:5,  iso:"2026-09-16", time24:"19:00", lane:6, opp:"Bowls on Parade"},
-  {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats"},
-  {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends"},
-  {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters"},
-  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads"},
-  {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
-  {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
-  {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
-  {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
-  {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
-  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
-  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly"},
-  {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split"},
-  {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl"},
-  {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM"},
-  {wk:12, iso:"2026-11-04", time24:"20:10", lane:6, opp:"Tokyo Drifters"}
-];
-
-// Shirt options. `shirt` on a night = the id that's been called,
-// or null / omitted when nobody's decided yet.
-const SHIRTS = [
-  {id:"leroy", label:"Leroy Jenkins"},
-  {id:"aloha", label:"Aloha"},
-  {id:"fresh", label:"Fresh Fit"}
-];
-
-// One entry per bowling night, keyed by date.
-//   played  -> who actually bowled, and how many games
-//   upcoming -> who has replied what
-const nights = {
-  "2026-08-19": {
-    played: true,
-    bowled: [["Eric",2], ["Ken",2], ["Ron",1], ["Michael",1]],
-    sat:    [["Phil",""], ["Prah",""]]
-  },
-  "2026-08-26": {
-    played: true,
-    bowled: [["Eric",2], ["Ron",2], ["Prah",2]],
-    sat:    [["Ken",""], ["Michael",""], ["Phil",""]]
-  },
-  "2026-09-02": {
-    played: false,
-    in:    [["Eric",""], ["Kelvyn","alt"]],
-    maybe: [["Michael",""]],
-    out:   [["Ken",""], ["Jamiqve","alt"]],
-    quiet: [["Phil",""], ["Ron",""], ["Prah",""], ["Pete","alt"]]
-  }
-};
 
 /* ---------- early / late night ---------- */
 const SUN  = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>';
@@ -592,11 +532,10 @@ function renderNextUp(){
     `<b>${fmtTime(g.time24)}</b> · Lane ${g.lane} · ${g.opp}`).join("<br>");
 
   const called = SHIRT_CALLS[iso] || null;
-  const chips = called
-    ? SHIRTS.map(sh =>
-        `<span class="shirt${sh.id === called ? " on" : ""}">${sh.label}</span>`).join("")
-    : `<span class="shirt tbd">Not called yet</span>` +
-      SHIRTS.map(sh => `<span class="shirt">${sh.label}</span>`).join("");
+  const calledLabel = called
+    ? (SHIRTS.find(s => s.id === called) || {}).label || "TBD"
+    : "TBD";
+  const chips = `<span class="shirt${called ? " on" : " tbd"}">${calledLabel}</span>`;
 
   el.innerHTML = `
     <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
@@ -604,7 +543,7 @@ function renderNextUp(){
     <div style="margin:-2px 0 9px">${slotBadge(iso)}</div>
     <div class="games">${lines}</div>
     <div class="shirtwrap">
-      <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>What we're wearing</div>
+      <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>Shirt</div>
       <div class="shirts">${chips}</div>
     </div>`;
 }
