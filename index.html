@@ -396,8 +396,8 @@
   </section>
 
   <section>
-    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>Full schedule</h2>
-    <p class="note" id="schedNote">Every matchup, lane and start time for the season.</p>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>Schedule</h2>
+    <p class="note" id="schedNote">Matchup, lane and start time for each game.</p>
     <div class="legend" id="legend"></div>
     <table>
       <thead><tr><th>Wk</th><th>When</th><th>Opponent</th><th style="text-align:right">Result</th></tr></thead>
@@ -696,10 +696,17 @@ function renderLegend(){
 
 function renderSchedule(){
   const next = nextNight();
-  // show through the week AFTER the current one; collapse the rest
   const isos = [...new Set(schedule.map(g => g.iso))].sort();
-  const idx = next ? isos.indexOf(next) : isos.length - 1;
-  const cutoff = isos[Math.min(idx + 1, isos.length - 1)];
+
+  // Focused window: most recent completed week, the next week, and the one
+  // after it. Everything older or farther out collapses behind one control.
+  const nextIdx = next ? isos.indexOf(next) : isos.length;
+  const firstIdx = Math.max(0, nextIdx - 1);
+  const lastIdx  = Math.min(isos.length - 1, nextIdx + 1);
+  const inWindow = iso => {
+    const i = isos.indexOf(iso);
+    return i >= firstIdx && i <= lastIdx;
+  };
 
   document.getElementById("sched").innerHTML = schedule.map(g => {
     const done = g.us != null;
@@ -708,8 +715,8 @@ function renderSchedule(){
       const win = g.us > g.them;
       result = `<span class="chip ${win?"w":"l"}">${win?"W":"L"}</span> ${g.us}–${g.them}`;
     }
-    const beyond = g.iso > cutoff;
-    return `<tr class="${done?"done":""}${g.iso===next?" next":""}${beyond?" collapsible hidden-row":""}">
+    const hide = !inWindow(g.iso);
+    return `<tr class="${done?"done":""}${g.iso===next?" next":""}${hide?" collapsible hidden-row":""}">
       <td class="wk">${g.wk}</td>
       <td class="when">${slotBadge2(g)}${fmtDate(g.iso)} · ${fmtTime(g.time24)} · L${g.lane}</td>
       <td>${g.opp}</td>
@@ -717,14 +724,14 @@ function renderSchedule(){
     </tr>`;
   }).join("");
 
-  const hiddenCount = schedule.filter(g => g.iso > cutoff).length;
+  const hiddenCount = schedule.filter(g => !inWindow(g.iso)).length;
   const btn = document.getElementById("moreBtn");
   if (!hiddenCount){ btn.style.display = "none"; return; }
 
   let open = false;
   const label = () => btn.textContent = open
     ? "Show less"
-    : `Show all ${schedule.length} games · ${hiddenCount} more`;
+    : `Show full season · ${hiddenCount} more game${hiddenCount === 1 ? "" : "s"}`;
   label();
   btn.onclick = () => {
     open = !open;

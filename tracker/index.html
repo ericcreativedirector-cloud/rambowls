@@ -209,7 +209,7 @@
 
     <section>
       <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5 9 11l3.5 3.5L20 6.5"/></svg>Night by night</h2>
-      <p class="note">Each bar is that night's average. The dashed line is <b id="baseLabel">last season's average</b>.</p>
+      <p class="note">Dashed line · <b id="baseLabel">last season average</b></p>
       <div class="chart" id="chart"></div>
     </section>
 
@@ -221,7 +221,7 @@
 
   </div>
 
-  <footer>Rambowls · one page per bowler<br>Schedule &amp; lineups live in the Scheduler</footer>
+  <footer>Rambowls · Fall 2026</footer>
 </div>
 
 <script src="../data.js"></script>
@@ -392,7 +392,7 @@ function render(){
     : (a >= goal ? "Goal reached 🏆" : `${(goal - a).toFixed(1)} pins to go`);
 
   /* ----- night by night: completed nights only ----- */
-  document.getElementById("baseLabel").textContent = `last season's average (${base})`;
+  document.getElementById("baseLabel").textContent = `last season average (${base})`;
   const ch = document.getElementById("chart");
   const played = [];
   for (const w of RB.weeks()){
