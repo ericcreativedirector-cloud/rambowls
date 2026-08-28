@@ -513,9 +513,24 @@ function todayISO(){
 }
 
 /* ---------- next up ---------- */
+/* A game ends 65 minutes after its scheduled start. Shared by Next Up, the
+   schedule highlight and the "remaining games" calendar export so all three
+   agree on when tonight stops being tonight. */
+function gameEnd(g){
+  const [y,mo,d] = g.iso.split("-").map(Number);
+  const [h,mi] = g.time24.split(":").map(Number);
+  return new Date(y, mo-1, d, h, mi + 65);
+}
+
+/* Still to be bowled: no official result yet AND not past its end time. */
+function isUnfinished(g, now){
+  if (g.us != null) return false;
+  return gameEnd(g) > (now || new Date());
+}
+
 function nextNight(){
-  const t = todayISO();
-  const upcoming = schedule.filter(g => g.iso >= t).map(g => g.iso);
+  const now = new Date();
+  const upcoming = schedule.filter(g => isUnfinished(g, now)).map(g => g.iso);
   return upcoming.length ? upcoming[0] : null;
 }
 
@@ -810,11 +825,6 @@ document.getElementById("icsRest").onclick = () => {
   // A game is "remaining" until it has actually ended — so at 3 PM on a
   // league day tonight's games are included, and at 11 PM they're not.
   const now = new Date();
-  const gameEnd = g => {
-    const [y,mo,d] = g.iso.split("-").map(Number);
-    const [h,mi] = g.time24.split(":").map(Number);
-    return new Date(y, mo-1, d, h, mi + 65);
-  };
   downloadICS(schedule.filter(g => gameEnd(g) > now), "rambowls-remaining");
 };
 
