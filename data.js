@@ -113,8 +113,8 @@ const NIGHTS = {
     played: false,
     in:    [["Eric",""], ["Phil",""], ["Ron",""]],
     maybe: [["Kelvyn","alt"]],
-    out:   [["Ken",""], ["Jamiqve","alt"]],
-    quiet: [["Michael",""], ["Prah",""], ["Pete","alt"]]
+    out:   [["Ken",""], ["Michael",""], ["Jamiqve","alt"]],
+    quiet: [["Prah",""], ["Pete","alt"]]
   }
 };
 
