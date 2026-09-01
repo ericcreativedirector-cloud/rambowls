@@ -151,6 +151,9 @@
   .rec-cell{background:var(--lane-2); padding:14px 12px}
   .rec-val{font-family:var(--display); font-size:30px; line-height:1}
   .rec-val .of{font-size:15px; color:var(--dim)}
+  .rec-val .mv{font-family:var(--data); font-size:12px; margin-left:5px; letter-spacing:.04em}
+  .rec-val .mv.up{color:var(--signal)} .rec-val .mv.dn{color:var(--strike)}
+  .rec-val .mv.fl{color:var(--dim)}
   .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
     text-transform:uppercase; color:var(--dim); margin-top:6px}
 
@@ -295,7 +298,7 @@
   .venue span{font-size:11.5px; color:var(--dim); line-height:1.6}
 
   /* ===== base = mobile ===== */
-  .record{grid-template-columns:repeat(3,1fr)}
+  .record{grid-template-columns:repeat(2,1fr)}
   .row{grid-template-columns:1fr; gap:8px}
   .track{justify-content:flex-start}
   .tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
@@ -334,7 +337,7 @@
     .nextup .games{font-size:13px; line-height:1.9}
     .nextup .cta{margin-top:16px}
     .nextup .btn{font-size:11px; padding:9px 15px; letter-spacing:.1em}
-    .record{grid-template-columns:repeat(3,1fr)}
+    .record{grid-template-columns:repeat(4,1fr)}
     .row{grid-template-columns:1fr auto; gap:10px 16px}
     .tabs{flex-wrap:wrap; overflow:visible}
     table{display:table; width:100%; border-collapse:collapse; font-size:14px}
@@ -379,6 +382,7 @@
     <p class="note" id="throughNote"></p>
     <div class="record">
       <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recPlace">—</div><div class="rec-lab">League place</div></div>
       <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg team total</div></div>
       <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div></div>
     </div>
@@ -614,6 +618,31 @@ function renderRecord(){
 
   document.getElementById("recRecord").textContent = t ? `${w}-${l}-${t}` : `${w}–${l}`;
   document.getElementById("recUs").textContent   = avg(played.map(g=>g.us));
+
+  /* League place — read off the league sheet, never derived from our own
+     scores, since it depends on all 16 teams. The arrow compares the two
+     most recent entries and only shows once there are two. */
+  const st = (RB.STANDINGS || []).slice().sort((a,b) => a.wk - b.wk);
+  const cur = st[st.length - 1];
+  const prev = st[st.length - 2];
+  const ord = n => {
+    const s = ["th","st","nd","rd"], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+  const placeEl = document.getElementById("recPlace");
+  if (!cur){
+    placeEl.textContent = "—";
+  } else {
+    let mv = "";
+    if (prev){
+      const d = prev.place - cur.place;               // positive = moved up
+      mv = d > 0 ? `<span class="mv up">▲${d}</span>`
+         : d < 0 ? `<span class="mv dn">▼${-d}</span>`
+         :         `<span class="mv fl">—</span>`;
+    }
+    placeEl.innerHTML =
+      `${ord(cur.place)}<span class="of">/${RB.SEASON.teamCount}</span>${mv}`;
+  }
 
   const starters = roster.filter(p => !p.alt);
   const qual = starters.filter(p => p.games >= 6).length;

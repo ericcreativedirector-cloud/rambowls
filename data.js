@@ -26,8 +26,17 @@ const SEASON = {
   ballast:    4,     // league ballast games
   setPoint:   200,   // handicap set point
   pct:        0.7,   // handicap percentage
-  standardAvg:120    // league standard average for unrated bowlers
+  standardAvg:120,   // league standard average for unrated bowlers
+  teamCount:  16     // teams in the league, for "4th of 16"
 };
+
+/* ---------- league standings ----------
+   Place comes off the Standings tab of the league sheet — it depends on all
+   16 teams, so it cannot be derived from our own scores. Add one row each
+   week when you log scores. Two or more rows unlocks the movement arrow. */
+const STANDINGS = [
+  {wk:2, place:4}
+];
 
 /* ---------- players ----------
    prev    = last season's average from the league sheet (ballast anchor)
@@ -215,7 +224,7 @@ function lastCompletedWeek(){
 }
 
 root.RB = {
-  SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS,
+  SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
   pad, todayISO, nights, weeks, playerById,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek
 };
