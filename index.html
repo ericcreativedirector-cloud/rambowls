@@ -383,7 +383,7 @@
     <div class="record">
       <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
       <div class="rec-cell"><div class="rec-val" id="recPlace">—</div><div class="rec-lab">League place</div></div>
-      <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg team total</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg scratch total</div></div>
       <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div></div>
     </div>
   </section>
@@ -617,7 +617,24 @@ function renderRecord(){
   const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : "—";
 
   document.getElementById("recRecord").textContent = t ? `${w}-${l}-${t}` : `${w}–${l}`;
-  document.getElementById("recUs").textContent   = avg(played.map(g=>g.us));
+
+  /* Avg team total, scratch — matches the league sheet's "Avg." column.
+     The us/them figures in SCHEDULE include handicap (they decide W/L);
+     the league ranks on scratch, so we sum the bowlers' raw scores here
+     rather than storing the same number twice. */
+  const scratchGame = (wk, idx) => {
+    let sum = 0, any = false;
+    for (const p of RB.PLAYERS){
+      const v = (p.scores && p.scores[wk]) ? p.scores[wk][idx] : null;
+      if (v != null && v !== ""){ sum += +v; any = true; }
+    }
+    return any ? sum : null;
+  };
+  const scratchTotals = played.map(g => {
+    const gamesThatWk = schedule.filter(x => x.wk === g.wk);
+    return scratchGame(g.wk, gamesThatWk.indexOf(g));
+  }).filter(v => v != null);
+  document.getElementById("recUs").textContent = avg(scratchTotals);
 
   /* League place — read off the league sheet, never derived from our own
      scores, since it depends on all 16 teams. The arrow compares the two
@@ -650,9 +667,21 @@ function renderRecord(){
     `${qual}<span class="of">/${starters.length}</span>`;
 
   const lastWk = played.length ? played[played.length-1].wk : 0;
+  // Say what the arrow is measured against, so ▲6 can't be misread as
+  // one week's movement when it's really against last season.
+  let mvNote = "";
+  if (cur && prev){
+    const d = prev.place - cur.place;
+    const vs = prev.baseline
+      ? `${prev.baseline} (${ord(prev.place)})`
+      : `Week ${prev.wk} (${ord(prev.place)})`;
+    mvNote = d === 0
+      ? ` Holding at ${ord(cur.place)} since ${vs}.`
+      : ` ${d > 0 ? "Up" : "Down"} ${Math.abs(d)} from ${vs}.`;
+  }
   document.getElementById("throughNote").textContent =
     played.length
-      ? `Through Week ${lastWk} · ${played.length} of 24 games bowled.`
+      ? `Through Week ${lastWk} · ${played.length} of 24 games bowled.${mvNote}`
       : `No games logged yet.`;
 }
 

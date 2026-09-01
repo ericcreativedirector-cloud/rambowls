@@ -33,8 +33,11 @@ const SEASON = {
 /* ---------- league standings ----------
    Place comes off the Standings tab of the league sheet — it depends on all
    16 teams, so it cannot be derived from our own scores. Add one row each
-   week when you log scores. Two or more rows unlocks the movement arrow. */
+   week when you log scores.
+   wk:0 is last season's finishing place, used only as the baseline for the
+   movement arrow until there are two real weeks to compare. */
 const STANDINGS = [
+  {wk:0, place:10, baseline:"last season's finish"},
   {wk:2, place:4}
 ];
 
