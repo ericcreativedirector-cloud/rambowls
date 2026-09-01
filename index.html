@@ -196,6 +196,18 @@
   .col ul{margin:0; padding:0; list-style:none}
   .col li{font-size:14px; padding:3px 0}
   .col li span{font-family:var(--data); font-size:10.5px; color:var(--dim)}
+  .reply{grid-column:1/-1; margin-top:2px; padding-top:14px; border-top:1px solid var(--rule)}
+  .reply p{margin:0 0 10px; font-size:12.5px; color:var(--dim)}
+  .reply p strong{color:var(--maple); font-weight:500}
+  .reply-row{display:flex; gap:8px; flex-wrap:wrap}
+  .reply-row a{flex:1 1 96px; min-height:44px; display:flex; align-items:center; justify-content:center;
+    font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    text-decoration:none; border:1px solid var(--rule); border-radius:4px;
+    background:var(--lane-2); color:var(--bone)}
+  .reply-row a.yes{border-color:var(--signal); color:var(--signal)}
+  .reply-row a.no{border-color:var(--strike); color:var(--strike)}
+  .reply-row a.mb{border-color:var(--maple); color:var(--maple)}
+  .reply-row a:active{transform:scale(.98)}
 
   table{width:100%; border-collapse:collapse; font-size:14px}
   th{font-family:var(--data); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
@@ -627,6 +639,32 @@ function headcount(inN, maybeN){
   return `<span class="headcount ${ok ? "ok" : "warn"}">${txt}${maybe}</span>`;
 }
 
+/* ---------- one-tap reply ----------
+   Opens Messages with the reply already written and NO recipient, so the
+   sender picks the existing team thread themselves. That is deliberate:
+   it keeps every phone number — mine included — out of this public repo,
+   and it means nobody has to decide who is or isn't on a hardcoded list.
+   The "sms:?&body=" form is what works across platforms; the "?&" is not
+   a typo. */
+function smsLink(iso, wk, status){
+  return `sms:?&body=` + encodeURIComponent(
+    `Rambowls Wk ${wk} - ${fmtDate(iso)} - I'm ${status}`);
+}
+
+function replyBox(iso, wk){
+  const chat = RB.SEASON.groupChatName;
+  return `<div class="reply">
+    <p>Changing your answer, or not on the list? Tap one — the text writes
+       itself. Messages opens with no one filled in, so pick the
+       <strong>${chat}</strong> group thread, then send.</p>
+    <div class="reply-row">
+      <a class="yes" href="${smsLink(iso, wk, "IN")}">I'm in</a>
+      <a class="mb"  href="${smsLink(iso, wk, "a MAYBE")}">Maybe</a>
+      <a class="no"  href="${smsLink(iso, wk, "OUT")}">I'm out</a>
+    </div>
+  </div>`;
+}
+
 function col(cls, title, people){
   return `<div class="col ${cls}"><h3>${title}</h3><ul>${
     people && people.length
@@ -653,7 +691,8 @@ function renderNight(iso){
     note.textContent = past
       ? `${fmtDate(iso, true)} — ${matchups}. No lineup recorded for this night.`
       : `${fmtDate(iso, true)} — ${matchups}. Nobody's replied for this week yet — send it in early if you already know.`;
-    box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", []);
+    box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", [])
+      + (past ? "" : replyBox(iso, wk));
     return;
   }
 
@@ -669,7 +708,8 @@ function renderNight(iso){
     note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
     box.innerHTML =
       col("in","In",data.in) + col("maybe","Maybe",data.maybe) +
-      col("out","Out",data.out) + col("quiet","No reply yet",data.quiet);
+      col("out","Out",data.out) + col("quiet","No reply yet",data.quiet) +
+      replyBox(iso, wk);
   }
 }
 

@@ -14,6 +14,12 @@ const SEASON = {
   // GoatCounter site code — just the subdomain, e.g. "rambowls".
   // Empty string = analytics off entirely (nothing loads, no requests made).
   analyticsId:"",
+  // Name of the team's group thread in Messages, shown in the reply prompt
+  // so people know which conversation to pick. Cosmetic only.
+  groupChatName:"Rambowls",
+  // NOTE: no phone numbers live in this file, on purpose. The reply buttons
+  // open Messages with an EMPTY recipient field — the sender chooses the
+  // existing group thread. Nobody's number is published in this public repo.
   sheetUrl:   "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/edit?gid=62#gid=62",
   qualify:    6,     // games needed for playoff eligibility
   needPerGame:3,     // bowlers we want on a lane each game
