@@ -27,7 +27,10 @@ const SEASON = {
   setPoint:   200,   // handicap set point
   pct:        0.7,   // handicap percentage
   standardAvg:120,   // league standard average for unrated bowlers
-  teamCount:  16     // teams in the league, for "4th of 16"
+  teamCount:  16,    // teams in the league, for "4th of 16"
+  // Last season's team scratch average (Winter 2026: 10th of 16, 11-13-0).
+  // Used as the season-long comparison on the scratch-average card.
+  prevSeasonAvg:361
 };
 
 /* ---------- league standings ----------

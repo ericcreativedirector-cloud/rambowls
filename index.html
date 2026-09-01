@@ -634,7 +634,21 @@ function renderRecord(){
     const gamesThatWk = schedule.filter(x => x.wk === g.wk);
     return scratchGame(g.wk, gamesThatWk.indexOf(g));
   }).filter(v => v != null);
-  document.getElementById("recUs").textContent = avg(scratchTotals);
+  const scratchAvg = avg(scratchTotals);
+  const prevAvg = RB.SEASON.prevSeasonAvg;
+  let avgNote = "";
+  if (typeof scratchAvg === "number" && prevAvg){
+    const d = scratchAvg - prevAvg;                  // positive = better
+    const mv = d > 0 ? `<span class="mv up">▲${d}</span>`
+             : d < 0 ? `<span class="mv dn">▼${-d}</span>`
+             :         `<span class="mv fl">—</span>`;
+    document.getElementById("recUs").innerHTML = `${scratchAvg}${mv}`;
+    avgNote = d === 0
+      ? ` Scratch average level with last season's ${prevAvg}.`
+      : ` Scratch average ${Math.abs(d)} ${d > 0 ? "better" : "worse"} than last season's ${prevAvg}.`;
+  } else {
+    document.getElementById("recUs").textContent = scratchAvg;
+  }
 
   /* League place — read off the league sheet, never derived from our own
      scores, since it depends on all 16 teams. The arrow compares the two
@@ -681,7 +695,7 @@ function renderRecord(){
   }
   document.getElementById("throughNote").textContent =
     played.length
-      ? `Through Week ${lastWk} · ${played.length} of 24 games bowled.${mvNote}`
+      ? `Through Week ${lastWk} · ${played.length} of 24 games bowled.${mvNote}${avgNote}`
       : `No games logged yet.`;
 }
 
