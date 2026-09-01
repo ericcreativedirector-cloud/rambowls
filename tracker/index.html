@@ -498,5 +498,23 @@ try {
   console.error("Rambowls stats failed:", err);
 }
 </script>
+<script>
+/* ---------- analytics ----------
+   Same loader as the Scheduler. Site code lives in data.js (SEASON.analyticsId).
+   GoatCounter separates the two pages by path, so /tracker/ reports on its own. */
+(function(){
+  try{
+    var id = window.RB && RB.SEASON && RB.SEASON.analyticsId;
+    if(!id) return;
+    var h = location.hostname;
+    if(h === "localhost" || h === "127.0.0.1" || h === "") return;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter", "https://" + id + ".goatcounter.com/count");
+    document.head.appendChild(s);
+  }catch(e){ /* analytics is never worth breaking the app over */ }
+})();
+</script>
 </body>
 </html>

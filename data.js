@@ -11,6 +11,9 @@ const SEASON = {
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
   lastUpdated:"2026-09-01",
+  // GoatCounter site code — just the subdomain, e.g. "rambowls".
+  // Empty string = analytics off entirely (nothing loads, no requests made).
+  analyticsId:"",
   sheetUrl:   "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/edit?gid=62#gid=62",
   qualify:    6,     // games needed for playoff eligibility
   needPerGame:3,     // bowlers we want on a lane each game

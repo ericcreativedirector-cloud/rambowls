@@ -889,5 +889,24 @@ if ("serviceWorker" in navigator){
   });
 })();
 </script>
+<script>
+/* ---------- analytics ----------
+   Cookieless page counts via GoatCounter. Loads only if SEASON.analyticsId
+   is set, and never on localhost, so smoke tests don't pollute the numbers.
+   Failure here must never affect the page — hence the try/catch. */
+(function(){
+  try{
+    var id = window.RB && RB.SEASON && RB.SEASON.analyticsId;
+    if(!id) return;
+    var h = location.hostname;
+    if(h === "localhost" || h === "127.0.0.1" || h === "") return;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter", "https://" + id + ".goatcounter.com/count");
+    document.head.appendChild(s);
+  }catch(e){ /* analytics is never worth breaking the app over */ }
+})();
+</script>
 </body>
 </html>

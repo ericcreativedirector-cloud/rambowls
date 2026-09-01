@@ -1,6 +1,6 @@
 // Rambowls Scheduler - offline cache
 // Bump CACHE when you push an update, so phones pick up the new version.
-const CACHE = 'rambowls-v18';
+const CACHE = 'rambowls-v19';
 
 const ASSETS = [
   './',
@@ -37,6 +37,11 @@ self.addEventListener('activate', e => {
 // and the page still opens in the basement at The Gutter when there isn't.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+
+  // Let analytics beacons go straight to the network, uncached.
+  // They must never be served from cache (that would fake a pageview)
+  // and there's no reason to store them for offline.
+  if (/(^|\.)goatcounter\.com$|(^|\.)zgo\.at$/.test(new URL(e.request.url).hostname)) return;
 
   e.respondWith(
     fetch(e.request)
