@@ -64,7 +64,7 @@
 
   .masthead{display:flex; flex-direction:column; align-items:stretch; gap:12px;
     border-bottom:3px solid var(--maple); padding-bottom:12px}
-  .masthead header{min-width:0; padding:10px 0 0;
+  .masthead header{min-width:0; padding:0;
     display:flex; flex-direction:column}
   .masthead .nextup{min-width:0; width:100%}
   header{min-width:0}
@@ -73,31 +73,39 @@
      enough condensed impact without the blunt slab Anton gave us. Both views
      must carry identical values or the mastheads won't match.
      text-wrap:balance evens the two lines instead of leaving a widow. */
-  /* Logo and nav share a row so the masthead costs one band, not two —
-     that's what pulls "Where we stand" into the first viewport. */
-  .brandrow{display:flex; align-items:flex-end; justify-content:space-between;
-    gap:12px; flex-wrap:wrap}
-  .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
-  .brandrow .nav{margin-top:0; flex:0 0 auto}
-  /* line-height under 1 makes RAMBOWLS and SCHEDULER crash into each other.
-     Big Shoulders has short descenders, so .74 overlaps the caps without any
-     collision. This is the one place the type is allowed to be loud. */
+  /* ---------- the logo ----------
+     Mark plus wordmark, locked. The ball used to sit up in the eyebrow, which
+     read as two unrelated things stacked. One mark, beside the type, at a size
+     that can hold its own against it.
+
+     CLEAR SPACE is part of the logo, not decoration around it. Nothing comes
+     closer than --clear on any side. That is why the nav dropped to its own
+     row: it was sitting inside the lockup's air. */
+  :root{--clear:clamp(15px,4.4vw,24px)}
+  .logo{display:flex; align-items:center; gap:clamp(11px,3.2vw,18px);
+    margin:var(--clear) 0; min-width:0}
+  .logo .mark{width:clamp(38px,11.5vw,64px); height:clamp(38px,11.5vw,64px);
+    flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:1.3;
+    stroke-linecap:round; stroke-linejoin:round}
+  .logo h1{margin:0; min-width:0}
+
+  /* Schedule / Stats now carries section-head weight: same face, same size,
+     same tracking as an h2. It is a peer of the sections, not a widget. */
+  .nav{display:flex; gap:0; margin:0 0 var(--clear); border:1px solid var(--rule);
+    border-radius:2px; overflow:hidden; width:max-content; max-width:100%}
+  .nav a{font-family:var(--display); font-weight:500; font-size:22px;
+    letter-spacing:.09em; text-transform:uppercase; text-decoration:none;
+    color:var(--dim); padding:9px 20px 10px; min-height:44px;
+    display:flex; align-items:center; background:var(--lane-2)}
+  .nav a + a{border-left:1px solid var(--rule)}
+  .nav a:hover{color:var(--bone)}
+  .nav a.on{color:#140C03; background:var(--maple); font-weight:600}
   h1{font-family:var(--display); font-weight:600; text-transform:uppercase;
     font-size:clamp(29px,9.2vw,54px); line-height:.74; letter-spacing:-.005em;
     margin:0 0 auto; word-break:break-word; text-wrap:balance}
   h1 span{color:var(--maple)}
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:9px 0 0; line-height:1.55}
-  /* shared Schedule · Stats nav — identical on both views */
-  .nav{display:flex; gap:0; margin-top:16px; border:1px solid var(--rule);
-    border-radius:2px; overflow:hidden; width:max-content; max-width:100%}
-  .nav a{font-family:var(--data); font-size:11px; letter-spacing:.14em;
-    text-transform:uppercase; text-decoration:none; color:var(--dim);
-    padding:10px 16px; min-height:44px; display:flex; align-items:center;
-    background:var(--lane-2)}
-  .nav a + a{border-left:1px solid var(--rule)}
-  .nav a:hover{color:var(--bone)}
-  .nav a.on{color:#140C03; background:var(--maple); font-weight:700}
   .stamps{margin-top:12px; display:flex; gap:5px; flex-wrap:wrap}
   .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:2px;
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
@@ -467,19 +475,19 @@
 <div class="wrap">
 
   <p class="topbar">
-    <svg class="ico ball" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
     <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
   </p>
 
   <div class="masthead">
     <header>
-      <div class="brandrow">
+      <div class="logo">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
         <h1>Rambowls<br><span>Scheduler</span></h1>
-        <nav class="nav">
-          <a class="on" href="./" aria-current="page">Schedule</a>
-          <a href="tracker/">Stats</a>
-        </nav>
       </div>
+      <nav class="nav">
+        <a class="on" href="./" aria-current="page">Schedule</a>
+        <a href="tracker/">Stats</a>
+      </nav>
       <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
       <div class="stamps">
         <span class="tag" id="updated">Updated</span>

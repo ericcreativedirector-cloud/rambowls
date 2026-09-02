@@ -46,28 +46,39 @@
   /* Masthead metrics are copied from the Scheduler verbatim. The wordmark must
      never change size or spacing between the two pages — same clamp, same
      padding, same rhythm. Change one, change both. */
-  .masthead{border-bottom:3px solid var(--maple); padding:10px 0 12px}
-  /* Logo and nav share a row — mirrors the Scheduler exactly. */
-  .brandrow{display:flex; align-items:flex-end; justify-content:space-between;
-    gap:12px; flex-wrap:wrap}
-  .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
-  .brandrow .nav{margin-top:0; flex:0 0 auto}
-  /* line-height under 1 makes the two words crash. Must match the Scheduler. */
+  .masthead{border-bottom:3px solid var(--maple); padding:0 0 12px}
+  /* ---------- the logo ----------
+     Mark plus wordmark, locked. The ball used to sit up in the eyebrow, which
+     read as two unrelated things stacked. One mark, beside the type, at a size
+     that can hold its own against it.
+
+     CLEAR SPACE is part of the logo, not decoration around it. Nothing comes
+     closer than --clear on any side. That is why the nav dropped to its own
+     row: it was sitting inside the lockup's air. */
+  :root{--clear:clamp(15px,4.4vw,24px)}
+  .logo{display:flex; align-items:center; gap:clamp(11px,3.2vw,18px);
+    margin:var(--clear) 0; min-width:0}
+  .logo .mark{width:clamp(38px,11.5vw,64px); height:clamp(38px,11.5vw,64px);
+    flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:1.3;
+    stroke-linecap:round; stroke-linejoin:round}
+  .logo h1{margin:0; min-width:0}
+
+  /* Schedule / Stats now carries section-head weight: same face, same size,
+     same tracking as an h2. It is a peer of the sections, not a widget. */
+  .nav{display:flex; gap:0; margin:0 0 var(--clear); border:1px solid var(--rule);
+    border-radius:2px; overflow:hidden; width:max-content; max-width:100%}
+  .nav a{font-family:var(--display); font-weight:500; font-size:22px;
+    letter-spacing:.09em; text-transform:uppercase; text-decoration:none;
+    color:var(--dim); padding:9px 20px 10px; min-height:44px;
+    display:flex; align-items:center; background:var(--lane-2)}
+  .nav a + a{border-left:1px solid var(--rule)}
+  .nav a:hover{color:var(--bone)}
+  .nav a.on{color:#140C03; background:var(--maple); font-weight:600}
   h1{font-family:var(--display); font-weight:600; text-transform:uppercase;
     font-size:clamp(29px,9.2vw,54px); line-height:.74; letter-spacing:-.005em; margin:0;
     word-break:break-word; text-wrap:balance}
   h1 span{color:var(--maple)}
 
-  /* shared Schedule · Stats nav — identical on both views */
-  .nav{display:flex; gap:0; margin-top:16px; border:1px solid var(--rule);
-    border-radius:2px; overflow:hidden; width:max-content; max-width:100%}
-  .nav a{font-family:var(--data); font-size:11px; letter-spacing:.14em;
-    text-transform:uppercase; text-decoration:none; color:var(--dim);
-    padding:10px 16px; min-height:44px; display:flex; align-items:center;
-    background:var(--lane-2)}
-  .nav a + a{border-left:1px solid var(--rule)}
-  .nav a:hover{color:var(--bone)}
-  .nav a.on{color:#140C03; background:var(--maple); font-weight:700}
 
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:12px 0 0}
@@ -237,18 +248,18 @@
 <div class="wrap">
 
   <p class="topbar">
-    <svg class="ico ball" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
     <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
   </p>
 
   <div class="masthead">
-    <div class="brandrow">
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
       <h1>Rambowls<br><span>Stats</span></h1>
-      <nav class="nav">
-        <a href="../">Schedule</a>
-        <a class="on" href="./" aria-current="page">Stats</a>
-      </nav>
     </div>
+    <nav class="nav">
+      <a href="../">Schedule</a>
+      <a class="on" href="./" aria-current="page">Stats</a>
+    </nav>
 
     <button class="picked" id="picked" type="button" style="display:none" aria-expanded="false">
       <span class="stack">
