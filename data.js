@@ -11,12 +11,11 @@ const SEASON = {
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
   lastUpdated:"2026-09-01",
-  // GoatCounter site code — just the subdomain, e.g. "rambowls".
-  // Empty string = analytics off entirely (nothing loads, no requests made).
-  analyticsId:"",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
+  // Who to send season goals to. Used only in the "set my goal" prompt copy.
+  captain:"Eric",
   // NOTE: no phone numbers live in this file, on purpose. The reply buttons
   // open Messages with an EMPTY recipient field — the sender chooses the
   // existing group thread. Nobody's number is published in this public repo.
@@ -40,7 +39,7 @@ const SEASON = {
    wk:0 is last season's finishing place, used only as the baseline for the
    movement arrow until there are two real weeks to compare. */
 const STANDINGS = [
-  {wk:0, place:10, baseline:"last season's finish"},
+  {wk:0, place:10, baseline:"last season"},
   {wk:2, place:4}
 ];
 
@@ -82,7 +81,7 @@ const PLAYERS = [
    us / them = official team totals; absent means not bowled yet.
 --------------------------------------------------------------- */
 const SCHEDULE = [
-  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads",                  us:533, them:470},
+  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"Reggie Gross's Team",           us:533, them:470},
   {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",       us:514, them:532},
   {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly",         us:552, them:541},
   {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                 us:559, them:488},
@@ -94,7 +93,7 @@ const SCHEDULE = [
   {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats"},
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends"},
   {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters"},
-  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads"},
+  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"Reggie Gross's Team"},
   {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
@@ -121,7 +120,13 @@ const SHIRT_CALLS = {
   "2026-09-02": null
 };
 
-/* ---------- availability, one entry per bowling night ---------- */
+/* ---------- availability, one entry per bowling night ----------
+   Optional `lineup:["Eric","Phil","Ron"]` overrides the auto-picked trio for
+   that night. Leave it out and lineupFor() picks the three IN bowlers with
+   the fewest games logged (ties keep roster order), which is what actually
+   moves people toward the 6-game playoff threshold. Add it when the real
+   lineup differs — a swap at the alley, someone bowling for a teammate.
+   Short names only, exactly as they appear in the in/maybe/out lists. */
 const NIGHTS = {
   "2026-08-19": {
     played: true,
@@ -210,29 +215,84 @@ function playerStats(id){
     avgDisplay: league == null ? null : Math.round(league),
     hcp,
     high: games.length ? Math.max(...games) : null,
-    goal: p.goal || p.prev + 10,
+    // A goal is only a goal if the bowler actually gave us one. We used to
+    // fall back to prev+10, which meant the app told teammates their "season
+    // target" was a number they never chose. Null now, and the Stats page
+    // asks for it instead of inventing it.
+    goal: p.goal != null ? p.goal : null,
+    hasGoal: p.goal != null,
     qualified: games.length >= SEASON.qualify,
     toQualify: Math.max(0, SEASON.qualify - games.length)
   };
 }
 
-/* Last week with any official player score or team total — for "Through Week X". */
+/* Games still to be bowled this season — the ceiling on what anyone can add. */
+function gamesRemaining(){
+  return SCHEDULE.filter(g => g.us == null).length;
+}
+
+/* A starter is at risk only when the maths has run out: more games needed
+   than the season has left. Everything short of that is just "early". */
+function atRisk(p){
+  const s = playerStats(p);
+  return !s.qualified && s.toQualify > gamesRemaining();
+}
+
+function playerByShort(short){
+  return PLAYERS.find(p => p.short === short) || null;
+}
+
+/* ---------- tonight's trio ----------
+   We field 3 bowlers a night and keep the same 3 for both games. Given the
+   IN list, pick the three with the fewest games logged so the lineup itself
+   works the playoff-eligibility problem. `lineup` in NIGHTS overrides.
+   Returns short names, plus enough context for the UI to explain itself. */
+function lineupFor(iso){
+  const n = NIGHTS[iso];
+  const need = SEASON.needPerGame;
+  const blank = {names:[], inCount:0, short:0, auto:true, manual:false, played:false};
+  if (!n) return {...blank, short:need};
+
+  if (n.played){
+    const names = (n.bowled || []).map(x => x[0]);
+    return {names, inCount:names.length, short:0, auto:false, manual:false, played:true};
+  }
+  const ins = (n.in || []).map(x => x[0]);
+
+  if (Array.isArray(n.lineup) && n.lineup.length){
+    const names = n.lineup.slice(0, need);
+    return {names, inCount:ins.length, short:Math.max(0, need - names.length),
+            auto:false, manual:true, played:false};
+  }
+  const names = ins
+    .map(s => ({s, p:playerByShort(s)}))
+    .map(o => ({
+      s: o.s,
+      games: o.p ? playerStats(o.p.id).count : Infinity,
+      order: o.p ? PLAYERS.indexOf(o.p) : Infinity
+    }))
+    .sort((a,b) => a.games - b.games || a.order - b.order)
+    .slice(0, need)
+    .map(o => o.s);
+  return {names, inCount:ins.length, short:Math.max(0, need - names.length),
+          auto:true, manual:false, played:false};
+}
+
+/* Last week the TEAM has officially recorded — for "Through Week X".
+   Deliberately ignores individual scores: if one bowler's numbers get entered
+   before the team totals, Stats would otherwise claim a week is complete while
+   the Scheduler's record still stops a week short. One definition, both pages. */
 function lastCompletedWeek(){
   let last = 0;
   for (const g of SCHEDULE) if (g.us != null && g.wk > last) last = g.wk;
-  for (const p of PLAYERS){
-    for (const k of Object.keys(p.scores || {})){
-      const any = (p.scores[k] || []).some(v => v != null && v !== "");
-      if (any && +k > last) last = +k;
-    }
-  }
   return last;
 }
 
 root.RB = {
   SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
-  pad, todayISO, nights, weeks, playerById,
-  officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek
+  pad, todayISO, nights, weeks, playerById, playerByShort,
+  officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
+  gamesRemaining, atRisk, lineupFor
 };
 
 })(window);

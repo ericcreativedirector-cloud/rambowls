@@ -61,13 +61,19 @@
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:12px 0 0}
 
-  /* collapsed player control */
-  .picked{display:inline-flex; align-items:center; gap:9px; margin-top:16px; cursor:pointer;
-    background:none; border:0; padding:0; color:var(--bone); min-height:44px}
+  /* Collapsed player control. It carries a card outline so it reads as a
+     control rather than a heading that happens to have a caret next to it. */
+  .picked{display:inline-flex; align-items:center; gap:11px; margin-top:16px; cursor:pointer;
+    background:var(--lane-2); border:1px solid var(--rule); border-radius:5px;
+    padding:7px 13px 8px; color:var(--bone); min-height:44px}
   .picked .nm{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(30px,9vw,46px); line-height:1; letter-spacing:.02em}
-  .picked .caret{color:var(--maple); font-size:16px; line-height:1}
+    font-size:clamp(28px,8.4vw,42px); line-height:1; letter-spacing:.02em}
+  .picked .caret{color:var(--maple); font-size:15px; line-height:1;
+    transition:transform .18s ease}
+  .picked[aria-expanded="true"] .caret{transform:rotate(180deg)}
+  .picked:hover{border-color:var(--maple)}
   .picked:hover .nm{color:var(--maple)}
+  @media (prefers-reduced-motion:reduce){ .picked .caret{transition:none} }
 
   .who{display:flex; flex-wrap:wrap; gap:7px; margin-top:14px}
   .who button{cursor:pointer; border-radius:3px; border:1px solid var(--rule); background:var(--lane-2);
@@ -110,14 +116,35 @@
   .goalnote{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
     font-family:var(--data); font-size:11px; color:var(--dim); margin-top:9px}
 
-  .chart{display:flex; align-items:flex-end; gap:6px; height:158px; padding-top:10px; position:relative}
-  .baseline{position:absolute; left:0; right:0; border-top:2px dashed rgba(232,90,82,.6); pointer-events:none}
+  /* Shown instead of the lane when a bowler hasn't given us a target. We do
+     not invent one — the app asks for it the same way availability replies
+     work: prewritten text, no recipient, sender picks the thread. */
+  .goalask{border:1px dashed var(--maple); border-radius:5px; padding:16px 17px;
+    background:rgba(200,135,60,.05)}
+  .goalask p{margin:0 0 13px; font-size:13.5px; color:var(--dim); max-width:48ch}
+  .goalask a{display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; padding:10px 17px; border-radius:4px; text-decoration:none;
+    font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    background:var(--maple); color:#140C03; font-weight:700}
+  .goalask a:active{transform:scale(.98)}
+
+  /* Left gutter holds the scale labels; bars start after it. */
+  .chart{display:flex; align-items:flex-end; gap:6px; height:158px; padding-top:10px;
+    padding-left:30px; position:relative}
+  .baseline{position:absolute; left:30px; right:0; border-top:2px dashed rgba(232,90,82,.6); pointer-events:none}
   .baseline i{position:absolute; right:2px; top:-15px; font-style:normal; font-family:var(--data);
     font-size:9px; color:var(--strike)}
+  /* Faint horizontal rules so a bar's height can be read, not just compared. */
+  .tickline{position:absolute; left:30px; right:0; border-top:1px solid rgba(122,130,142,.16);
+    pointer-events:none}
+  .tickline i{position:absolute; left:-30px; top:-6px; width:26px; text-align:right;
+    font-style:normal; font-family:var(--data); font-size:8.5px; color:var(--dim)}
   .chart .col{flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:5px;
-    height:100%; justify-content:flex-end}
+    height:100%; justify-content:flex-end; position:relative; z-index:1}
   .chart .bar{width:100%; max-width:40px; background:var(--maple); border-radius:2px 2px 0 0; flex-shrink:0}
-  .chart .val{font-family:var(--data); font-size:10.5px; color:var(--bone)}
+  /* Teal when the night cleared the dashed baseline, muted when it didn't. */
+  .chart .val{font-family:var(--data); font-size:10.5px; color:var(--dim)}
+  .chart .val.over{color:var(--signal); font-weight:700}
   .chart .lab{font-family:var(--data); font-size:8.5px; letter-spacing:.04em; color:var(--dim)}
   .empty{font-family:var(--data); font-size:11px; color:var(--dim); letter-spacing:.06em}
 
@@ -197,14 +224,20 @@
     <section>
       <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/></svg><span id="laneTitle">Season goal</span></h2>
       <p class="note" id="goalNote"></p>
-      <div class="lane">
-        <div class="oil"></div>
-        <div class="mark" style="left:0"><i id="laneLo"></i></div>
-        <div class="mark" style="right:0"><i id="laneHi" style="left:auto; right:5px"></i></div>
-        <div class="ball" id="ball">🎳</div>
-        <div class="pins">🔟</div>
+      <div id="goalBody">
+        <div class="lane">
+          <div class="oil"></div>
+          <div class="mark" style="left:0"><i id="laneLo"></i></div>
+          <div class="mark" style="right:0"><i id="laneHi" style="left:auto; right:5px"></i></div>
+          <div class="ball" id="ball">🎳</div>
+          <div class="pins">🔟</div>
+        </div>
+        <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
       </div>
-      <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
+      <div class="goalask" id="goalAsk" style="display:none">
+        <p id="goalAskCopy"></p>
+        <a id="goalAskBtn" href="#">Send my goal</a>
+      </div>
     </section>
 
     <section>
@@ -361,7 +394,7 @@ function render(){
   document.getElementById("statRow").innerHTML = `
     <div class="stat">
       <b>${S.avgDisplay ?? "—"}</b><span>Average</span>
-      ${S.ballast && S.count ? `<i>scratch ${S.scratchAvg.toFixed(1)}</i>` : ""}
+      ${S.ballast && S.count ? `<i>scratch ${Math.round(S.scratchAvg)}</i>` : ""}
     </div>
     <div class="stat"><b>+${S.hcp}</b><span>Handicap</span></div>
     <div class="stat"><b>${S.high ?? "—"}</b><span>High game</span></div>
@@ -374,22 +407,47 @@ function render(){
     ? `League avg includes preseason ballast through Game ${RB.SEASON.ballast}.`
     : "";
 
-  /* ----- road to goal ----- */
+  /* ----- road to goal -----
+     Only rendered for bowlers who actually gave us a target. Everyone else
+     gets asked for one rather than being handed a number they never chose. */
   const base = p.prev, goal = S.goal, a = S.leagueAvg;
-  document.getElementById("laneTitle").textContent = "Road to " + goal;
-  document.getElementById("goalNote").innerHTML = p.goal
-    ? `Your season target: <b>${goal}</b>.`
-    : `No target set, so this is <b>last season + 10</b> (${base} → ${goal}).`;
-  document.getElementById("laneLo").textContent = base + " last season";
-  document.getElementById("laneHi").textContent = goal + " goal";
-  const pct = a == null ? 0 : Math.min(1, Math.max(0, (a - base) / (goal - base)));
-  document.getElementById("ball").style.left = (5 + pct * 84) + "%";
-  document.getElementById("goalLeft").textContent = (a == null || !S.count)
-    ? "No scores yet"
-    : `Now ${a.toFixed(1)} — ${(pct * 100).toFixed(0)}% of the way there`;
-  document.getElementById("goalRight").textContent = (a == null || !S.count)
-    ? ""
-    : (a >= goal ? "Goal reached 🏆" : `${(goal - a).toFixed(1)} pins to go`);
+  const body = document.getElementById("goalBody");
+  const ask  = document.getElementById("goalAsk");
+
+  if (!S.hasGoal){
+    document.getElementById("laneTitle").textContent = "Season goal";
+    document.getElementById("goalNote").innerHTML =
+      `No target on file for ${esc(p.short)} yet.`;
+    body.style.display = "none";
+    ask.style.display  = "block";
+    document.getElementById("goalAskCopy").textContent =
+      `Pick a number and this page will track it all season. `
+      + `Last season you averaged ${base}.`;
+    // Same mechanism as the Scheduler's availability replies: prewritten
+    // text, empty recipient, sender chooses the thread. No numbers in source.
+    document.getElementById("goalAskBtn").href = "sms:?&body=" + encodeURIComponent(
+      `Rambowls - ${p.short}'s season goal is ___ (last season ${base}). For the Stats page.`);
+  } else {
+    body.style.display = "block";
+    ask.style.display  = "none";
+    // Averages read as whole numbers here, the way the league sheet shows
+    // them — so the headline card and this line can never disagree.
+    const now = a == null ? null : Math.round(a);
+    document.getElementById("laneTitle").textContent = "Road to " + goal;
+    document.getElementById("goalNote").textContent = "";
+    document.getElementById("laneLo").textContent = base + " last season";
+    document.getElementById("laneHi").textContent = goal + " goal";
+    const pct = a == null ? 0 : Math.min(1, Math.max(0, (a - base) / (goal - base)));
+    document.getElementById("ball").style.left = (5 + pct * 84) + "%";
+    document.getElementById("goalLeft").textContent = (a == null || !S.count)
+      ? "No scores yet"
+      : `Now ${now} — ${Math.round(pct * 100)}% of the way there`;
+    document.getElementById("goalRight").textContent = (a == null || !S.count)
+      ? ""
+      // Measured off the SAME rounded figure shown as "Now", so 121 + 17 = 138
+      // actually adds up for anyone who checks it.
+      : (a >= goal ? "Goal reached 🏆" : `${goal - now} pins to go`);
+  }
 
   /* ----- night by night: completed nights only ----- */
   document.getElementById("baseLabel").textContent = `last season average (${base})`;
@@ -402,14 +460,30 @@ function render(){
   if (!played.length){
     ch.innerHTML = `<span class="empty">No nights bowled yet.</span>`;
   } else {
-    const maxV = Math.max(goal + 10, base + 10, ...played.map(n => n.v));
+    const maxV = Math.max((goal || 0) + 10, base + 10, ...played.map(n => n.v));
     const H = 112;
+    /* Bars stay zero-based — an axis that starts at 90 would exaggerate every
+       gap. The step is the smallest round number that keeps the chart under
+       six gridlines, so the scale stays legible whether the range tops out
+       at 130 or someone throws a 240 night. */
+    const step = [10, 20, 25, 50, 100].find(s => maxV / s <= 6) || 100;
+    const ticks = [];
+    for (let v = step; v <= maxV; v += step) ticks.push(v);
+
     ch.innerHTML = played.map(n => `
       <div class="col">
-        <div class="val">${n.v.toFixed(0)}</div>
+        <div class="val${n.v > base ? " over" : ""}">${Math.round(n.v)}</div>
         <div class="bar" style="height:${Math.max(4, Math.round(n.v / maxV * H))}px"></div>
         <div class="lab">${n.date}</div>
       </div>`).join("");
+
+    for (const v of ticks){
+      const t = document.createElement("div");
+      t.className = "tickline";
+      t.style.bottom = (19 + v / maxV * H) + "px";
+      t.innerHTML = `<i>${v}</i>`;
+      ch.appendChild(t);
+    }
     const bl = document.createElement("div");
     bl.className = "baseline";
     bl.style.bottom = (19 + base / maxV * H) + "px";
@@ -450,7 +524,7 @@ function renderLog(p, prov){
 
     const nums = [0,1].map(i => displayScore(p, prov, w.wk, i).v).filter(v => v != null);
     const nightAvg = nums.length === 2
-      ? `<span class="nightavg">night avg ${((nums[0]+nums[1])/2).toFixed(1)}</span>` : "";
+      ? `<span class="nightavg">night avg ${Math.round((nums[0]+nums[1])/2)}</span>` : "";
     const provRow = [0,1].some(i => displayScore(p, prov, w.wk, i).provisional);
 
     rows.push(`<div class="logrow${provRow ? " prov" : ""}">
@@ -497,24 +571,6 @@ try {
   document.getElementById("pageSub").style.display = "block";
   console.error("Rambowls stats failed:", err);
 }
-</script>
-<script>
-/* ---------- analytics ----------
-   Same loader as the Scheduler. Site code lives in data.js (SEASON.analyticsId).
-   GoatCounter separates the two pages by path, so /tracker/ reports on its own. */
-(function(){
-  try{
-    var id = window.RB && RB.SEASON && RB.SEASON.analyticsId;
-    if(!id) return;
-    var h = location.hostname;
-    if(h === "localhost" || h === "127.0.0.1" || h === "") return;
-    var s = document.createElement("script");
-    s.async = true;
-    s.src = "https://gc.zgo.at/count.js";
-    s.setAttribute("data-goatcounter", "https://" + id + ".goatcounter.com/count");
-    document.head.appendChild(s);
-  }catch(e){ /* analytics is never worth breaking the app over */ }
-})();
 </script>
 </body>
 </html>

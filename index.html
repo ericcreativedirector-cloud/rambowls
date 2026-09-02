@@ -104,6 +104,15 @@
   .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.65;
     color:var(--bone); overflow-wrap:anywhere}
   .nextup .games b{color:var(--maple); font-weight:500}
+  /* tonight's trio — who's actually throwing, both games */
+  .lineup{margin-top:10px; padding-top:9px; border-top:1px solid rgba(200,135,60,.28);
+    font-family:var(--data); font-size:10px; line-height:1.6; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--bone)}
+  .lineup .k{color:var(--maple); letter-spacing:.12em}
+  .lineup .nm{font-weight:700}
+  .lineup .sub{display:block; margin:3px 0 0; font-size:9px; letter-spacing:.08em;
+    color:var(--dim); text-transform:none}
+  .lineup .gap{color:var(--strike)}
   .nextup .cta{margin-top:11px}
   .nextup .btn{font-size:9px; padding:8px 10px; letter-spacing:.06em}
 
@@ -157,6 +166,11 @@
   .rec-val .mv.fl{color:var(--dim)}
   .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
     text-transform:uppercase; color:var(--dim); margin-top:6px}
+  /* comparison lives inside the card it describes, in words, so no arrow
+     needs decoding and the section note stays a single plain sentence */
+  .rec-sub{font-family:var(--data); font-size:9.5px; letter-spacing:.04em;
+    color:var(--dim); margin-top:5px; line-height:1.45}
+  .rec-sub .up{color:var(--signal)} .rec-sub .dn{color:var(--strike)}
 
   .board{border-top:1px solid var(--rule)}
   .row{display:grid; grid-template-columns:1fr auto; gap:10px 16px; align-items:center;
@@ -174,14 +188,22 @@
   .row.alt .name{font-weight:500; color:#C3C9D2}
   .divider{font-family:var(--data); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--maple); padding:20px 0 8px; border-bottom:1px solid var(--rule)}
+  /* Maple by default: everyone needing games in September is arithmetic, not
+     an emergency. Red is held back for someone who can no longer get there. */
   .elig-summary{font-family:var(--data); font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
-    color:var(--strike); padding:12px 2px; border-bottom:1px solid var(--rule)}
+    color:var(--maple); padding:12px 2px; border-bottom:1px solid var(--rule)}
   .elig-summary.ok{color:var(--signal)}
+  .elig-summary.risk{color:var(--strike)}
+  .elig-summary .proj{display:block; margin-top:5px; font-size:9.5px; letter-spacing:.06em;
+    text-transform:none; color:var(--dim)}
   .headcount{font-family:var(--data); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
     font-weight:700; border:1px solid; border-radius:2px; padding:3px 7px; margin-left:10px;
     vertical-align:2px; white-space:nowrap}
   .headcount.ok{color:var(--signal); border-color:var(--signal)}
   .headcount.warn{color:var(--strike); border-color:var(--strike)}
+  /* more than three in isn't a problem — it's the rotation that gets
+     everyone to six games. Informational, never an alert. */
+  .headcount.rot{color:var(--maple); border-color:var(--maple)}
 
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
   .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
@@ -383,9 +405,9 @@
     <p class="note" id="throughNote"></p>
     <div class="record">
       <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
-      <div class="rec-cell"><div class="rec-val" id="recPlace">—</div><div class="rec-lab">League place</div></div>
-      <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg scratch total</div></div>
-      <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recPlace">—</div><div class="rec-lab">League place</div><div class="rec-sub" id="recPlaceSub"></div></div>
+      <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg scratch total</div><div class="rec-sub" id="recUsSub"></div></div>
+      <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div><div class="rec-sub" id="recQualSub"></div></div>
     </div>
   </section>
 
@@ -414,7 +436,6 @@
 
   <section>
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>Schedule</h2>
-    <p class="note" id="schedNote">Matchup, lane and start time for each game.</p>
     <div class="legend" id="legend"></div>
     <table>
       <thead><tr><th>Wk</th><th>When</th><th>Opponent</th><th style="text-align:right">Result</th></tr></thead>
@@ -480,6 +501,9 @@ const roster = RB.PLAYERS.map(p => {
 
 const PIN_ON  = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="#F3EEE3"/><path d="M3.4 8.6c1.7.9 3.5.9 5.2 0" stroke="#E85A52" stroke-width="1.6" fill="none"/></svg>';
 const PIN_OFF = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="none" stroke="#2E3742" stroke-width="1.2"/></svg>';
+// Dashed maple = a game tonight would fill this. Two per bowler in the
+// lineup, because a double-header is two games — capped at what's still open.
+const PIN_PROJ = '<svg class="pin" viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1c2 0 3 2.2 3 4 0 1.5-.7 2.4-.7 3.3 0 1.4 2 3.4 2 8.2 0 4.5-1.9 6.5-4.3 6.5S1.7 21 1.7 16.5c0-4.8 2-6.8 2-8.2 0-.9-.7-1.8-.7-3.3 0-1.8 1-4 3-4z" fill="rgba(200,135,60,.09)" stroke="#C8873C" stroke-width="1.2" stroke-dasharray="2.4 2.2" opacity="0.85"/></svg>';
 
 /* ---------- early / late night ---------- */
 const SUN  = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>';
@@ -572,11 +596,34 @@ function renderNextUp(){
     : "TBD";
   const chips = `<span class="shirt${called ? " on" : " tbd"}">${calledLabel}</span>`;
 
+  /* Tonight's trio. We keep the same three for both games, so this is one
+     line, not two. Auto-picked fewest-games-first; NIGHTS[iso].lineup wins. */
+  const lu = RB.lineupFor(iso);
+  let lineupBlock = "";
+  if (lu.names.length){
+    const names = lu.names.map(n => `<span class="nm">${n}</span>`).join(" · ");
+    const tail = lu.short
+      ? ` <span class="gap">+ ${lu.short} more needed</span>`
+      : "";
+    const why = lu.manual
+      ? "Set by hand for this night."
+      : lu.inCount > lu.names.length
+        ? `Fewest games first, from ${lu.inCount} in. Rotate freely — this is a suggestion.`
+        : "Both games.";
+    lineupBlock = `<div class="lineup"><span class="k">Lineup</span> ${names}${tail}
+      <span class="sub">${why}</span></div>`;
+  } else {
+    lineupBlock = `<div class="lineup"><span class="k">Lineup</span>
+      <span class="gap">Nobody's in yet</span>
+      <span class="sub">Three bowlers fields the night.</span></div>`;
+  }
+
   el.innerHTML = `
     <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
     <div class="date">${fmtDate(iso, true)}</div>
     <div style="margin:-2px 0 9px">${slotBadge(iso)}</div>
     <div class="games">${lines}</div>
+    ${lineupBlock}
     <div class="shirtwrap">
       <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>Shirt</div>
       <div class="shirts">${chips}</div>
@@ -585,15 +632,34 @@ function renderNextUp(){
 
 /* ---------- eligibility board ---------- */
 function renderBoard(){
+  /* Whoever is slated to bowl the next night gets two dashed pins — the two
+     games a double-header would add. Cap at the pins they still have open so
+     a bowler on 5 never shows 7. */
+  const nextIso  = nextNight();
+  const lineup   = nextIso ? RB.lineupFor(nextIso) : {names:[]};
+  const playing  = new Set(lineup.names);
+  const projFor  = p => {
+    const pl = RB.PLAYERS.find(x => x.name === p.name);
+    if (!pl || !playing.has(pl.short)) return 0;
+    return Math.min(2, Math.max(0, 6 - p.games));
+  };
+
   const line = p => {
-    const pins = Array.from({length:6}, (_,i) => i < p.games ? PIN_ON : PIN_OFF).join("");
+    const proj = projFor(p);
+    const pins = Array.from({length:6}, (_,i) =>
+      i < p.games ? PIN_ON
+      : i < p.games + proj ? PIN_PROJ
+      : PIN_OFF).join("");
     let mark = "";
     if (p.games >= 6) mark = '<span class="stamp">Qualified</span>';
     else if (!p.alt && p.games === 0) mark = '<span class="stamp flag">Needs games</span>';
     const meta = p.avg ? `avg ${p.avg} · hcp ${p.hcp}` : `no average yet · hcp ${p.hcp}`;
+    const count = proj
+      ? `${p.games}<span style="color:var(--maple)">+${proj}</span>/6`
+      : `${p.games}/6`;
     return `<div class="row${p.alt ? " alt" : ""}">
       <div class="who"><span class="name">${p.name}</span><span class="meta">${meta}</span></div>
-      <div class="track">${mark}<span class="pins">${pins}</span><span class="count">${p.games}/6</span></div>
+      <div class="track">${mark}<span class="pins">${pins}</span><span class="count">${count}</span></div>
     </div>`;
   };
   // most games first; ties keep roster order
@@ -601,10 +667,22 @@ function renderBoard(){
   const starterList = roster.filter(p => !p.alt);
   const starters = byGames(starterList).map(line).join("");
   const alts = byGames(roster.filter(p => p.alt)).map(line).join("");
+
   const need = starterList.filter(p => p.games < 6).length;
-  const summary = need === 0
-    ? `<div class="elig-summary ok">All ${starterList.length} starters are playoff eligible ✓</div>`
-    : `<div class="elig-summary">${need} starter${need === 1 ? "" : "s"} still need${need === 1 ? "s" : ""} games to qualify</div>`;
+  // Red means the arithmetic has run out, not that it's early in the season.
+  const stuck = RB.PLAYERS.filter(p => !p.alt && RB.atRisk(p)).map(p => p.short);
+  const projNote = playing.size
+    ? `<span class="proj">Dashed pins · the two games ${[...playing].join(", ")} would add on ${fmtDate(nextIso)}.</span>`
+    : "";
+
+  let summary;
+  if (need === 0){
+    summary = `<div class="elig-summary ok">All ${starterList.length} starters are playoff eligible ✓</div>`;
+  } else if (stuck.length){
+    summary = `<div class="elig-summary risk">${stuck.join(", ")} can no longer reach 6 games${projNote}</div>`;
+  } else {
+    summary = `<div class="elig-summary">${need} starter${need === 1 ? "" : "s"} still qualifying · ${RB.gamesRemaining()} games left${projNote}</div>`;
+  }
   document.getElementById("board").innerHTML =
     summary + starters + `<div class="divider">Alternates</div>` + alts;
 }
@@ -637,19 +715,14 @@ function renderRecord(){
   }).filter(v => v != null);
   const scratchAvg = avg(scratchTotals);
   const prevAvg = RB.SEASON.prevSeasonAvg;
-  let avgNote = "";
+  document.getElementById("recUs").textContent = scratchAvg;
+  // The comparison lives under the number it describes, spelled out, so
+  // nothing in this block needs a legend to read.
   if (typeof scratchAvg === "number" && prevAvg){
     const d = scratchAvg - prevAvg;                  // positive = better
-    const mvArrow = d > 0 ? "▲" : "▼";
-    const mv = d > 0 ? `<span class="mv up">▲${d}</span>`
-             : d < 0 ? `<span class="mv dn">▼${-d}</span>`
-             :         `<span class="mv fl">—</span>`;
-    document.getElementById("recUs").innerHTML = `${scratchAvg}${mv}`;
-    avgNote = d === 0
-      ? ` Scratch avg level with last season.`
-      : ` Scratch avg ${mvArrow}${Math.abs(d)} on last season's ${prevAvg}.`;
-  } else {
-    document.getElementById("recUs").textContent = scratchAvg;
+    document.getElementById("recUsSub").innerHTML = d === 0
+      ? `level with last season`
+      : `<span class="${d > 0 ? "up" : "dn"}">${d > 0 ? "+" : "−"}${Math.abs(d)}</span> vs last season`;
   }
 
   /* League place — read off the league sheet, never derived from our own
@@ -666,51 +739,49 @@ function renderRecord(){
   if (!cur){
     placeEl.textContent = "—";
   } else {
-    let mv = "";
+    placeEl.innerHTML = `${ord(cur.place)}<span class="of">/${RB.SEASON.teamCount}</span>`;
     if (prev){
+      // Name what we're comparing to rather than leaving a bare arrow that
+      // could be read as one week's movement when it's really the season.
+      const vs = prev.baseline ? `${ord(prev.place)} ${prev.baseline}`
+                               : `${ord(prev.place)} in Wk ${prev.wk}`;
       const d = prev.place - cur.place;               // positive = moved up
-      mv = d > 0 ? `<span class="mv up">▲${d}</span>`
-         : d < 0 ? `<span class="mv dn">▼${-d}</span>`
-         :         `<span class="mv fl">—</span>`;
+      document.getElementById("recPlaceSub").innerHTML = d === 0
+        ? `holding · was ${vs}`
+        : `<span class="${d > 0 ? "up" : "dn"}">${d > 0 ? "+" : "−"}${Math.abs(d)}</span> vs ${vs}`;
     }
-    placeEl.innerHTML =
-      `${ord(cur.place)}<span class="of">/${RB.SEASON.teamCount}</span>${mv}`;
   }
 
   const starters = roster.filter(p => !p.alt);
   const qual = starters.filter(p => p.games >= 6).length;
   document.getElementById("recQual").innerHTML =
     `${qual}<span class="of">/${starters.length}</span>`;
+  document.getElementById("recQualSub").textContent = `${RB.SEASON.qualify} games each`;
 
   const lastWk = played.length ? played[played.length-1].wk : 0;
-  // Say what the arrow is measured against, so ▲6 can't be misread as
-  // one week's movement when it's really against last season.
-  let mvNote = "";
-  if (cur && prev){
-    const d = prev.place - cur.place;
-    const vs = prev.baseline
-      ? `${prev.baseline} (${ord(prev.place)})`
-      : `Week ${prev.wk} (${ord(prev.place)})`;
-    mvNote = d === 0
-      ? ` Holding at ${ord(cur.place)} since ${vs}.`
-      : ` ${d > 0 ? "▲" : "▼"}${Math.abs(d)} on ${vs}.`;
-  }
   document.getElementById("throughNote").textContent =
     played.length
-      ? `Through Wk ${lastWk} · ${played.length} of 24 games.${mvNote}${avgNote}`
+      ? `Through Week ${lastWk} · ${played.length} of 24 games.`
       : `No games logged yet.`;
 }
 
 /* ---------- availability ---------- */
-// We aim for 3 bowlers a game — this badge answers "do we have enough?"
-const NEED = 3;
+/* Three bowlers fields a night. Exactly three is the clean case; fewer is a
+   real problem; more is a rotation, which is how people reach six games —
+   so it reads as information, not a warning. */
+const NEED = RB.SEASON.needPerGame;
 function headcount(inN, maybeN){
-  const ok = inN >= NEED;
-  const txt = ok
-    ? `${inN} in ✓`
-    : `${inN} in · need ${NEED - inN} more`;
   const maybe = maybeN ? ` · ${maybeN} maybe` : "";
-  return `<span class="headcount ${ok ? "ok" : "warn"}">${txt}${maybe}</span>`;
+  let cls, txt;
+  if (inN === NEED){
+    cls = "ok";   txt = `Roster set · ${inN}/${NEED} in`;
+  } else if (inN < NEED){
+    const gap = NEED - inN;
+    cls = "warn"; txt = `${inN} in · need ${gap} more`;
+  } else {
+    cls = "rot";  txt = `${inN} in · rotate ${inN - NEED}`;
+  }
+  return `<span class="headcount ${cls}">${txt}${maybe}</span>`;
 }
 
 /* ---------- one-tap reply ----------
@@ -728,9 +799,7 @@ function smsLink(iso, wk, status){
 function replyBox(iso, wk){
   const chat = RB.SEASON.groupChatName;
   return `<div class="reply">
-    <p>Changing your answer, or not on the list? Tap one — the text writes
-       itself. Messages opens with no one filled in, so pick the
-       <strong>${chat}</strong> group thread, then send.</p>
+    <p>Reply in the <strong>${chat}</strong> group chat:</p>
     <div class="reply-row">
       <a class="yes" href="${smsLink(iso, wk, "IN")}">I'm in</a>
       <a class="mb"  href="${smsLink(iso, wk, "a MAYBE")}">Maybe</a>
@@ -936,10 +1005,11 @@ try {
 }
 document.getElementById("icsAll").onclick  = () => downloadICS(schedule, "rambowls-fall-2026");
 document.getElementById("icsRest").onclick = () => {
-  // A game is "remaining" until it has actually ended — so at 3 PM on a
-  // league day tonight's games are included, and at 11 PM they're not.
+  // Same definition of "not bowled yet" that Next Up and the schedule
+  // highlight use — an official result finishes a game immediately, and
+  // otherwise it stands until 65 minutes past its start.
   const now = new Date();
-  downloadICS(schedule.filter(g => gameEnd(g) > now), "rambowls-remaining");
+  downloadICS(schedule.filter(g => isUnfinished(g, now)), "rambowls-remaining");
 };
 
 // offline support — safe to fail, the page works without it
@@ -1001,25 +1071,6 @@ if ("serviceWorker" in navigator){
       reset();
     }
   });
-})();
-</script>
-<script>
-/* ---------- analytics ----------
-   Cookieless page counts via GoatCounter. Loads only if SEASON.analyticsId
-   is set, and never on localhost, so smoke tests don't pollute the numbers.
-   Failure here must never affect the page — hence the try/catch. */
-(function(){
-  try{
-    var id = window.RB && RB.SEASON && RB.SEASON.analyticsId;
-    if(!id) return;
-    var h = location.hostname;
-    if(h === "localhost" || h === "127.0.0.1" || h === "") return;
-    var s = document.createElement("script");
-    s.async = true;
-    s.src = "https://gc.zgo.at/count.js";
-    s.setAttribute("data-goatcounter", "https://" + id + ".goatcounter.com/count");
-    document.head.appendChild(s);
-  }catch(e){ /* analytics is never worth breaking the app over */ }
 })();
 </script>
 </body>
