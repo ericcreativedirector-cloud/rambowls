@@ -858,19 +858,60 @@ function renderNextUp(){
     });
   };
 
+  // True while we are moving the rail ourselves. The scroll listener below
+  // must ignore those events: on first paint it was reading a half-finished
+  // layout and rewriting idx from it, which is how the card could say Week 3
+  // while the counter said Week 2.
+  let programmatic = false;
+  let settleTimer = null;
+
   const goto = (i, smooth) => {
     idx = Math.min(cards.length - 1, Math.max(0, i));
     // offsetLeft is relative to the track's padding box, which is what
-    // scrollLeft measures — no need to subtract the track's own offset.
-    const left = cards[idx].offsetLeft;
-    // Element.scrollTo is not universal; assigning scrollLeft always works.
-    if (typeof track.scrollTo === "function"){
-      track.scrollTo({left, behavior: smooth ? "smooth" : "auto"});
+    // scrollLeft measures, so no need to subtract the track's own offset.
+    // offsetLeft is measured from the nearest POSITIONED ancestor, which is
+    // not this track, so it carries the wrap's padding with it. Subtracting
+    // the track's own offset gives the real scroll position; relying on snap
+    // to absorb the difference happened to work, but only by luck.
+    const left = cards[idx].offsetLeft - track.offsetLeft;
+    programmatic = true;
+    if (smooth && typeof track.scrollTo === "function"){
+      track.scrollTo({left, behavior: "smooth"});
     } else {
+      // Not scrollTo with behavior:"auto" — "auto" means "use the CSS value",
+      // and this track sets scroll-behavior:smooth. Every re-anchor animated
+      // and interrupted the one before it, leaving the rail parked between two
+      // cards. Suspend the CSS property for the assignment instead.
+      const prev = track.style.scrollBehavior;
+      track.style.scrollBehavior = "auto";
       track.scrollLeft = left;
+      track.style.scrollBehavior = prev;
     }
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => { programmatic = false; }, smooth ? 600 : 120);
     label();
   };
+
+  // Re-anchor once the webfont has actually swapped in. Big Shoulders arrives
+  // after first paint, every card gets wider, and a scrollLeft set against the
+  // fallback metrics then points at the wrong week. Measured 455 where the
+  // card starts at 684.
+  const reanchor = () => goto(idx, false);
+  if (document.fonts && document.fonts.ready){
+    // Twice: once when the promise resolves, once on the next frame, because
+    // the reflow the swap causes has not landed yet at resolve time.
+    document.fonts.ready
+      .then(() => { reanchor(); requestAnimationFrame(reanchor); })
+      .catch(() => {});
+  }
+  // Belt and braces for anything else that shifts width late (late CSS, the
+  // theme picker sizing itself). Cheap, and the programmatic guard means
+  // these can never move which week is considered current.
+  [80, 250, 600].forEach(ms => setTimeout(reanchor, ms));
+  window.addEventListener("resize", () => {
+    clearTimeout(reanchor._t);
+    reanchor._t = setTimeout(reanchor, 150);
+  });
 
   // Keyboard parity for anyone not swiping. The track is focusable, so left
   // and right walk the rail the way the arrows used to.
@@ -882,6 +923,7 @@ function renderNextUp(){
   // keep the counter honest when the rail is swiped rather than clicked
   let t = null;
   track.addEventListener("scroll", () => {
+    if (programmatic) return;
     clearTimeout(t);
     t = setTimeout(() => {
       const mid = track.scrollLeft + track.clientWidth / 2;
