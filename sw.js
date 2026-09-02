@@ -1,6 +1,6 @@
 // Rambowls Scheduler - offline cache
 // Bump CACHE when you push an update, so phones pick up the new version.
-const CACHE = 'rambowls-v39';
+const CACHE = 'rambowls-v40';
 
 const ASSETS = [
   './',
@@ -29,19 +29,18 @@ self.addEventListener('activate', e => {
         keys.filter(k => k !== CACHE).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
+      // Tell every open page that a new version is live. Paired with
+      // skipWaiting above, this means nobody is reading a stale build
+      // because their phone kept the tab open overnight.
+      .then(() => self.clients.matchAll({type: 'window'}))
+      .then(cs => cs.forEach(c => c.postMessage({type: 'RB_UPDATED', cache: CACHE})))
   );
 });
 
-// Network first, cache as fallback.
-// That way a pushed update shows up immediately when there's signal,
-// and the page still opens in the basement at The Gutter when there isn't.
+// Network first, cache as fallback. A pushed update shows up immediately when
+// there is signal, and the page still opens if the network drops.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-
-  // Let analytics beacons go straight to the network, uncached.
-  // They must never be served from cache (that would fake a pageview)
-  // and there's no reason to store them for offline.
-  if (/(^|\.)goatcounter\.com$|(^|\.)zgo\.at$/.test(new URL(e.request.url).hostname)) return;
 
   e.respondWith(
     fetch(e.request)
