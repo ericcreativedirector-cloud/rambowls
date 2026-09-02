@@ -50,8 +50,9 @@
     gap:12px; flex-wrap:wrap}
   .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
   .brandrow .nav{margin-top:0; flex:0 0 auto}
+  /* line-height under 1 makes the two words crash. Must match the Scheduler. */
   h1{font-family:var(--display); font-weight:600; text-transform:uppercase;
-    font-size:clamp(29px,9.2vw,54px); line-height:.88; letter-spacing:.01em; margin:0;
+    font-size:clamp(29px,9.2vw,54px); line-height:.74; letter-spacing:-.005em; margin:0;
     word-break:break-word; text-wrap:balance}
   h1 span{color:var(--maple)}
 
@@ -84,7 +85,7 @@
   .picked .kick{font-family:var(--data); font-size:8.5px; letter-spacing:.24em;
     text-transform:uppercase; color:var(--maple); line-height:1}
   .picked .nm{font-family:var(--display); font-weight:600; text-transform:uppercase;
-    font-size:clamp(26px,7.6vw,38px); line-height:.92; letter-spacing:.02em}
+    font-size:clamp(28px,8vw,40px); line-height:.92; letter-spacing:.02em}
   .picked .caret{margin-left:auto; flex:0 0 auto; width:14px; height:14px;
     stroke:var(--maple); fill:none; stroke-width:2.6; stroke-linecap:square;
     transition:transform .18s ease}
@@ -116,7 +117,7 @@
   section{margin-top:44px}
   /* match the Scheduler's first-section rhythm under the masthead */
   #page > section:first-of-type{margin-top:24px}
-  h2{font-family:var(--display); font-size:20px; letter-spacing:.06em;
+  h2{font-family:var(--display); font-size:22px; letter-spacing:.06em;
     text-transform:uppercase; margin:0 0 4px; font-weight:500; text-wrap:balance;
     display:flex; align-items:center; gap:9px}
   h2 .ico{width:17px; height:17px}
@@ -129,7 +130,7 @@
 
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px}
   .stat{background:var(--lane-2); border:1px solid var(--rule); border-radius:2px; padding:13px 14px}
-  .stat b{display:block; font-family:var(--display); font-size:28px; font-weight:600;
+  .stat b{display:block; font-family:var(--display); font-size:30px; font-weight:600;
     letter-spacing:.02em; color:var(--bone); line-height:1}
   .stat b small{font-size:14px; color:var(--dim)}
   .stat span{display:block; font-family:var(--data); font-size:9px; letter-spacing:.12em;
@@ -224,7 +225,7 @@
     .masthead{padding-bottom:22px}
     .sub{font-size:12px; margin-top:14px}
     .stats{grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px}
-    .stat b{font-size:32px}
+    .stat b{font-size:34px}
     .chart{gap:8px; height:172px}
     .logrow{grid-template-columns:170px 1fr; align-items:baseline}
   }
@@ -257,7 +258,7 @@
     <p class="sub" id="pageSub"></p>
     <div class="who" id="whoRow"></div>
     <p class="whoask" id="whoAsk">Who's bowling?</p>
-    <noscript><p class="sub">JavaScript required — stats won't load without it.</p></noscript>
+    <noscript><p class="sub">JavaScript required. Stats won't load without it.</p></noscript>
   </div>
 
   <div id="page" style="display:none">
@@ -491,7 +492,7 @@ function render(){
     document.getElementById("laneEdge").style.left  = `calc(${pct * 100}% - 2.5px)`;
     document.getElementById("goalLeft").textContent = (a == null || !S.count)
       ? "No scores yet"
-      : `Now ${now} — ${Math.round(pct * 100)}% of the way there`;
+      : `Now ${now} · ${Math.round(pct * 100)}% of the way there`;
     document.getElementById("goalRight").textContent = (a == null || !S.count)
       ? ""
       // Measured off the SAME rounded figure shown as "Now", so 121 + 17 = 138
@@ -587,7 +588,7 @@ function renderLog(p, prov){
     : `<p class="empty" style="padding:14px 2px">No nights bowled yet.</p>`;
 
   document.getElementById("logNote").innerHTML = open
-    ? `Official scores come from the league sheet. Week ${openWk} is still open — anything you type saves on this phone only, and the official score replaces it the moment the sheet posts.`
+    ? `Official scores come from the league sheet. Week ${openWk} is still open, so anything you type saves on this phone only. The official score replaces it the moment the sheet posts.`
     : `Official scores come from the league sheet.`;
 
   log.querySelectorAll("input[type=number]").forEach(inp => {

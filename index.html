@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rambowls Scheduler — Fall 2026</title>
+<title>Rambowls Scheduler · Fall 2026</title>
 <meta name="description" content="Schedule, availability and playoff eligibility for the Rambowls, 2026 Fall Wednesday League at The Gutter.">
 <meta name="theme-color" content="#0E1116">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Rambowls Scheduler">
-<meta property="og:description" content="Every matchup, lane and start time for Fall 2026 — plus who's in each week and who still needs games to qualify.">
+<meta property="og:description" content="Every matchup, lane and start time for Fall 2026, plus who's in each week and who still needs games to qualify.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='9.4' cy='8.4' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='14' cy='7.7' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='12.6' cy='11.9' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -79,8 +79,11 @@
     gap:12px; flex-wrap:wrap}
   .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
   .brandrow .nav{margin-top:0; flex:0 0 auto}
+  /* line-height under 1 makes RAMBOWLS and SCHEDULER crash into each other.
+     Big Shoulders has short descenders, so .74 overlaps the caps without any
+     collision. This is the one place the type is allowed to be loud. */
   h1{font-family:var(--display); font-weight:600; text-transform:uppercase;
-    font-size:clamp(29px,9.2vw,54px); line-height:.88; letter-spacing:.01em;
+    font-size:clamp(29px,9.2vw,54px); line-height:.74; letter-spacing:-.005em;
     margin:0 0 auto; word-break:break-word; text-wrap:balance}
   h1 span{color:var(--maple)}
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
@@ -110,11 +113,21 @@
     scroll-behavior:smooth; scrollbar-width:none; -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain}
   .nu-track::-webkit-scrollbar{display:none}
-  .nu-card{flex:0 0 100%; scroll-snap-align:start; min-width:0;
+  /* not full width: the next card peeks past the right edge, which is what
+     tells you the rail moves. Arrows alone were not reading as swipeable. */
+  .nu-card{flex:0 0 calc(100% - 34px); scroll-snap-align:start; min-width:0;
     border:1px solid var(--maple); border-radius:2px;
     background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03));
     overflow:hidden}
-  /* nights already bowled drop the maple frame — they're record, not plan */
+  /* Only the night you act on gets full maple. Later nights keep the frame
+     but drop to a third of the intensity; bowled nights lose it entirely. */
+  .nu-card.future{border-color:rgba(200,135,60,.32);
+    background:linear-gradient(180deg,rgba(200,135,60,.05),rgba(200,135,60,.015))}
+  .nu-card.future .lab, .nu-card.future .cellkick,
+  .nu-card.future .shirtlab, .nu-card.future .lineup .k{color:rgba(200,135,60,.62)}
+  .nu-card.future .nu-when{border-right-color:rgba(200,135,60,.16)}
+  .nu-card.future .nu-cell.wide, .nu-card.future .lineup{border-top-color:rgba(200,135,60,.16)}
+  /* nights already bowled drop the maple frame, they are record not plan */
   .nu-card.past{border-color:var(--rule); background:var(--lane-2)}
   .nu-card.past .nu-when{border-right-color:var(--rule)}
   .nu-card.past .nu-cell.wide{border-top-color:var(--rule)}
@@ -134,8 +147,13 @@
   .nu-pos{font-family:var(--data); font-size:9px; letter-spacing:.16em;
     text-transform:uppercase; color:var(--dim); margin-left:2px}
   .nu-pos b{color:var(--maple); font-weight:500}
+  .nu-pos .sw{color:var(--maple)}
   @media (prefers-reduced-motion:reduce){ .nu-track{scroll-behavior:auto} }
-  .nu-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* The left cell holds a long date and a wide time badge, so an even split
+     put the badge through the divider. 1.35fr gives it consistently more room
+     at every width, and the badge is allowed to wrap rather than overrun. */
+  .nu-grid{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+  .nu-when .slot{white-space:normal; max-width:100%}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
   .nu-cell.wide{grid-column:1/-1; border-top:1px solid rgba(200,135,60,.28)}
@@ -154,7 +172,7 @@
     display:flex; align-items:center; gap:5px}
   .nextup .lab .ico{width:11px !important; height:11px !important}
   .nextup .date{font-family:var(--display); font-weight:600;
-    font-size:clamp(15px,4.2vw,32px);
+    font-size:clamp(17px,4.6vw,34px);
     line-height:1.05; text-transform:uppercase; margin-bottom:8px; text-wrap:balance}
   /* "Wednesday," and "September 2" each stay whole — the date may break
      between them but never inside them, so no stray "2" on its own line. */
@@ -197,7 +215,7 @@
 
   section{margin-top:44px}
   section:first-of-type{margin-top:20px}
-  h2{font-family:var(--display); font-size:20px; letter-spacing:.06em;
+  h2{font-family:var(--display); font-size:22px; letter-spacing:.06em;
     text-transform:uppercase; margin:0 0 4px; font-weight:500; text-wrap:balance;
     display:flex; align-items:center; gap:9px}
   h2 .ico{width:17px; height:17px}
@@ -219,7 +237,7 @@
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
-  .rec-val{font-family:var(--display); font-weight:600; font-size:24px; line-height:1}
+  .rec-val{font-family:var(--display); font-weight:600; font-size:26px; line-height:1}
   .rec-val .of{font-size:15px; color:var(--dim)}
   .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
     text-transform:uppercase; color:var(--dim); margin-top:6px}
@@ -457,8 +475,8 @@
       </div>
       <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
       <div class="stamps">
-        <span class="tag" id="updated">Updated —</span>
-        <noscript><span class="tag">JavaScript required — data won't load without it</span></noscript>
+        <span class="tag" id="updated">Updated</span>
+        <noscript><span class="tag">JavaScript required. Data won't load without it</span></noscript>
       </div>
     </header>
     <div class="nextup" id="nextup"></div>
@@ -688,7 +706,7 @@ function nightCard(iso, nextIso){
     const why   = lu.played ? "Bowled."
                 : lu.manual ? "Set by hand for this night."
                 : lu.inCount > lu.names.length
-                  ? `Fewest games first, from ${lu.inCount} in. Rotate freely — this is a suggestion.`
+                  ? `Fewest games first, from ${lu.inCount} in. Rotate however you like.`
                   : "Both games.";
     lineupBlock = `<div class="lineup"><span class="k">${lu.played ? "Bowled" : "Lineup"}</span> ${names}${tail}
       <span class="sub">${why}</span></div>`;
@@ -698,7 +716,11 @@ function nightCard(iso, nextIso){
       <span class="sub">Three bowlers fields the night.</span></div>`;
   }
 
-  return `<div class="nu-card${past ? " past" : ""}" data-iso="${iso}" data-wk="${wk}">
+  // Three states, three weights of maple: the night you act on is loud, the
+  // ones ahead are present but quiet, the ones behind are just record.
+  const state = past ? "past" : isNext ? "next" : "future";
+
+  return `<div class="nu-card ${state}" data-iso="${iso}" data-wk="${wk}">
     <div class="nu-grid">
       <div class="nu-cell nu-when">
         <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${lab}</div>
@@ -745,12 +767,16 @@ function renderNextUp(){
   const next  = document.getElementById("nuNext");
   const pos   = document.getElementById("nuPos");
   let idx = Math.max(0, isos.indexOf(startIso));
+  let moved = false;
 
   const label = () => {
     const c = cards[idx];
     if (!c) return;
+    // Say what the rail does until someone has actually moved it, then get
+    // out of the way and just report position.
+    const hint = moved ? "" : ` · <span class="sw">Swipe for other weeks</span>`;
     pos.innerHTML = `Week <b>${c.dataset.wk}</b> of ${isos.length}`
-      + (c.dataset.iso === nextIso ? " · next up" : "");
+      + (c.dataset.iso === nextIso ? " · next up" : "") + hint;
     prev.disabled = idx <= 0;
     next.disabled = idx >= cards.length - 1;
   };
@@ -769,8 +795,8 @@ function renderNextUp(){
     label();
   };
 
-  prev.onclick = () => goto(idx - 1, true);
-  next.onclick = () => goto(idx + 1, true);
+  prev.onclick = () => { moved = true; goto(idx - 1, true); };
+  next.onclick = () => { moved = true; goto(idx + 1, true); };
 
   // keep the counter honest when the rail is swiped rather than clicked
   let t = null;
@@ -783,6 +809,7 @@ function renderNextUp(){
         const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
         if (d < bestD){ bestD = d; best = i; }
       });
+      if (best !== idx) moved = true;
       idx = best;
       label();
     }, 90);
@@ -993,8 +1020,8 @@ function renderNight(iso){
     const past = iso < todayISO();
     head.innerHTML = `Availability · Week ${wk}` + (past ? "" : headcount(0, 0));
     note.textContent = past
-      ? `${fmtDate(iso, true)} — ${matchups}. No lineup recorded for this night.`
-      : `${fmtDate(iso, true)} — ${matchups}. Nobody's replied for this week yet — send it in early if you already know.`;
+      ? `${fmtDate(iso, true)} · ${matchups}. No lineup recorded for this night.`
+      : `${fmtDate(iso, true)} · ${matchups}. Nobody's replied yet. Send it in early if you already know.`;
     box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", [])
       + (past ? "" : replyBox(iso, wk));
     return;
@@ -1002,14 +1029,14 @@ function renderNight(iso){
 
   if (data.played){
     head.textContent = `Who bowled · Week ${wk}`;
-    note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
+    note.textContent = `${fmtDate(iso, true)} · ${matchups}.`;
     const bowled = (data.bowled || []).map(([n,g]) => [n, `${g} ${g===1?"game":"games"}`]);
     box.innerHTML = col("in","Bowled", bowled) + col("quiet","Sat out", data.sat);
   } else {
     const today = iso === todayISO();
     head.innerHTML = `${today ? "Tonight" : "Availability"} · Week ${wk}`
       + headcount((data.in || []).length, (data.maybe || []).length);
-    note.textContent = `${fmtDate(iso, true)} — ${matchups}.`;
+    note.textContent = `${fmtDate(iso, true)} · ${matchups}.`;
     box.innerHTML =
       col("in","In",data.in) + col("maybe","Maybe",data.maybe) +
       col("out","Out",data.out) + col("quiet","No reply yet",data.quiet) +
@@ -1049,8 +1076,8 @@ function renderLegend(){
   const early = isos.filter(d => nightSlot(d) === "early").length;
   const late  = isos.length - early;
   document.getElementById("legend").innerHTML =
-    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 PM — ${early} of ${isos.length}</span>`
-  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 PM — ${late} of ${isos.length}</span>`;
+    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 PM · ${early} of ${isos.length}</span>`
+  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 PM · ${late} of ${isos.length}</span>`;
 }
 
 function renderSchedule(){
@@ -1129,8 +1156,8 @@ function downloadICS(games, filename){
       `DTSTART;TZID=America/New_York:${icsStamp(g.iso, g.time24)}`,
       `DTEND;TZID=America/New_York:${icsStamp(g.iso, g.time24, 65)}`,
       `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
-      `LOCATION:The Gutter — Lane ${g.lane}`,
-      `DESCRIPTION:Week ${g.wk} — 2026 Fall Wednesday League. Lane ${g.lane}.`,
+      `LOCATION:The Gutter, Lane ${g.lane}`,
+      `DESCRIPTION:Week ${g.wk} · 2026 Fall Wednesday League. Lane ${g.lane}.`,
       "BEGIN:VALARM","TRIGGER:-PT60M","ACTION:DISPLAY",
       "DESCRIPTION:Rambowls in 1 hour","END:VALARM",
       "END:VEVENT"
@@ -1161,7 +1188,7 @@ try {
   // Never let a silent "—" disguise a real failure.
   const u = document.getElementById("updated");
   if (u) u.innerHTML =
-    `Couldn't load team data — <a href="${SHEET_URL}" target="_blank" rel="noopener" style="color:inherit">use the league sheet ↗</a>`;
+    `Couldn't load team data. <a href="${SHEET_URL}" target="_blank" rel="noopener" style="color:inherit">use the league sheet ↗</a>`;
   console.error("Rambowls boot failed:", err);
 }
 document.getElementById("icsAll").onclick  = () => downloadICS(schedule, "rambowls-fall-2026");

@@ -69,11 +69,11 @@ const PLAYERS = [
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
-   scores:{}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43 — not the 56 an unrated bowler gets."},
+   scores:{}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Alternate, on the league sheet with no prior average — the league standard 120 stands in until he files one."},
+   scores:{}, note:"Alternate, on the league sheet with no prior average, so the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Not on the league sheet yet — still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."}
+   scores:{}, note:"Not on the league sheet yet, still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."}
 ];
 
 /* ---------- schedule ----------
