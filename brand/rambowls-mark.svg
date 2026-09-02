@@ -2,17 +2,17 @@
      width="24" height="24" role="img" aria-label="Rambowls">
   <title>Rambowls</title>
   <!-- Icon-only mark. Identical geometry to the .mark SVG inlined in the app:
-       ball r=9.2 on a 24 box, stroke .9, three holes r=1.25. Two holes sit on
-       the x=15 axis; the third is the right-angle vertex of a 45-45-90
-       triangle, offset left by half the vertical spread. The vertical pair
-       echoes the stem of the R.
-       The whole mark is one colour: change the group fill and the ball
-       stroke together. -->
+       ball r=9.2 on a 24 box, stroke .9, three holes r=1.25 sitting in the
+       upper-right quadrant. Two holes share the x=15.2 axis, echoing the stem
+       of the R; the third is the right-angle vertex of a 45-45-90 triangle,
+       offset left by half the vertical spread.
+       The mark is a single colour — ball stroke and holes alike. Recolour by
+       changing the group fill and the ball stroke together. -->
   <g fill="#C8873C">
     <circle cx="12" cy="12" r="9.2" fill="none" stroke="#C8873C"
             stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="15" cy="8.2" r="1.25"/>
-    <circle cx="15" cy="15.8" r="1.25"/>
-    <circle cx="11.2" cy="12" r="1.25"/>
+    <circle cx="15.2" cy="7.2" r="1.25"/>
+    <circle cx="15.2" cy="12.8" r="1.25"/>
+    <circle cx="12.4" cy="10" r="1.25"/>
   </g>
 </svg>

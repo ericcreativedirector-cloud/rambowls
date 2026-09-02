@@ -298,7 +298,9 @@ function lastCompletedWeek(){
 
 /* ---- Themes -------------------------------------------------------------
    Decorative only. A theme may set --maple (primary accent) and --maple-2
-   (secondary accent: masthead rule, logo finger-holes). It must NEVER touch
+   (secondary accent: masthead rule). The logo mark — ball stroke and finger
+   holes alike — is always --maple, so NYK renders it in the club orange. The
+   wordmark is always --bone and no theme repaints it. It must NEVER touch
    --strike or --signal: those are semantic on this app (needs-attention vs
    done) and the eligibility pins are read at a glance. A red-primary team
    swapped into --strike would make every finished bowler look like an error.

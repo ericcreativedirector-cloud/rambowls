@@ -4,7 +4,7 @@ Derived from the shipped app (`index.html`, `tracker/index.html`, `data.js`).
 The app is the source of record. If this document and the CSS disagree, the
 CSS wins and this document is stale.
 
-_Last revised: 2 September 2026 — 45-45-90 hole triangle, tightened lockup gap._
+_Last revised: 2 September 2026 — holes to the upper-right quadrant, two-tone lockup stated explicitly._
 
 ---
 
@@ -16,12 +16,13 @@ A bowling ball drawn as an outline, with three finger holes arranged as a
 45-45-90 triangle, set against the wordmark RAMBOWLS in Big Shoulders Display
 SemiBold.
 
-Two of the holes sit on a single vertical axis (x = 15 on the 24-unit grid)
+The cluster sits in the **upper-right quadrant** of the ball, not centred.
+Two of the holes share a single vertical axis (x = 15.2 on the 24-unit grid)
 so that the pair reads as a deliberate rhyme with the vertical stem of the
 **R**. The third sits at the right-angle vertex, offset left by exactly half
-the vertical spread, which puts both legs of the triangle at 45°. That
-alignment is the idea — a randomly scattered triangle is not an acceptable
-substitute.
+the vertical spread, which puts both legs of the triangle at 45°. Both the
+quadrant placement and the 45° construction are the idea — a centred or
+randomly scattered triangle is not an acceptable substitute.
 
 **On accuracy:** this is a stylised mark, not a technical drawing. A real
 conventional drilling is a much narrower triangle — the bridge between the
@@ -41,13 +42,30 @@ The mark is drawn on a 24 × 24 grid. All values are grid units.
 | Ball radius | 9.2 |
 | Ball stroke | 0.9, round cap and join |
 | Ball fill | none — the ball is an outline |
-| Hole axis (pair) | x = 15, at y = 8.2 and 15.8 |
-| Third hole | x = 11.2, y = 12 — the 45° vertex |
+| Hole axis (pair) | x = 15.2, at y = 7.2 and 12.8 |
+| Third hole | x = 12.4, y = 10 — the 45° vertex |
+| Triangle spread | 5.6 vertical, 2.8 horizontal offset |
 | Hole radius | 1.25, all three equal |
 | Holes | solid fill, no stroke |
 
-Everything in the mark is one colour. The ball's stroke and the holes' fill
-are always the same value.
+### 1.2a Colour of the logo
+
+The lockup is **two-tone, always**:
+
+| Part | Token | House value |
+|---|---|---|
+| Ball stroke **and** finger holes | `--maple` | `#C8873C` |
+| RAMBOWLS wordmark | `--bone` | `#F3EEE3` |
+
+The mark is a single colour throughout — the ball's stroke and the holes' fill
+are always the same value, never split from each other.
+
+A theme repaints `--maple`, so the mark follows the theme: under **NYK** the
+ball and holes are the club orange `#F58426`. The wordmark does **not** follow
+a theme. It stays `--bone` in every palette.
+
+On a light ground, set the wordmark in `--lane` (`#0E1116`) and leave the mark
+in `--maple` untouched.
 
 ### 1.3 The lockup
 
@@ -85,8 +103,9 @@ Both recolour by changing the fill on the wrapping `<g>` and the ball's
 
 - Don't rotate, skew, or arch the wordmark.
 - Don't fill the ball. It is an outline.
-- Don't move the two paired holes off the x=15 axis, and don't shift the
+- Don't move the two paired holes off the x=15.2 axis, and don't shift the
   third hole off the 45° vertex.
+- Don't recentre the hole cluster. It belongs in the upper-right quadrant.
 - Don't recolour the holes independently of the ball.
 - Don't stack the lockup vertically. If the space is narrow, use the mark
   alone.
@@ -202,16 +221,9 @@ proportion against the mark, which clamps on the same curve
 
 ---
 
-## 5. Open item
+## 5. Notes
 
-`data.js` documents `--maple-2` as controlling the "logo finger-holes," but
-the CSS currently paints them with `--maple`:
-
-```css
-.logo .mark .hole{fill:var(--maple); stroke:none}
-```
-
-In the house and NYK themes this is invisible either way. In BKN it matters:
-as written the holes are white like the ball; as documented they'd be the
-grey secondary. Decide which is intended and make the code and the comment
-agree.
+The `--maple-2` token exists as a secondary accent for the masthead rule. It
+does **not** touch the logo — an earlier comment in `data.js` claimed it drove
+the finger holes, which was never true in the CSS. That comment has been
+corrected. Holes are `--maple`, same as the ball.
