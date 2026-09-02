@@ -167,9 +167,6 @@
   .rec-cell{background:var(--lane-2); padding:11px 12px}
   .rec-val{font-family:var(--display); font-size:24px; line-height:1}
   .rec-val .of{font-size:15px; color:var(--dim)}
-  .rec-val .mv{font-family:var(--data); font-size:12px; margin-left:5px; letter-spacing:.04em}
-  .rec-val .mv.up{color:var(--signal)} .rec-val .mv.dn{color:var(--strike)}
-  .rec-val .mv.fl{color:var(--dim)}
   .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
     text-transform:uppercase; color:var(--dim); margin-top:6px}
   /* comparison lives inside the card it describes, in words, so no arrow
@@ -689,7 +686,7 @@ function renderBoard(){
 
   let summary;
   if (need === 0){
-    summary = `<div class="elig-summary ok">All ${starterList.length} starters are playoff eligible ✓</div>`;
+    summary = `<div class="elig-summary ok">All ${starterList.length} starters are playoff eligible</div>`;
   } else if (stuck.length){
     summary = `<div class="elig-summary risk">${stuck.join(", ")} can no longer reach 6 games${projNote}</div>`;
   } else {

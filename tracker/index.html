@@ -139,8 +139,17 @@
     background:repeating-linear-gradient(90deg,#3d2f1c 0 34px,#4a3922 34px 68px);
     border:1px solid #00000066}
   .lane .oil{position:absolute; inset:0; background:linear-gradient(90deg,#ffffff14,transparent 70%)}
-  .lane .ball{position:absolute; top:50%; transform:translate(-50%,-50%); font-size:28px; transition:left .6s ease}
-  @media (prefers-reduced-motion:reduce){ .lane .ball{transition:none} }
+  /* Progress is a hard maple fill with a solid leading edge — it shows the
+     distance covered, not just a floating position, and it carries no emoji. */
+  .lane .fill{position:absolute; left:0; top:0; bottom:0; width:0;
+    background:linear-gradient(90deg,rgba(200,135,60,.16),rgba(200,135,60,.34));
+    transition:width .6s ease}
+  .lane .edge{position:absolute; top:0; bottom:0; width:5px; left:0;
+    background:var(--maple); box-shadow:0 0 0 1px #00000055;
+    transition:left .6s ease}
+  @media (prefers-reduced-motion:reduce){
+    .lane .fill, .lane .edge{transition:none}
+  }
   .lane .mark{position:absolute; top:0; bottom:0; width:2px; background:#f3eee355}
   .lane .mark i{position:absolute; top:3px; left:5px; font-style:normal; font-size:9px; color:var(--bone);
     font-family:var(--data); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap}
@@ -264,9 +273,10 @@
       <div id="goalBody">
         <div class="lane">
           <div class="oil"></div>
+          <div class="fill" id="laneFill"></div>
+          <div class="edge" id="laneEdge"></div>
           <div class="mark" style="left:0"><i id="laneLo"></i></div>
           <div class="mark" style="right:0"><i id="laneHi" style="left:auto; right:5px"></i></div>
-          <div class="ball" id="ball">🎳</div>
         </div>
         <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
       </div>
@@ -437,7 +447,7 @@ function render(){
     <div class="stat"><b>${S.high ?? "—"}</b><span>High game</span></div>
     <div class="stat">
       <b>${S.count}<small>/${RB.SEASON.qualify}</small></b><span>To qualify</span>
-      ${S.qualified ? `<i>Eligible ✓</i>` : `<i>${S.toQualify} to go</i>`}
+      ${S.qualified ? `<i>Eligible</i>` : `<i>${S.toQualify} to go</i>`}
     </div>`;
 
   document.getElementById("ballastNote").textContent = S.ballast
@@ -475,7 +485,8 @@ function render(){
     document.getElementById("laneLo").textContent = base + " last season";
     document.getElementById("laneHi").textContent = goal + " goal";
     const pct = a == null ? 0 : Math.min(1, Math.max(0, (a - base) / (goal - base)));
-    document.getElementById("ball").style.left = (5 + pct * 84) + "%";
+    document.getElementById("laneFill").style.width = (pct * 100) + "%";
+    document.getElementById("laneEdge").style.left  = `calc(${pct * 100}% - 2.5px)`;
     document.getElementById("goalLeft").textContent = (a == null || !S.count)
       ? "No scores yet"
       : `Now ${now} — ${Math.round(pct * 100)}% of the way there`;
@@ -483,7 +494,7 @@ function render(){
       ? ""
       // Measured off the SAME rounded figure shown as "Now", so 121 + 17 = 138
       // actually adds up for anyone who checks it.
-      : (a >= goal ? "Goal reached 🏆" : `${goal - now} pins to go`);
+      : (a >= goal ? "Goal cleared" : `${goal - now} pins to go`);
   }
 
   /* ----- night by night: completed nights only ----- */
