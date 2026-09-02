@@ -10,7 +10,8 @@
      body, so waiting for it would render the house colors and then snap. The
      whitelist is here rather than in data.js on purpose: this runs first and
      an unchecked localStorage value would be writing an attribute selector. -->
-<script>(function(){try{var t=localStorage.getItem("rb-theme");
+<script>(function(){try{var t=localStorage.getItem("rambowls_theme")
+||localStorage.getItem("rb-theme");
 if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Rambowls Scheduler">
@@ -55,7 +56,11 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     --maple:#F58426; --maple-2:#1272C4;
     --lane:#08141F; --lane-2:#10202F; --rule:#1C2B3B;
   }
-  html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#8E949B; }
+  html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#5E6772; }
+  /* #5E6772 rather than #8E949B: against a white primary the old grey
+     read as a dimmer white rather than a second colour. This sits well
+     below it and still holds ~3:1 on the ground, which is what a 3px
+     rule needs. */
 
   *{box-sizing:border-box}
   html{
@@ -628,6 +633,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
 </div>
 
 <script src="data.js"></script>
+<script src="theme.js"></script>
 <script>
 // If data.js failed to load there is nothing to render — say so plainly
 // rather than leaving a page of em-dashes.

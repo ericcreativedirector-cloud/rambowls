@@ -309,62 +309,15 @@ function lastCompletedWeek(){
 
    The pre-paint application lives in an inline <head> script on each page,
    so the theme is on the element before first paint. This is the picker. */
-const THEMES = [
-  {code:"RB",  name:"House",          ground:"#0E1116"},
-  {code:"NYK", name:"Orange & blue",  ground:"#08141F"},
-  {code:"BKN", name:"Black & white",  ground:"#0E1116"}
-];
-const THEME_KEY = "rb-theme";
-const THEME_CODES = THEMES.map(t => t.code);
-
-function themeSaved(){
-  try{
-    const t = localStorage.getItem(THEME_KEY);
-    return THEME_CODES.includes(t) ? t : "RB";
-  }catch(e){ return "RB"; }
-}
-
-function applyTheme(code){
-  if (!THEME_CODES.includes(code)) code = "RB";
-  const el = document.documentElement;
-  if (code === "RB") el.removeAttribute("data-theme");
-  else el.setAttribute("data-theme", code);
-  try{ localStorage.setItem(THEME_KEY, code); }catch(e){}
-  /* Drag the browser/PWA chrome along with the ground. Without this the
-     installed app keeps a #0E1116 status bar sitting on a blue page, which
-     reads as a bug rather than a theme. */
-  const meta = document.querySelector('meta[name="theme-color"]');
-  const t = THEMES.find(x => x.code === code);
-  if (meta && t) meta.setAttribute("content", t.ground);
-  document.querySelectorAll("[data-theme-set]").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.themeSet === code)));
-  return code;
-}
-
-function initThemes(){
-  const host = document.getElementById("themes");
-  if (!host) return;
-  host.innerHTML = THEMES.map(t =>
-    `<button type="button" data-theme-set="${t.code}" aria-pressed="false" `
-    + `title="${t.name}">${t.code}</button>`).join("");
-  host.addEventListener("click", e => {
-    const b = e.target.closest("[data-theme-set]");
-    if (b) applyTheme(b.dataset.themeSet);
-  });
-  applyTheme(themeSaved());
-}
-
 root.RB = {
   SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
   pad, todayISO, nights, weeks, playerById, playerByShort,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
-  gamesRemaining, atRisk, lineupFor,
-  THEMES, applyTheme, initThemes
+  gamesRemaining, atRisk, lineupFor
 };
 
 /* data.js is loaded at the end of <body>, so the DOM is parsed by now.
    Both pages get the picker from this one call — neither page script
    needs to know themes exist. */
-initThemes();
 
 })(window);
