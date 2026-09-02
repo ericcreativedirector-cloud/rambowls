@@ -140,10 +140,11 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   :root{--clear:clamp(15px,4.4vw,24px)}
   .brandline{display:flex; align-items:flex-end; justify-content:space-between;
     gap:var(--clear); flex-wrap:wrap; margin:var(--clear) 0}
-  /* Gap tightened 30% (was clamp(7px,2vw,12px)) so the wordmark tucks closer
+  /* Gap tightened 30% (two 30% passes off the original
+     clamp(7px,2vw,12px)) so the wordmark tucks closer
      to the ball. Clear space (--clear) is unchanged — that still governs what
      may approach the lockup from outside. */
-  .logo{display:flex; align-items:flex-end; gap:clamp(4.9px,1.4vw,8.4px); min-width:0}
+  .logo{display:flex; align-items:flex-end; gap:clamp(3.43px,0.98vw,5.88px); min-width:0}
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}

@@ -4,7 +4,7 @@ Derived from the shipped app (`index.html`, `tracker/index.html`, `data.js`).
 The app is the source of record. If this document and the CSS disagree, the
 CSS wins and this document is stale.
 
-_Last revised: 2 September 2026 — holes to the upper-right quadrant, two-tone lockup stated explicitly._
+_Last revised: 2 September 2026 — lockup gap tightened again, holes to the upper-right quadrant, two-tone lockup stated explicitly._
 
 ---
 
@@ -75,12 +75,18 @@ Ball left, wordmark right, sharing a baseline.
   sits with its bottom on the type baseline. Because the ball is inset within
   that box, it floats slightly above the baseline and rises slightly above cap
   height. That is intentional and should not be "corrected."
-- Gap between the mark box and the wordmark: **0.19 × cap-height-em**
-  (`clamp(4.9px, 1.4vw, 8.4px)` at the app's type scale).
+- Gap between the mark box and the wordmark: **0.134 × cap-height-em**
+  (`clamp(3.43px, 0.98vw, 5.88px)` at the app's type scale).
+- Note this is the gap to the mark's **box**, not to the ball's visible edge.
+  The ball is inset within its 24-unit box, leaving roughly 5.4px of built-in
+  optical space on the right at full size. The gap you *see* is therefore
+  about 11px, not 5.9px. If the lockup ever needs to close up further, the
+  lever is the mark's viewBox, not this gap — driving the gap to zero still
+  leaves that inset behind.
 - Wordmark tracking: **−0.5%** (`letter-spacing: -.005em`).
 - Wordmark case: **always uppercase**, never "Rambowls" in mixed case as a
   logotype. Mixed case is fine in running prose.
-- Lockup proportion: **4.874 : 1** (width : height).
+- Lockup proportion: **4.813 : 1** (width : height).
 
 ### 1.4 Clear space
 
