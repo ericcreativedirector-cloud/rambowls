@@ -85,7 +85,7 @@
     color:var(--dim); margin:9px 0 0; line-height:1.55}
   /* shared Schedule · Stats nav — identical on both views */
   .nav{display:flex; gap:0; margin-top:16px; border:1px solid var(--rule);
-    border-radius:4px; overflow:hidden; width:max-content; max-width:100%}
+    border-radius:2px; overflow:hidden; width:max-content; max-width:100%}
   .nav a{font-family:var(--data); font-size:11px; letter-spacing:.14em;
     text-transform:uppercase; text-decoration:none; color:var(--dim);
     padding:10px 16px; min-height:44px; display:flex; align-items:center;
@@ -94,7 +94,7 @@
   .nav a:hover{color:var(--bone)}
   .nav a.on{color:#140C03; background:var(--maple); font-weight:700}
   .stamps{margin-top:12px; display:flex; gap:5px; flex-wrap:wrap}
-  .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:3px;
+  .tag{padding:3px 7px; border:1px solid var(--rule); border-radius:2px;
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim)}
 
@@ -102,7 +102,7 @@
      Dividers are borders, not grid gaps, so the card's gradient runs
      unbroken beneath the whole grid and the rules read as hairlines
      scored into one surface rather than as separate stacked cards. */
-  .nextup{margin-top:0; border:1px solid var(--maple); border-radius:5px;
+  .nextup{margin-top:0; border:1px solid var(--maple); border-radius:2px;
     background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03));
     padding:0; overflow:hidden}
   .nu-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -148,13 +148,13 @@
   .shirtlab .ico{width:12px !important; height:12px !important}
   .shirts{display:flex; flex-wrap:wrap; gap:5px}
   .shirt{font-family:var(--data); font-size:9px; letter-spacing:.05em;
-    text-transform:uppercase; padding:5px 8px; border-radius:3px;
+    text-transform:uppercase; padding:5px 8px; border-radius:2px;
     border:1px solid var(--rule); color:var(--dim); background:var(--lane-2)}
   .shirt.on{border-color:var(--maple); background:var(--maple); color:#140C03; font-weight:700}
   .shirt.tbd{border-style:dashed; color:var(--maple); border-color:var(--maple);
     background:transparent}
   .cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
-  .btn{display:inline-block; padding:9px 15px; border-radius:4px; text-decoration:none;
+  .btn{display:inline-block; padding:9px 15px; border-radius:2px; text-decoration:none;
     font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     border:1px solid var(--rule); color:var(--bone); background:var(--lane-2); cursor:pointer}
   .btn:hover{border-color:var(--maple); color:var(--maple)}
@@ -171,7 +171,7 @@
 
   /* league sheet callout */
   .sheetbox{display:flex; align-items:center; gap:14px; text-decoration:none;
-    border:1px solid var(--maple); border-radius:5px; padding:16px 18px;
+    border:1px solid var(--maple); border-radius:2px; padding:16px 18px;
     background:rgba(200,135,60,.08); color:var(--bone); min-height:44px}
   .sheetbox:hover{background:rgba(200,135,60,.16)}
   .sheetbox .ico{width:22px; height:22px}
@@ -181,7 +181,7 @@
   .sheetbox .arw{margin-left:auto; color:var(--maple); font-size:20px; flex:0 0 auto}
 
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
-    background:var(--rule); border:1px solid var(--rule); border-radius:4px; overflow:hidden}
+    background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
   .rec-val{font-family:var(--display); font-size:24px; line-height:1}
   .rec-val .of{font-size:15px; color:var(--dim)}
@@ -228,7 +228,7 @@
 
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
   .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-    padding:7px 12px; border:1px solid var(--rule); border-radius:3px; background:var(--lane-2);
+    padding:7px 12px; border:1px solid var(--rule); border-radius:2px; background:var(--lane-2);
     color:var(--dim); cursor:pointer;
     transition:background .15s ease, color .15s ease, border-color .15s ease}
   .tab:hover{color:var(--bone)}
@@ -239,7 +239,7 @@
   .tab.empty{opacity:.5}
   .tab.empty.on{opacity:1}
   .avail{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px}
-  .col{border:1px solid var(--rule); border-radius:4px; padding:12px 14px; background:var(--lane-2)}
+  .col{border:1px solid var(--rule); border-radius:2px; padding:12px 14px; background:var(--lane-2)}
   .col h3{font-family:var(--data); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
     margin:0 0 10px; font-weight:500}
   .col.in h3{color:var(--signal)} .col.out h3{color:var(--strike)}
@@ -253,7 +253,7 @@
   .reply-row{display:flex; gap:8px; flex-wrap:wrap}
   .reply-row a{flex:1 1 96px; min-height:44px; display:flex; align-items:center; justify-content:center;
     font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-    text-decoration:none; border:1px solid var(--rule); border-radius:4px;
+    text-decoration:none; border:1px solid var(--rule); border-radius:2px;
     background:var(--lane-2); color:var(--bone)}
   .reply-row a.yes{border-color:var(--signal); color:var(--signal)}
   .reply-row a.no{border-color:var(--strike); color:var(--strike)}
@@ -279,7 +279,7 @@
   /* early / late night badge */
   .slot{display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
     font-family:var(--data); font-size:9px; font-weight:700; letter-spacing:.12em;
-    text-transform:uppercase; padding:3px 7px 3px 5px; border-radius:3px; border:1px solid}
+    text-transform:uppercase; padding:3px 7px 3px 5px; border-radius:2px; border:1px solid}
   .slot svg{width:11px; height:11px; fill:none; stroke-width:1.7;
     stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto}
   .slot.early{color:var(--early); border-color:rgba(79,179,164,.5); background:rgba(79,179,164,.1)}
@@ -295,7 +295,7 @@
     display:inline-flex; align-items:center; gap:6px}
 
   /* grouped action block */
-  .ctagroup{margin-top:20px; border:1px solid var(--rule); border-radius:5px;
+  .ctagroup{margin-top:20px; border:1px solid var(--rule); border-radius:2px;
     padding:14px; background:var(--lane-2)}
   .ctahead{font-family:var(--data); font-size:9.5px; letter-spacing:.16em;
     text-transform:uppercase; color:var(--maple); margin-bottom:11px;
@@ -323,7 +323,7 @@
   .ptr{position:fixed; top:calc(-46px + env(safe-area-inset-top)); left:50%;
     transform:translate(-50%,0);
     z-index:50; display:flex; align-items:center; gap:9px; opacity:0;
-    padding:8px 14px; border-radius:999px; pointer-events:none;
+    padding:8px 14px; border-radius:2px; pointer-events:none;
     background:var(--lane-2); border:1px solid var(--rule);
     font-family:var(--data); font-size:10px; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim)}
@@ -360,7 +360,7 @@
   thead{display:none}
   tr{border-bottom:1px solid var(--rule); padding:12px 0; position:relative}
   tr.next{background:rgba(200,135,60,.07); padding-left:10px; padding-right:10px;
-    border-radius:4px; border-bottom-color:var(--maple)}
+    border-radius:2px; border-bottom-color:var(--maple)}
   td{border:0; padding:1px 0}
   td.wk{position:absolute; top:12px; right:0; font-size:11px}
   tr.next td.wk{right:10px}
