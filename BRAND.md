@@ -72,14 +72,14 @@ weight, which is why it went.
 
 | Use | Face | Weight | Size |
 |---|---|---|---|
-| Wordmark | Display | 600 | `clamp(22px,6.9vw,40px)`, line-height `.771` |
+| Wordmark | Display | 600 | `clamp(28px,9.8vw,44px)`, line-height `.771` |
 | Section head (h2) | Display | 500 | 22px |
 | Hero date | Display | 600 | `clamp(17px,4.6vw,34px)` |
 | Record value | Display | 600 | 26px |
 | Stat number | Display | 600 | 30px (34px at 640+) |
 | Bowler name | Display | 600 | `clamp(28px,8vw,40px)` |
 | Toggle | Display | 500 | `clamp(12px,3.8vw,17px)` |
-| Mark | n/a | n/a | `clamp(22px,7.2vw,42px)`, stroke `.9` |
+| Mark | n/a | n/a | `clamp(30px,10.3vw,46px)`, stroke `.9` |
 | Body copy | Body | 400 | 15px |
 | Notes | Body | 400 | 13.5px |
 | Labels, kickers, all data | Data | 400 to 700 | 8.5 to 13px, letterspaced |
@@ -186,11 +186,15 @@ It is a flex sibling of the logo, separated by `--clear`, both bottom-aligned.
 Big Shoulders 500 at `clamp(12px,3.8vw,17px)`, `.09em`, and it inverts to
 solid maple like every other selected thing.
 
-It briefly matched `h2` at 22px. It does not any more: the logo and toggle
-both came down about 25%, and the toggle followed. The toggle is still taller
-than the logo because `min-height:44px` is a floor that does not bend for
-composition. If the two ever need to look equal, raise the logo rather than
-lower the toggle.
+It briefly matched `h2` at 22px. It does not any more: the toggle came down
+about 25% while the logo went back up, which is the right order. The toggle
+has a hard floor at `min-height:44px` and the logo does not, so when the two
+need to balance, the logo moves.
+
+The lockup is 40px tall at 390px, against a 46px toggle. That is close enough
+to read as a pair. Clear space is never at risk here: the gap is the flex
+`gap: var(--clear)`, so the two cannot crowd each other, they can only wrap.
+Measured gap at 390 is 51px, three times `--clear`. Nothing wraps at 320.
 
 ### One masthead spec, both pages
 
