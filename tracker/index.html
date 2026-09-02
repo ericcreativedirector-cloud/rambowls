@@ -41,14 +41,17 @@
     text-transform:uppercase; color:var(--maple); margin:0 0 18px;
     display:flex; align-items:center; gap:10px; line-height:1.7}
 
-  .masthead{border-bottom:3px solid var(--maple); padding:16px 0 18px}
+  /* Masthead metrics are copied from the Scheduler verbatim. The wordmark must
+     never change size or spacing between the two pages — same clamp, same
+     padding, same rhythm. Change one, change both. */
+  .masthead{border-bottom:3px solid var(--maple); padding:10px 0 12px}
   /* Logo and nav share a row — mirrors the Scheduler exactly. */
   .brandrow{display:flex; align-items:flex-end; justify-content:space-between;
     gap:12px; flex-wrap:wrap}
   .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
   .brandrow .nav{margin-top:0; flex:0 0 auto}
   h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(32px,10.4vw,54px); line-height:.88; letter-spacing:.01em; margin:0;
+    font-size:clamp(29px,9.2vw,54px); line-height:.88; letter-spacing:.01em; margin:0;
     word-break:break-word}
   h1 span{color:var(--maple)}
 
@@ -66,30 +69,53 @@
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:12px 0 0}
 
-  /* Collapsed player control. It carries a card outline so it reads as a
-     control rather than a heading that happens to have a caret next to it. */
-  .picked{display:inline-flex; align-items:center; gap:11px; margin-top:16px; cursor:pointer;
-    background:var(--lane-2); border:1px solid var(--rule); border-radius:5px;
-    padding:7px 13px 8px; color:var(--bone); min-height:44px}
+  /* ---------- bowler selector ----------
+     Brutalist on purpose: square corners, one thick maple rule down the left
+     edge, a mono kicker doing the labelling and Anton carrying the name. It
+     reads as structure rather than as a rounded UI widget, and it inverts to
+     solid maple when open so the two states are unmistakable. */
+  .picked{display:flex; align-items:center; gap:16px; width:100%; margin-top:18px;
+    cursor:pointer; text-align:left; border-radius:0;
+    background:var(--lane-2); border:1px solid var(--rule);
+    border-left:4px solid var(--maple);
+    padding:10px 14px 11px 13px; color:var(--bone); min-height:44px;
+    transition:background .15s ease, border-color .15s ease}
+  .picked .stack{display:flex; flex-direction:column; gap:4px; min-width:0}
+  .picked .kick{font-family:var(--data); font-size:8.5px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--maple); line-height:1}
   .picked .nm{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(26px,7.8vw,38px); line-height:1; letter-spacing:.02em}
-  .picked .caret{color:var(--maple); font-size:15px; line-height:1;
+    font-size:clamp(26px,7.6vw,38px); line-height:.92; letter-spacing:.02em}
+  .picked .caret{margin-left:auto; flex:0 0 auto; width:14px; height:14px;
+    stroke:var(--maple); fill:none; stroke-width:2.6; stroke-linecap:square;
     transition:transform .18s ease}
-  .picked[aria-expanded="true"] .caret{transform:rotate(180deg)}
   .picked:hover{border-color:var(--maple)}
-  .picked:hover .nm{color:var(--maple)}
-  @media (prefers-reduced-motion:reduce){ .picked .caret{transition:none} }
+  /* open = inverted block. No ambiguity about which state you're in. */
+  .picked[aria-expanded="true"]{background:var(--maple); border-color:var(--maple)}
+  .picked[aria-expanded="true"] .kick,
+  .picked[aria-expanded="true"] .nm{color:#140C03}
+  .picked[aria-expanded="true"] .caret{stroke:#140C03; transform:rotate(180deg)}
+  @media (prefers-reduced-motion:reduce){
+    .picked, .picked .caret{transition:none}
+  }
+  @media (min-width:640px){ .picked{width:max-content; min-width:280px} }
 
-  .who{display:flex; flex-wrap:wrap; gap:7px; margin-top:14px}
-  .who button{cursor:pointer; border-radius:3px; border:1px solid var(--rule); background:var(--lane-2);
-    color:var(--bone); font-family:var(--data); font-size:11px; letter-spacing:.1em;
-    text-transform:uppercase; padding:11px 13px; min-height:44px}
-  .who button:hover{border-color:var(--maple); color:var(--maple)}
-  .who button.on{border-color:var(--maple); color:#140C03; background:var(--maple); font-weight:700}
+  /* The open roster is a hard grid of squared blocks, not pills — it should
+     look like the selector broke apart into its options. */
+  .who{display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
+    gap:1px; margin-top:1px; background:var(--rule);
+    border:1px solid var(--rule); border-left:4px solid var(--maple)}
+  .who button{cursor:pointer; border-radius:0; border:0; background:var(--lane-2);
+    color:var(--bone); font-family:var(--data); font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; padding:13px 12px; min-height:48px; text-align:left}
+  .who button:hover{color:var(--maple)}
+  .who button.on{color:#140C03; background:var(--maple); font-weight:700}
   .whoask{font-family:var(--data); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--maple); margin:14px 0 0}
+  .sub{margin:14px 0 0}
 
   section{margin-top:44px}
+  /* match the Scheduler's first-section rhythm under the masthead */
+  #page > section:first-of-type{margin-top:24px}
   h2{font-family:var(--display); font-size:20px; letter-spacing:.06em;
     text-transform:uppercase; margin:0 0 4px; font-weight:400;
     display:flex; align-items:center; gap:9px}
@@ -211,7 +237,11 @@
     </div>
 
     <button class="picked" id="picked" type="button" style="display:none" aria-expanded="false">
-      <span class="nm" id="pickedName"></span><span class="caret" aria-hidden="true">▾</span>
+      <span class="stack">
+        <span class="kick">Bowler</span>
+        <span class="nm" id="pickedName"></span>
+      </span>
+      <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5 12 16.5 20 8.5"/></svg>
     </button>
     <p class="sub" id="pageSub"></p>
     <div class="who" id="whoRow"></div>
@@ -368,9 +398,10 @@ function renderWho(){
     row.appendChild(b);
   }
 
-  row.style.display = pickerOpen ? "flex" : "none";
+  // .who is a CSS grid now, so the open state must be "grid", not "flex"
+  row.style.display = pickerOpen ? "grid" : "none";
   ask.style.display = (pickerOpen && !who) ? "block" : "none";
-  picked.style.display = who ? "inline-flex" : "none";
+  picked.style.display = who ? "flex" : "none";
   picked.setAttribute("aria-expanded", String(pickerOpen));
   if (who) document.getElementById("pickedName").textContent = RB.playerById(who).short;
 
