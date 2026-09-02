@@ -152,7 +152,10 @@
   /* The left cell holds a long date and a wide time badge, so an even split
      put the badge through the divider. 1.35fr gives it consistently more room
      at every width, and the badge is allowed to wrap rather than overrun. */
-  .nu-grid{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+  .nu-grid{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);
+    /* the two quadrants carry the weight, the band underneath is a footer:
+       give the top row a floor so it always reads as the taller half */
+    grid-template-rows:minmax(126px,auto) auto}
   .nu-when .slot{white-space:normal; max-width:100%}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
@@ -176,7 +179,7 @@
     line-height:1.05; text-transform:uppercase; margin-bottom:8px; text-wrap:balance}
   /* "Wednesday," and "September 2" each stay whole — the date may break
      between them but never inside them, so no stray "2" on its own line. */
-  .nextup .date .nb{white-space:nowrap}
+  .nextup .date .nb, .slot .nb{white-space:nowrap}
   .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.65;
     color:var(--bone); overflow-wrap:anywhere}
   .nextup .games b{color:var(--maple); font-weight:500}
@@ -603,8 +606,10 @@ function slotBadge(iso){
   if (!slot) return "";
   // all league games are PM, so show it once: "7:00 & 8:10 PM"
   const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
+  // The times ride together as one unbreakable unit, so the badge can only
+  // break after "late ·". Without this "PM" drops onto a line by itself.
   return `<span class="slot ${slot}">${slot === "early" ? SUN : MOON}`
-       + `${slot} · ${times.join(" & ")} PM</span>`;
+       + `${slot} · <span class="nb">${times.join(" & ")} PM</span></span>`;
 }
 
 // compact icon-only marker for schedule rows
@@ -985,9 +990,15 @@ function smsLink(iso, wk, status){
 }
 
 function replyBox(iso, wk){
+  const cap  = RB.SEASON.captain;
   const chat = RB.SEASON.groupChatName;
+  // Messages opens with the text written and nobody in the To: field, so the
+  // sender picks. That keeps every number out of this public repo. The copy
+  // names the captain first because he is the one editing the file; adding
+  // the group thread is optional and only exists so the team can see it too.
   return `<div class="reply">
-    <p>Reply in the <strong>${chat}</strong> group chat:</p>
+    <p>Send to <strong>${cap}</strong>, he keeps the sheet.
+       Add the <strong>${chat}</strong> thread too if you want everyone to see it.</p>
     <div class="reply-row">
       <a class="yes" href="${smsLink(iso, wk, "IN")}">I'm in</a>
       <a class="mb"  href="${smsLink(iso, wk, "a MAYBE")}">Maybe</a>
