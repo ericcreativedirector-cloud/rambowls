@@ -134,20 +134,21 @@
   .nu-card.past .lab, .nu-card.past .cellkick,
   .nu-card.past .shirtlab, .nu-card.past .lineup .k{color:var(--dim)}
   .nu-card.past .lineup{border-top-color:var(--rule)}
-  /* rail controls */
-  .nu-nav{display:flex; align-items:center; gap:8px; margin-top:9px}
-  .nu-nav button{width:34px; height:34px; min-height:34px; padding:0; flex:0 0 auto;
-    display:inline-flex; align-items:center; justify-content:center;
-    background:var(--lane-2); border:1px solid var(--rule); border-radius:2px;
-    color:var(--bone); cursor:pointer}
-  .nu-nav button:hover:not(:disabled){border-color:var(--maple); color:var(--maple)}
-  .nu-nav button:disabled{opacity:.3; cursor:default}
-  .nu-nav svg{width:13px; height:13px; fill:none; stroke:currentColor;
-    stroke-width:2.4; stroke-linecap:square; stroke-linejoin:miter}
-  .nu-pos{font-family:var(--data); font-size:9px; letter-spacing:.16em;
-    text-transform:uppercase; color:var(--dim); margin-left:2px}
+  /* Rail position: one tick per week, the whole season in 14px of height.
+     The peeking card already says the rail moves, so these only have to say
+     where you are. Indicator, not control: swiping and keyboard arrows on the
+     focused track do the moving, which keeps every tap target at 44px. */
+  .nu-nav{display:flex; align-items:center; gap:9px; margin-top:9px}
+  .nu-rail{display:flex; align-items:center; gap:4px; flex:1 1 auto; min-width:0}
+  .nu-rail .tick{flex:1 1 0; min-width:0; height:2px; border-radius:2px;
+    background:var(--rule); transition:background .18s ease, height .18s ease}
+  .nu-rail .tick.done{background:rgba(122,130,142,.45)}
+  .nu-rail .tick.on{background:var(--maple); height:5px}
+  .nu-pos{font-family:var(--data); font-size:8.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--dim); flex:0 0 auto; white-space:nowrap}
   .nu-pos b{color:var(--maple); font-weight:500}
-  .nu-pos .sw{color:var(--maple)}
+  .nu-track:focus-visible{outline:2px solid var(--maple); outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){ .nu-rail .tick{transition:none} }
   @media (prefers-reduced-motion:reduce){ .nu-track{scroll-behavior:auto} }
   /* The left cell holds a long date and a wide time badge, so an even split
      put the badge through the divider. 1.35fr gives it consistently more room
@@ -759,31 +760,27 @@ function renderNextUp(){
   const startIso = nextIso || isos[isos.length - 1];
 
   el.innerHTML =
-    `<div class="nu-track" id="nuTrack">${isos.map(d => nightCard(d, nextIso)).join("")}</div>
+    `<div class="nu-track" id="nuTrack" tabindex="0" role="region"
+           aria-label="Bowling nights, scroll sideways for other weeks">${isos.map(d => nightCard(d, nextIso)).join("")}</div>
      <div class="nu-nav">
-       <button type="button" id="nuPrev" aria-label="Previous week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg></button>
-       <button type="button" id="nuNext" aria-label="Next week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
-       <span class="nu-pos" id="nuPos"></span>
+       <div class="nu-rail" id="nuRail" aria-hidden="true">${isos.map(() => `<span class="tick"></span>`).join("")}</div>
+       <span class="nu-pos" id="nuPos" aria-live="polite"></span>
      </div>`;
 
   const track = document.getElementById("nuTrack");
   const cards = [...track.querySelectorAll(".nu-card")];
-  const prev  = document.getElementById("nuPrev");
-  const next  = document.getElementById("nuNext");
+  const ticks = [...document.getElementById("nuRail").children];
   const pos   = document.getElementById("nuPos");
   let idx = Math.max(0, isos.indexOf(startIso));
-  let moved = false;
 
   const label = () => {
     const c = cards[idx];
     if (!c) return;
-    // Say what the rail does until someone has actually moved it, then get
-    // out of the way and just report position.
-    const hint = moved ? "" : ` · <span class="sw">Swipe for other weeks</span>`;
-    pos.innerHTML = `Week <b>${c.dataset.wk}</b> of ${isos.length}`
-      + (c.dataset.iso === nextIso ? " · next up" : "") + hint;
-    prev.disabled = idx <= 0;
-    next.disabled = idx >= cards.length - 1;
+    pos.innerHTML = `Week <b>${c.dataset.wk}</b> of ${isos.length}`;
+    ticks.forEach((t, i) => {
+      t.className = "tick"
+        + (i === idx ? " on" : cards[i].classList.contains("past") ? " done" : "");
+    });
   };
 
   const goto = (i, smooth) => {
@@ -800,8 +797,12 @@ function renderNextUp(){
     label();
   };
 
-  prev.onclick = () => { moved = true; goto(idx - 1, true); };
-  next.onclick = () => { moved = true; goto(idx + 1, true); };
+  // Keyboard parity for anyone not swiping. The track is focusable, so left
+  // and right walk the rail the way the arrows used to.
+  track.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight"){ e.preventDefault(); goto(idx + 1, true); }
+    if (e.key === "ArrowLeft"){  e.preventDefault(); goto(idx - 1, true); }
+  });
 
   // keep the counter honest when the rail is swiped rather than clicked
   let t = null;
@@ -814,7 +815,6 @@ function renderNextUp(){
         const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
         if (d < bestD){ bestD = d; best = i; }
       });
-      if (best !== idx) moved = true;
       idx = best;
       label();
     }, 90);
