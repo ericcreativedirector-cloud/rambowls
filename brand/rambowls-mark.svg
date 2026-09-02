@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+     width="24" height="24" role="img" aria-label="Rambowls">
+  <title>Rambowls</title>
+  <!-- Icon-only mark. Identical geometry to the .mark SVG inlined in the app:
+       ball r=9.2 on a 24 box, stroke .9, three holes r=1.25 stacked on the
+       x=15 axis so they read as a vertical column echoing the R stem.
+       The whole mark is one colour: change the group fill and the ball
+       stroke together. -->
+  <g fill="#C8873C">
+    <circle cx="12" cy="12" r="9.2" fill="none" stroke="#C8873C"
+            stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="15" cy="8.2" r="1.25"/>
+    <circle cx="15" cy="12" r="1.25"/>
+    <circle cx="15" cy="15.8" r="1.25"/>
+  </g>
+</svg>

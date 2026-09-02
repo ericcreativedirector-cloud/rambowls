@@ -9,7 +9,7 @@
 ||localStorage.getItem("rb-theme");
 if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Rambowls · Stats</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='9.4' cy='8.4' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='14' cy='7.7' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='12.6' cy='11.9' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='15' cy='7.6' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='15' cy='12' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='15' cy='16.4' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +103,9 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   :root{--clear:clamp(15px,4.4vw,24px)}
   .brandline{display:flex; align-items:flex-end; justify-content:space-between;
     gap:var(--clear); flex-wrap:wrap; margin:var(--clear) 0}
-  .logo{display:flex; align-items:flex-end; gap:clamp(7px,2vw,12px); min-width:0}
+  /* Gap tightened 30% (was clamp(7px,2vw,12px)). Matches the Scheduler —
+     change one, change both. */
+  .logo{display:flex; align-items:flex-end; gap:clamp(4.9px,1.4vw,8.4px); min-width:0}
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}
@@ -306,7 +308,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   <div class="masthead">
     <div class="brandline">
       <div class="logo">
-        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" class="hole" r="1.25"/><circle cx="14" cy="7.7" class="hole" r="1.25"/><circle cx="12.6" cy="11.9" class="hole" r="1.25"/></svg>
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="15" cy="8.2" class="hole" r="1.25"/><circle cx="15" cy="12" class="hole" r="1.25"/><circle cx="15" cy="15.8" class="hole" r="1.25"/></svg>
         <h1>Rambowls</h1>
       </div>
       <nav class="nav">
