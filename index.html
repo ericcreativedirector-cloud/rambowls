@@ -214,9 +214,13 @@
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px}
   .tab{font-family:var(--data); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
     padding:7px 12px; border:1px solid var(--rule); border-radius:3px; background:var(--lane-2);
-    color:var(--dim); cursor:pointer}
+    color:var(--dim); cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease}
   .tab:hover{color:var(--bone)}
-  .tab.on{border-color:var(--maple); color:var(--maple); background:rgba(200,135,60,.1)}
+  /* Selected night inverts to solid maple — same vocabulary as the nav and the
+     bowler selector, so "this one is active" always looks the same way. */
+  .tab.on{border-color:var(--maple); color:#140C03; background:var(--maple); font-weight:700}
+  @media (prefers-reduced-motion:reduce){ .tab{transition:none} }
   .tab.empty{opacity:.5}
   .tab.empty.on{opacity:1}
   .avail{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px}

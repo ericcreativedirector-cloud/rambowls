@@ -139,8 +139,8 @@
     background:repeating-linear-gradient(90deg,#3d2f1c 0 34px,#4a3922 34px 68px);
     border:1px solid #00000066}
   .lane .oil{position:absolute; inset:0; background:linear-gradient(90deg,#ffffff14,transparent 70%)}
-  .lane .pins{position:absolute; right:9px; top:50%; transform:translateY(-50%); font-size:24px}
   .lane .ball{position:absolute; top:50%; transform:translate(-50%,-50%); font-size:28px; transition:left .6s ease}
+  @media (prefers-reduced-motion:reduce){ .lane .ball{transition:none} }
   .lane .mark{position:absolute; top:0; bottom:0; width:2px; background:#f3eee355}
   .lane .mark i{position:absolute; top:3px; left:5px; font-style:normal; font-size:9px; color:var(--bone);
     font-family:var(--data); letter-spacing:.08em; text-transform:uppercase; white-space:nowrap}
@@ -267,7 +267,6 @@
           <div class="mark" style="left:0"><i id="laneLo"></i></div>
           <div class="mark" style="right:0"><i id="laneHi" style="left:auto; right:5px"></i></div>
           <div class="ball" id="ball">🎳</div>
-          <div class="pins">🔟</div>
         </div>
         <div class="goalnote"><span id="goalLeft"></span><span id="goalRight"></span></div>
       </div>
