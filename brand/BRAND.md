@@ -4,7 +4,7 @@ Derived from the shipped app (`index.html`, `tracker/index.html`, `data.js`).
 The app is the source of record. If this document and the CSS disagree, the
 CSS wins and this document is stale.
 
-_Last revised: 2 September 2026 — vertical-column holes, tightened lockup gap._
+_Last revised: 2 September 2026 — 45-45-90 hole triangle, tightened lockup gap._
 
 ---
 
@@ -12,14 +12,24 @@ _Last revised: 2 September 2026 — vertical-column holes, tightened lockup gap.
 
 ### 1.1 What it is
 
-A bowling ball drawn as an outline, with three finger holes stacked in a
-straight vertical column on the right of the ball, set against the wordmark
-RAMBOWLS in Big Shoulders Display SemiBold.
+A bowling ball drawn as an outline, with three finger holes arranged as a
+45-45-90 triangle, set against the wordmark RAMBOWLS in Big Shoulders Display
+SemiBold.
 
-The holes are not arranged naturalistically. They sit on a single vertical
-axis (x = 15 on the 24-unit grid) so that the column reads as a deliberate
-rhyme with the vertical stem of the **R**. That alignment is the idea — a
-scattered triangle of holes is not an acceptable substitute.
+Two of the holes sit on a single vertical axis (x = 15 on the 24-unit grid)
+so that the pair reads as a deliberate rhyme with the vertical stem of the
+**R**. The third sits at the right-angle vertex, offset left by exactly half
+the vertical spread, which puts both legs of the triangle at 45°. That
+alignment is the idea — a randomly scattered triangle is not an acceptable
+substitute.
+
+**On accuracy:** this is a stylised mark, not a technical drawing. A real
+conventional drilling is a much narrower triangle — the bridge between the
+two finger holes can be as little as a quarter inch, while the span from
+thumb to fingers runs around four inches, giving an apex angle nearer 16°
+than 90°. Rendered honestly at 30px that reads as a smudge and a dot. The 45°
+construction is the deliberate choice: it is the better mark even though it
+is the worse diagram. Don't "correct" it toward realism.
 
 ### 1.2 Construction
 
@@ -31,9 +41,9 @@ The mark is drawn on a 24 × 24 grid. All values are grid units.
 | Ball radius | 9.2 |
 | Ball stroke | 0.9, round cap and join |
 | Ball fill | none — the ball is an outline |
-| Hole axis | x = 15 |
-| Hole centres | y = 8.2, 12, 15.8 (even 3.8 spacing) |
-| Hole radius | 1.25 |
+| Hole axis (pair) | x = 15, at y = 8.2 and 15.8 |
+| Third hole | x = 11.2, y = 12 — the 45° vertex |
+| Hole radius | 1.25, all three equal |
 | Holes | solid fill, no stroke |
 
 Everything in the mark is one colour. The ball's stroke and the holes' fill
@@ -75,7 +85,8 @@ Both recolour by changing the fill on the wrapping `<g>` and the ball's
 
 - Don't rotate, skew, or arch the wordmark.
 - Don't fill the ball. It is an outline.
-- Don't move the holes off the vertical axis or re-space them unevenly.
+- Don't move the two paired holes off the x=15 axis, and don't shift the
+  third hole off the 45° vertex.
 - Don't recolour the holes independently of the ball.
 - Don't stack the lockup vertically. If the space is narrow, use the mark
   alone.
