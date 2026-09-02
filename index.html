@@ -18,13 +18,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;500;600;700&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --lane:#0E1116; --lane-2:#161B22; --maple:#C8873C; --bone:#F3EEE3;
     --strike:#E85A52; --signal:#35A79B; --dim:#7A828E; --rule:#242B34;
     --early:#4FB3A4; --late:#9B8CE0;
-    --display:"Anton", Impact, Haettenschweiler, sans-serif;
+    --display:"Big Shoulders Display", "Anton", Impact, sans-serif;
     --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
@@ -68,18 +68,20 @@
     display:flex; flex-direction:column}
   .masthead .nextup{min-width:0; width:100%}
   header{min-width:0}
-  /* font-weight:400 is required — Anton ships only one weight, so leaving the
-     h1 at its default bold makes the browser synthesise a faux-bold with wider
-     glyphs. Both views must set this or the mastheads won't match. */
+  /* Big Shoulders Display is variable, so weight is a real choice now rather
+     than whatever Anton shipped. 600 on the wordmark, 500 on section heads —
+     enough condensed impact without the blunt slab Anton gave us. Both views
+     must carry identical values or the mastheads won't match.
+     text-wrap:balance evens the two lines instead of leaving a widow. */
   /* Logo and nav share a row so the masthead costs one band, not two —
      that's what pulls "Where we stand" into the first viewport. */
   .brandrow{display:flex; align-items:flex-end; justify-content:space-between;
     gap:12px; flex-wrap:wrap}
   .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
   .brandrow .nav{margin-top:0; flex:0 0 auto}
-  h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
+  h1{font-family:var(--display); font-weight:600; text-transform:uppercase;
     font-size:clamp(29px,9.2vw,54px); line-height:.88; letter-spacing:.01em;
-    margin:0 0 auto; word-break:break-word}
+    margin:0 0 auto; word-break:break-word; text-wrap:balance}
   h1 span{color:var(--maple)}
   .sub{font-family:var(--data); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); margin:9px 0 0; line-height:1.55}
@@ -98,13 +100,41 @@
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim)}
 
-  /* next up — a 2-up quadrant row over one long band.
-     Dividers are borders, not grid gaps, so the card's gradient runs
-     unbroken beneath the whole grid and the rules read as hairlines
-     scored into one surface rather than as separate stacked cards. */
-  .nextup{margin-top:0; border:1px solid var(--maple); border-radius:2px;
+  /* next up — a horizontal rail of every bowling night, snapped to the next
+     one. Swipe back for what just happened, forward for what's coming.
+     Each night is a 2-up quadrant row over one long band; dividers are cell
+     borders, not grid gaps, so the card's gradient runs unbroken beneath the
+     whole grid and the rules read as hairlines scored into one surface. */
+  .nextup{margin-top:0; min-width:0}
+  .nu-track{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory;
+    scroll-behavior:smooth; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain}
+  .nu-track::-webkit-scrollbar{display:none}
+  .nu-card{flex:0 0 100%; scroll-snap-align:start; min-width:0;
+    border:1px solid var(--maple); border-radius:2px;
     background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03));
-    padding:0; overflow:hidden}
+    overflow:hidden}
+  /* nights already bowled drop the maple frame — they're record, not plan */
+  .nu-card.past{border-color:var(--rule); background:var(--lane-2)}
+  .nu-card.past .nu-when{border-right-color:var(--rule)}
+  .nu-card.past .nu-cell.wide{border-top-color:var(--rule)}
+  .nu-card.past .lab, .nu-card.past .cellkick,
+  .nu-card.past .shirtlab, .nu-card.past .lineup .k{color:var(--dim)}
+  .nu-card.past .lineup{border-top-color:var(--rule)}
+  /* rail controls */
+  .nu-nav{display:flex; align-items:center; gap:8px; margin-top:9px}
+  .nu-nav button{width:34px; height:34px; min-height:34px; padding:0; flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:var(--lane-2); border:1px solid var(--rule); border-radius:2px;
+    color:var(--bone); cursor:pointer}
+  .nu-nav button:hover:not(:disabled){border-color:var(--maple); color:var(--maple)}
+  .nu-nav button:disabled{opacity:.3; cursor:default}
+  .nu-nav svg{width:13px; height:13px; fill:none; stroke:currentColor;
+    stroke-width:2.4; stroke-linecap:square; stroke-linejoin:miter}
+  .nu-pos{font-family:var(--data); font-size:9px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--dim); margin-left:2px}
+  .nu-pos b{color:var(--maple); font-weight:500}
+  @media (prefers-reduced-motion:reduce){ .nu-track{scroll-behavior:auto} }
   .nu-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr))}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
@@ -123,8 +153,12 @@
     text-transform:uppercase; color:var(--maple); margin-bottom:6px;
     display:flex; align-items:center; gap:5px}
   .nextup .lab .ico{width:11px !important; height:11px !important}
-  .nextup .date{font-family:var(--display); font-size:clamp(15px,4.2vw,32px);
-    line-height:1.05; text-transform:uppercase; margin-bottom:8px}
+  .nextup .date{font-family:var(--display); font-weight:600;
+    font-size:clamp(15px,4.2vw,32px);
+    line-height:1.05; text-transform:uppercase; margin-bottom:8px; text-wrap:balance}
+  /* "Wednesday," and "September 2" each stay whole — the date may break
+     between them but never inside them, so no stray "2" on its own line. */
+  .nextup .date .nb{white-space:nowrap}
   .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.65;
     color:var(--bone); overflow-wrap:anywhere}
   .nextup .games b{color:var(--maple); font-weight:500}
@@ -164,9 +198,11 @@
   section{margin-top:44px}
   section:first-of-type{margin-top:20px}
   h2{font-family:var(--display); font-size:20px; letter-spacing:.06em;
-    text-transform:uppercase; margin:0 0 4px; font-weight:400;
+    text-transform:uppercase; margin:0 0 4px; font-weight:500; text-wrap:balance;
     display:flex; align-items:center; gap:9px}
   h2 .ico{width:17px; height:17px}
+  /* no widows: never leave a lone word on the last line of a paragraph */
+  .note, .lineup .sub, .rec-sub{text-wrap:pretty}
   .note{font-size:13.5px; color:var(--dim); margin:0 0 18px; max-width:62ch}
 
   /* league sheet callout */
@@ -183,7 +219,7 @@
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
-  .rec-val{font-family:var(--display); font-size:24px; line-height:1}
+  .rec-val{font-family:var(--display); font-weight:600; font-size:24px; line-height:1}
   .rec-val .of{font-size:15px; color:var(--dim)}
   .rec-lab{font-family:var(--data); font-size:10px; letter-spacing:.13em;
     text-transform:uppercase; color:var(--dim); margin-top:6px}
@@ -603,27 +639,37 @@ function nextNight(){
   return upcoming.length ? upcoming[0] : null;
 }
 
-function renderNextUp(){
-  const iso = nextNight();
-  const el = document.getElementById("nextup");
-  if (!iso){
-    el.innerHTML = `<div class="nu-grid">
-      <div class="nu-cell nu-when">
-        <div class="lab">Season complete</div>
-        <div class="date">That's a wrap</div>
-      </div>
-      <div class="nu-cell nu-games">
-        <div class="cellkick">Games</div>
-        <div class="games">All 24 bowled.<br>Results below.</div>
-      </div>
-    </div>`;
-    return;
-  }
-  const games = schedule.filter(g => g.iso === iso);
+/* Split the long date so neither half can break internally — "September 2"
+   never leaves a stray "2" alone on the next line. */
+function dateNoWidow(iso){
+  const full = fmtDate(iso, true);          // "Wednesday, September 2"
+  const i = full.indexOf(", ");
+  if (i < 0) return `<span class="nb">${full}</span>`;
+  // keep the comma on the weekday — splitting on ", " would eat it
+  return `<span class="nb">${full.slice(0, i + 1)}</span> `
+       + `<span class="nb">${full.slice(i + 2)}</span>`;
+}
+
+/* One night's card: 2-up quadrant row over one long band. */
+function nightCard(iso, nextIso){
+  const games   = schedule.filter(g => g.iso === iso);
+  const wk      = games[0].wk;
+  const isNext  = iso === nextIso;
   const isToday = iso === todayISO();
-  const wk = games[0].wk;
-  const lines = games.map(g =>
-    `<b>${fmtTime(g.time24)}</b> · Lane ${g.lane} · ${g.opp}`).join("<br>");
+  const played  = games.every(g => g.us != null);
+  const past    = played || (!isNext && iso < todayISO());
+
+  const lab = past    ? `Week ${wk} · Final`
+            : isNext  ? `${isToday ? "Tonight" : "Next up"} · Week ${wk}`
+            :           `Week ${wk}`;
+
+  // played nights show the result inline; upcoming ones just the matchup
+  const lines = games.map(g => {
+    const head = `<b>${fmtTime(g.time24)}</b> · Lane ${g.lane} · ${g.opp}`;
+    if (g.us == null) return head;
+    const win = g.us > g.them;
+    return `${head} <span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}–${g.them}`;
+  }).join("<br>");
 
   const called = SHIRT_CALLS[iso] || null;
   const calledLabel = called
@@ -631,33 +677,32 @@ function renderNextUp(){
     : "TBD";
   const chips = `<span class="shirt${called ? " on" : " tbd"}">${calledLabel}</span>`;
 
-  /* Tonight's trio. We keep the same three for both games, so this is one
-     line, not two. Auto-picked fewest-games-first; NIGHTS[iso].lineup wins. */
+  /* Tonight's trio. Same three bowl both games, so this is one line, not two.
+     Auto-picked fewest-games-first; NIGHTS[iso].lineup wins; a played night
+     reports who actually bowled. */
   const lu = RB.lineupFor(iso);
-  let lineupBlock = "";
+  let lineupBlock;
   if (lu.names.length){
     const names = lu.names.map(n => `<span class="nm">${n}</span>`).join(" · ");
-    const tail = lu.short
-      ? ` <span class="gap">+ ${lu.short} more needed</span>`
-      : "";
-    const why = lu.manual
-      ? "Set by hand for this night."
-      : lu.inCount > lu.names.length
-        ? `Fewest games first, from ${lu.inCount} in. Rotate freely — this is a suggestion.`
-        : "Both games.";
-    lineupBlock = `<div class="lineup"><span class="k">Lineup</span> ${names}${tail}
+    const tail  = lu.short ? ` <span class="gap">+ ${lu.short} more needed</span>` : "";
+    const why   = lu.played ? "Bowled."
+                : lu.manual ? "Set by hand for this night."
+                : lu.inCount > lu.names.length
+                  ? `Fewest games first, from ${lu.inCount} in. Rotate freely — this is a suggestion.`
+                  : "Both games.";
+    lineupBlock = `<div class="lineup"><span class="k">${lu.played ? "Bowled" : "Lineup"}</span> ${names}${tail}
       <span class="sub">${why}</span></div>`;
   } else {
     lineupBlock = `<div class="lineup"><span class="k">Lineup</span>
-      <span class="gap">Nobody's in yet</span>
+      <span class="gap">${past ? "Not recorded" : "Nobody's in yet"}</span>
       <span class="sub">Three bowlers fields the night.</span></div>`;
   }
 
-  el.innerHTML = `
+  return `<div class="nu-card${past ? " past" : ""}" data-iso="${iso}" data-wk="${wk}">
     <div class="nu-grid">
       <div class="nu-cell nu-when">
-        <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
-        <div class="date">${fmtDate(iso, true)}</div>
+        <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${lab}</div>
+        <div class="date">${dateNoWidow(iso)}</div>
         <div>${slotBadge(iso)}</div>
       </div>
       <div class="nu-cell nu-games">
@@ -673,7 +718,77 @@ function renderNextUp(){
           </div>
         </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
+}
+
+/* The hero is a rail of all 12 nights, opened on the next one. Swiping back
+   for last week is the same gesture as swiping forward for next — no mode,
+   no separate archive view. */
+function renderNextUp(){
+  const el      = document.getElementById("nextup");
+  const isos    = [...new Set(schedule.map(g => g.iso))].sort();
+  const nextIso = nextNight();
+  const startIso = nextIso || isos[isos.length - 1];
+
+  el.innerHTML =
+    `<div class="nu-track" id="nuTrack">${isos.map(d => nightCard(d, nextIso)).join("")}</div>
+     <div class="nu-nav">
+       <button type="button" id="nuPrev" aria-label="Previous week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg></button>
+       <button type="button" id="nuNext" aria-label="Next week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+       <span class="nu-pos" id="nuPos"></span>
+     </div>`;
+
+  const track = document.getElementById("nuTrack");
+  const cards = [...track.querySelectorAll(".nu-card")];
+  const prev  = document.getElementById("nuPrev");
+  const next  = document.getElementById("nuNext");
+  const pos   = document.getElementById("nuPos");
+  let idx = Math.max(0, isos.indexOf(startIso));
+
+  const label = () => {
+    const c = cards[idx];
+    if (!c) return;
+    pos.innerHTML = `Week <b>${c.dataset.wk}</b> of ${isos.length}`
+      + (c.dataset.iso === nextIso ? " · next up" : "");
+    prev.disabled = idx <= 0;
+    next.disabled = idx >= cards.length - 1;
+  };
+
+  const goto = (i, smooth) => {
+    idx = Math.min(cards.length - 1, Math.max(0, i));
+    // offsetLeft is relative to the track's padding box, which is what
+    // scrollLeft measures — no need to subtract the track's own offset.
+    const left = cards[idx].offsetLeft;
+    // Element.scrollTo is not universal; assigning scrollLeft always works.
+    if (typeof track.scrollTo === "function"){
+      track.scrollTo({left, behavior: smooth ? "smooth" : "auto"});
+    } else {
+      track.scrollLeft = left;
+    }
+    label();
+  };
+
+  prev.onclick = () => goto(idx - 1, true);
+  next.onclick = () => goto(idx + 1, true);
+
+  // keep the counter honest when the rail is swiped rather than clicked
+  let t = null;
+  track.addEventListener("scroll", () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0, bestD = Infinity;
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+        if (d < bestD){ bestD = d; best = i; }
+      });
+      idx = best;
+      label();
+    }, 90);
+  }, {passive:true});
+
+  goto(idx, false);
 }
 
 /* ---------- eligibility board ---------- */
@@ -1069,7 +1184,7 @@ if ("serviceWorker" in navigator){
 (function(){
   const THRESHOLD = 70;      // px of pull before it fires
   const MAX       = 110;     // how far the indicator travels
-  let startY = 0, pulling = false, dist = 0;
+  let startY = 0, startX = 0, axis = null, pulling = false, dist = 0;
 
   const el = document.createElement("div");
   el.className = "ptr";
@@ -1094,15 +1209,25 @@ if ("serviceWorker" in navigator){
   document.addEventListener("touchstart", e => {
     if (window.scrollY > 0 || e.touches.length !== 1) return;
     startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+    axis = null;
     pulling = true;
     el.style.transition = "";
   }, {passive:true});
 
   document.addEventListener("touchmove", e => {
     if (!pulling) return;
-    const d = e.touches[0].clientY - startY;
-    if (d <= 0){ pulling = false; reset(); return; }
-    set(d * 0.5);            // resistance, so it feels like a rubber band
+    const dy = e.touches[0].clientY - startY;
+    const dx = e.touches[0].clientX - startX;
+    // Decide once whether this gesture is a pull or a sideways swipe. Without
+    // this, swiping the Next Up rail also drags the refresh indicator down.
+    if (axis === null){
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    }
+    if (axis === "x"){ pulling = false; reset(); return; }
+    if (dy <= 0){ pulling = false; reset(); return; }
+    set(dy * 0.5);           // resistance, so it feels like a rubber band
   }, {passive:true});
 
   document.addEventListener("touchend", () => {
