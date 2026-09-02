@@ -38,13 +38,23 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
 
-  /* Themes override the two decorative accents and nothing else.
+  /* Themes override the decorative accents and, for NYK, the ground.
      NYK primary is the orange, not the blue, on purpose: the orange clears
-     7.4:1 on --lane and can carry small type, the blue only manages 3.4:1
-     and would fail the 11px eyebrow. Blue takes the fills and rules, where
-     3:1 is the bar. The blue is also lifted a touch off the true club value
-     so a 3px rule still reads on a phone in a dim bar. */
-  html[data-theme="NYK"]{ --maple:#F58426; --maple-2:#1272C4; }
+     7.3:1 on the blue ground and can carry small type, the blue only manages
+     3.4:1 and would fail the 11px eyebrow. Blue takes the masthead rule,
+     where 3:1 is the bar, and the ground.
+
+     The ground is the club blue crushed to background luminance rather than
+     any published navy — the hue is held at 205 and the lightness dropped to
+     ~8%, which lands within a hair of --lane's brightness. That matters: the
+     whole UI was contrast-tuned against #0E1116, so matching luminance means
+     every token underneath still clears the same ratios it did before, and
+     only the temperature changes. A darker published navy would have been
+     bluer but would have quietly moved every contrast pair on the page. */
+  html[data-theme="NYK"]{
+    --maple:#F58426; --maple-2:#1272C4;
+    --lane:#08141F; --lane-2:#10202F; --rule:#1C2B3B;
+  }
   html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#8E949B; }
 
   *{box-sizing:border-box}
@@ -129,10 +139,11 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}
-  /* Finger-holes take the secondary accent. These were hardcoded #C8873C and
-     so ignored the tokens entirely — a class, not a fill attribute, because
-     var() in an SVG presentation attribute is not reliable everywhere. */
-  .logo .mark .hole{fill:var(--maple-2); stroke:none}
+  /* The ball is one solid colour — holes included. These were hardcoded
+     #C8873C and so ignored the tokens entirely; a class, not a fill
+     attribute, because var() in an SVG presentation attribute is not
+     reliable everywhere. */
+  .logo .mark .hole{fill:var(--maple); stroke:none}
   /* .771 = (ascender - descender) / unitsPerEm for Big Shoulders, which
      is the line-height at which the text box bottom lands on the
      baseline. That is what lets flex-end sit the ball ON the baseline

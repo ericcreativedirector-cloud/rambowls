@@ -25,9 +25,13 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
 
-  /* Themes override the two decorative accents and nothing else.
-     Values must stay identical to the Scheduler — change one, change both. */
-  html[data-theme="NYK"]{ --maple:#F58426; --maple-2:#1272C4; }
+  /* Themes override the decorative accents and, for NYK, the ground.
+     Values must stay identical to the Scheduler — change one, change both.
+     Reasoning for the NYK numbers lives in the Scheduler's copy. */
+  html[data-theme="NYK"]{
+    --maple:#F58426; --maple-2:#1272C4;
+    --lane:#08141F; --lane-2:#10202F; --rule:#1C2B3B;
+  }
   html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#8E949B; }
 
   *{box-sizing:border-box}
@@ -98,7 +102,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}
-  .logo .mark .hole{fill:var(--maple-2); stroke:none}
+  .logo .mark .hole{fill:var(--maple); stroke:none}
   /* .771 = (ascender - descender) / unitsPerEm for Big Shoulders, which
      is the line-height at which the text box bottom lands on the
      baseline. That is what lets flex-end sit the ball ON the baseline

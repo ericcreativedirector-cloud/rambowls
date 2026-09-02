@@ -310,9 +310,9 @@ function lastCompletedWeek(){
    The pre-paint application lives in an inline <head> script on each page,
    so the theme is on the element before first paint. This is the picker. */
 const THEMES = [
-  {code:"RB",  name:"House"},
-  {code:"NYK", name:"Orange & blue"},
-  {code:"BKN", name:"Black & white"}
+  {code:"RB",  name:"House",          ground:"#0E1116"},
+  {code:"NYK", name:"Orange & blue",  ground:"#08141F"},
+  {code:"BKN", name:"Black & white",  ground:"#0E1116"}
 ];
 const THEME_KEY = "rb-theme";
 const THEME_CODES = THEMES.map(t => t.code);
@@ -330,6 +330,12 @@ function applyTheme(code){
   if (code === "RB") el.removeAttribute("data-theme");
   else el.setAttribute("data-theme", code);
   try{ localStorage.setItem(THEME_KEY, code); }catch(e){}
+  /* Drag the browser/PWA chrome along with the ground. Without this the
+     installed app keeps a #0E1116 status bar sitting on a blue page, which
+     reads as a bug rather than a theme. */
+  const meta = document.querySelector('meta[name="theme-color"]');
+  const t = THEMES.find(x => x.code === code);
+  if (meta && t) meta.setAttribute("content", t.ground);
   document.querySelectorAll("[data-theme-set]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.themeSet === code)));
   return code;
