@@ -68,12 +68,12 @@ const PLAYERS = [
    scores:{}, note:"No games yet this season."},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180]}},
-  {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Alternate — not on the league sheet, so 120 (the league standard average) stands in until a real average is filed."},
+  {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
+   scores:{}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43 — not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Alternate — not on the league sheet, so 120 (the league standard average) stands in until a real average is filed."},
+   scores:{}, note:"Alternate, on the league sheet with no prior average — the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Alternate — not on the league sheet, so 120 (the league standard average) stands in until a real average is filed."}
+   scores:{}, note:"Not on the league sheet yet — still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."}
 ];
 
 /* ---------- schedule ----------
@@ -81,7 +81,7 @@ const PLAYERS = [
    us / them = official team totals; absent means not bowled yet.
 --------------------------------------------------------------- */
 const SCHEDULE = [
-  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"Reggie Gross's Team",           us:533, them:470},
+  {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads",                  us:533, them:470},
   {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",       us:514, them:532},
   {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly",         us:552, them:541},
   {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                 us:559, them:488},
@@ -93,7 +93,7 @@ const SCHEDULE = [
   {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats"},
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends"},
   {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters"},
-  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"Reggie Gross's Team"},
+  {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads"},
   {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
@@ -144,6 +144,14 @@ const NIGHTS = {
     maybe: [["Kelvyn","alt"]],
     out:   [["Ken",""], ["Michael",""], ["Jamiqve","alt"]],
     quiet: [["Prah",""], ["Pete","alt"]]
+  },
+  "2026-09-09": {
+    played: false,
+    in:    [],
+    maybe: [],
+    out:   [["Eric",""]],
+    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""],
+            ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
   }
 };
 

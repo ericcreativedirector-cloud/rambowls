@@ -42,8 +42,13 @@
     display:flex; align-items:center; gap:10px; line-height:1.7}
 
   .masthead{border-bottom:3px solid var(--maple); padding:16px 0 18px}
+  /* Logo and nav share a row — mirrors the Scheduler exactly. */
+  .brandrow{display:flex; align-items:flex-end; justify-content:space-between;
+    gap:12px; flex-wrap:wrap}
+  .brandrow h1{margin:0; flex:1 1 auto; min-width:0}
+  .brandrow .nav{margin-top:0; flex:0 0 auto}
   h1{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(40px,13vw,68px); line-height:.88; letter-spacing:.01em; margin:0;
+    font-size:clamp(32px,10.4vw,54px); line-height:.88; letter-spacing:.01em; margin:0;
     word-break:break-word}
   h1 span{color:var(--maple)}
 
@@ -67,7 +72,7 @@
     background:var(--lane-2); border:1px solid var(--rule); border-radius:5px;
     padding:7px 13px 8px; color:var(--bone); min-height:44px}
   .picked .nm{font-family:var(--display); font-weight:400; text-transform:uppercase;
-    font-size:clamp(28px,8.4vw,42px); line-height:1; letter-spacing:.02em}
+    font-size:clamp(26px,7.8vw,38px); line-height:1; letter-spacing:.02em}
   .picked .caret{color:var(--maple); font-size:15px; line-height:1;
     transition:transform .18s ease}
   .picked[aria-expanded="true"] .caret{transform:rotate(180deg)}
@@ -85,7 +90,7 @@
     color:var(--maple); margin:14px 0 0}
 
   section{margin-top:44px}
-  h2{font-family:var(--display); font-size:22px; letter-spacing:.06em;
+  h2{font-family:var(--display); font-size:20px; letter-spacing:.06em;
     text-transform:uppercase; margin:0 0 4px; font-weight:400;
     display:flex; align-items:center; gap:9px}
   h2 .ico{width:17px; height:17px}
@@ -96,7 +101,7 @@
 
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px}
   .stat{background:var(--lane-2); border:1px solid var(--rule); border-radius:5px; padding:13px 14px}
-  .stat b{display:block; font-family:var(--display); font-size:30px; font-weight:400;
+  .stat b{display:block; font-family:var(--display); font-size:28px; font-weight:400;
     letter-spacing:.02em; color:var(--bone); line-height:1}
   .stat b small{font-size:14px; color:var(--dim)}
   .stat span{display:block; font-family:var(--data); font-size:9px; letter-spacing:.12em;
@@ -182,7 +187,7 @@
     .masthead{padding-bottom:22px}
     .sub{font-size:12px; margin-top:14px}
     .stats{grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px}
-    .stat b{font-size:34px}
+    .stat b{font-size:32px}
     .chart{gap:8px; height:172px}
     .logrow{grid-template-columns:170px 1fr; align-items:baseline}
   }
@@ -197,11 +202,13 @@
   </p>
 
   <div class="masthead">
-    <h1>Rambowls<br><span>Stats</span></h1>
-    <nav class="nav">
-      <a href="../">Schedule</a>
-      <a class="on" href="./" aria-current="page">Stats</a>
-    </nav>
+    <div class="brandrow">
+      <h1>Rambowls<br><span>Stats</span></h1>
+      <nav class="nav">
+        <a href="../">Schedule</a>
+        <a class="on" href="./" aria-current="page">Stats</a>
+      </nav>
+    </div>
 
     <button class="picked" id="picked" type="button" style="display:none" aria-expanded="false">
       <span class="nm" id="pickedName"></span><span class="caret" aria-hidden="true">▾</span>
