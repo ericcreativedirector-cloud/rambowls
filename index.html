@@ -6,6 +6,12 @@
 <title>Rambowls Scheduler · Fall 2026</title>
 <meta name="description" content="Schedule, availability and playoff eligibility for the Rambowls, 2026 Fall Wednesday League at The Gutter.">
 <meta name="theme-color" content="#0E1116">
+<!-- Theme goes on the element before first paint. data.js loads at the end of
+     body, so waiting for it would render the house colors and then snap. The
+     whitelist is here rather than in data.js on purpose: this runs first and
+     an unchecked localStorage value would be writing an attribute selector. -->
+<script>(function(){try{var t=localStorage.getItem("rb-theme");
+if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Rambowls Scheduler">
 <meta property="og:description" content="Every matchup, lane and start time for Fall 2026, plus who's in each week and who still needs games to qualify.">
@@ -24,10 +30,23 @@
     --lane:#0E1116; --lane-2:#161B22; --maple:#C8873C; --bone:#F3EEE3;
     --strike:#E85A52; --signal:#35A79B; --dim:#7A828E; --rule:#242B34;
     --early:#4FB3A4; --late:#9B8CE0;
+    /* Secondary accent. Defaults to the primary so the house theme is
+       pixel-identical to before this existed. Themes may split them. */
+    --maple-2:var(--maple);
     --display:"Big Shoulders Display", "Anton", Impact, sans-serif;
     --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
+
+  /* Themes override the two decorative accents and nothing else.
+     NYK primary is the orange, not the blue, on purpose: the orange clears
+     7.4:1 on --lane and can carry small type, the blue only manages 3.4:1
+     and would fail the 11px eyebrow. Blue takes the fills and rules, where
+     3:1 is the bar. The blue is also lifted a touch off the true club value
+     so a 3px rule still reads on a phone in a dim bar. */
+  html[data-theme="NYK"]{ --maple:#F58426; --maple-2:#1272C4; }
+  html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#8E949B; }
+
   *{box-sizing:border-box}
   html{
     scroll-snap-type:y proximity;   /* gentle: never fights a deliberate scroll */
@@ -62,8 +81,26 @@
     text-transform:uppercase; color:var(--maple); margin:0 0 var(--clear);
     display:flex; align-items:center; gap:10px; line-height:1.7}
 
+  /* Theme picker. Rides in the eyebrow at the same 11px mono as its
+     neighbour, so it reads as part of the masthead furniture rather than a
+     control bolted on. margin-left:auto pins it right without a spacer.
+     Empty until data.js fills it, so no-JS gets nothing rather than dead
+     buttons. 34px min tap target — small, but it is a once-a-season toggle. */
+  .themes{margin-left:auto; display:flex; flex:0 0 auto;
+    border:1px solid var(--rule); border-radius:2px; overflow:hidden}
+  .themes button{appearance:none; -webkit-appearance:none; cursor:pointer;
+    font-family:var(--data); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; font-weight:500;
+    background:transparent; color:var(--dim); border:0;
+    padding:6px 9px; min-height:34px; line-height:1;
+    transition:color .15s ease, background-color .15s ease}
+  .themes button + button{border-left:1px solid var(--rule)}
+  .themes button:hover{color:var(--bone)}
+  .themes button[aria-pressed="true"]{background:var(--lane-2); color:var(--maple)}
+  .themes button:focus-visible{outline:2px solid var(--maple); outline-offset:-2px}
+
   .masthead{display:flex; flex-direction:column; align-items:stretch; gap:12px;
-    border-bottom:3px solid var(--maple); padding-bottom:12px}
+    border-bottom:3px solid var(--maple-2); padding-bottom:12px}
   .masthead header{min-width:0; padding:0;
     display:flex; flex-direction:column}
   .masthead .nextup{min-width:0; width:100%}
@@ -92,6 +129,10 @@
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}
+  /* Finger-holes take the secondary accent. These were hardcoded #C8873C and
+     so ignored the tokens entirely — a class, not a fill attribute, because
+     var() in an SVG presentation attribute is not reliable everywhere. */
+  .logo .mark .hole{fill:var(--maple-2); stroke:none}
   /* .771 = (ascender - descender) / unitsPerEm for Big Shoulders, which
      is the line-height at which the text box bottom lands on the
      baseline. That is what lets flex-end sit the ball ON the baseline
@@ -485,13 +526,14 @@
 
   <p class="topbar">
     <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
+    <span class="themes" id="themes" role="group" aria-label="Color theme"></span>
   </p>
 
   <div class="masthead">
     <header>
       <div class="brandline">
         <div class="logo">
-          <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
+          <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" class="hole" r="1.25"/><circle cx="14" cy="7.7" class="hole" r="1.25"/><circle cx="12.6" cy="11.9" class="hole" r="1.25"/></svg>
           <h1>Rambowls</h1>
         </div>
         <nav class="nav">

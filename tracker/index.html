@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0E1116">
+<!-- Pre-paint theme. Identical to the Scheduler — change one, change both. -->
+<script>(function(){try{var t=localStorage.getItem("rb-theme");
+if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Rambowls · Stats</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%230E1116' stroke='%23C8873C' stroke-width='1.6'/%3E%3Ccircle cx='9.4' cy='8.4' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='14' cy='7.7' r='1.5' fill='%23C8873C'/%3E%3Ccircle cx='12.6' cy='11.9' r='1.5' fill='%23C8873C'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
@@ -14,10 +17,19 @@
   :root{
     --lane:#0E1116; --lane-2:#161B22; --maple:#C8873C; --bone:#F3EEE3;
     --strike:#E85A52; --signal:#35A79B; --dim:#7A828E; --rule:#242B34;
+    /* Secondary accent. Defaults to the primary so the house theme is
+       pixel-identical to before this existed. Themes may split them. */
+    --maple-2:var(--maple);
     --display:"Big Shoulders Display", "Anton", Impact, sans-serif;
     --body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --data:"Roboto Mono", ui-monospace, Menlo, monospace;
   }
+
+  /* Themes override the two decorative accents and nothing else.
+     Values must stay identical to the Scheduler — change one, change both. */
+  html[data-theme="NYK"]{ --maple:#F58426; --maple-2:#1272C4; }
+  html[data-theme="BKN"]{ --maple:#FFFFFF; --maple-2:#8E949B; }
+
   *{box-sizing:border-box}
   html{
     scroll-snap-type:y proximity; scroll-behavior:smooth;
@@ -43,6 +55,21 @@
     text-transform:uppercase; color:var(--maple); margin:0 0 var(--clear);
     display:flex; align-items:center; gap:10px; line-height:1.7}
 
+  /* Theme picker — copied from the Scheduler verbatim. Change one, change
+     both, same rule as the masthead metrics below. */
+  .themes{margin-left:auto; display:flex; flex:0 0 auto;
+    border:1px solid var(--rule); border-radius:2px; overflow:hidden}
+  .themes button{appearance:none; -webkit-appearance:none; cursor:pointer;
+    font-family:var(--data); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; font-weight:500;
+    background:transparent; color:var(--dim); border:0;
+    padding:6px 9px; min-height:34px; line-height:1;
+    transition:color .15s ease, background-color .15s ease}
+  .themes button + button{border-left:1px solid var(--rule)}
+  .themes button:hover{color:var(--bone)}
+  .themes button[aria-pressed="true"]{background:var(--lane-2); color:var(--maple)}
+  .themes button:focus-visible{outline:2px solid var(--maple); outline-offset:-2px}
+
   /* Masthead metrics are copied from the Scheduler verbatim. The wordmark must
      never change size or spacing between the two pages — same clamp, same
      padding, same rhythm. Change one, change both. */
@@ -51,7 +78,7 @@
      is exactly how these two pages drifted apart. Must match the
      Scheduler container rule below it. */
   .masthead{display:flex; flex-direction:column; align-items:stretch;
-    border-bottom:3px solid var(--maple); padding:0 0 12px}
+    border-bottom:3px solid var(--maple-2); padding:0 0 12px}
   /* ---------- the logo ----------
      Mark plus the word RAMBOWLS. The page name lives in the toggle now, not
      in the logo, so the logo is one thing and reads the same on both pages.
@@ -71,6 +98,7 @@
   .logo .mark{width:clamp(30px,10.3vw,46px); height:clamp(30px,10.3vw,46px);
     flex:0 0 auto; stroke:var(--maple); fill:none; stroke-width:.9;
     stroke-linecap:round; stroke-linejoin:round; display:block}
+  .logo .mark .hole{fill:var(--maple-2); stroke:none}
   /* .771 = (ascender - descender) / unitsPerEm for Big Shoulders, which
      is the line-height at which the text box bottom lands on the
      baseline. That is what lets flex-end sit the ball ON the baseline
@@ -263,12 +291,13 @@
 
   <p class="topbar">
     <span>2026 Fall Wednesday League<br>The Gutter Bar</span>
+    <span class="themes" id="themes" role="group" aria-label="Color theme"></span>
   </p>
 
   <div class="masthead">
     <div class="brandline">
       <div class="logo">
-        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" r="1.25" fill="#C8873C" stroke="none"/><circle cx="14" cy="7.7" r="1.25" fill="#C8873C" stroke="none"/><circle cx="12.6" cy="11.9" r="1.25" fill="#C8873C" stroke="none"/></svg>
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="9.4" cy="8.4" class="hole" r="1.25"/><circle cx="14" cy="7.7" class="hole" r="1.25"/><circle cx="12.6" cy="11.9" class="hole" r="1.25"/></svg>
         <h1>Rambowls</h1>
       </div>
       <nav class="nav">
