@@ -98,9 +98,27 @@
     font-family:var(--data); font-size:8.5px; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim)}
 
-  /* next up */
+  /* next up — a 2-up quadrant row over one long band.
+     Dividers are borders, not grid gaps, so the card's gradient runs
+     unbroken beneath the whole grid and the rules read as hairlines
+     scored into one surface rather than as separate stacked cards. */
   .nextup{margin-top:0; border:1px solid var(--maple); border-radius:5px;
-    background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03)); padding:12px 13px}
+    background:linear-gradient(180deg,rgba(200,135,60,.13),rgba(200,135,60,.03));
+    padding:0; overflow:hidden}
+  .nu-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nu-cell{padding:12px 13px; min-width:0}
+  .nu-when{border-right:1px solid rgba(200,135,60,.28)}
+  .nu-cell.wide{grid-column:1/-1; border-top:1px solid rgba(200,135,60,.28)}
+  .cellkick{font-family:var(--data); font-size:8.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--maple); margin-bottom:7px;
+    display:flex; align-items:center; gap:5px}
+  .cellkick .ico{width:11px !important; height:11px !important}
+  /* the long band carries lineup and shirt side by side */
+  .nu-band{display:flex; justify-content:space-between; align-items:flex-start;
+    gap:18px; flex-wrap:wrap}
+  .nu-band .lineup, .nu-band .shirtwrap{margin:0; padding:0; border:0}
+  .nu-band .lineup{flex:1 1 190px; min-width:0}
+  .nu-band .shirtwrap{flex:0 0 auto}
   .nextup .lab{font-family:var(--data); font-size:8.5px; letter-spacing:.12em;
     text-transform:uppercase; color:var(--maple); margin-bottom:6px;
     display:flex; align-items:center; gap:5px}
@@ -360,7 +378,8 @@
     .sub{font-size:12px; margin-top:14px}
     .stamps{gap:8px; margin-top:12px}
     .tag{padding:4px 10px; font-size:10.5px; letter-spacing:.13em}
-    .nextup{padding:18px 20px}
+    .nextup{padding:0}
+    .nu-cell{padding:18px 20px}
     .nextup .lab{font-size:10px; letter-spacing:.18em; margin-bottom:8px; gap:7px}
     .nextup .lab .ico{width:13px !important; height:13px !important}
     .nextup .date{margin-bottom:10px}
@@ -588,9 +607,16 @@ function renderNextUp(){
   const iso = nextNight();
   const el = document.getElementById("nextup");
   if (!iso){
-    el.innerHTML = `<div class="lab">Season complete</div>
-      <div class="date">That's a wrap</div>
-      <div class="games">All 24 games bowled. Results below.</div>`;
+    el.innerHTML = `<div class="nu-grid">
+      <div class="nu-cell nu-when">
+        <div class="lab">Season complete</div>
+        <div class="date">That's a wrap</div>
+      </div>
+      <div class="nu-cell nu-games">
+        <div class="cellkick">Games</div>
+        <div class="games">All 24 bowled.<br>Results below.</div>
+      </div>
+    </div>`;
     return;
   }
   const games = schedule.filter(g => g.iso === iso);
@@ -628,14 +654,25 @@ function renderNextUp(){
   }
 
   el.innerHTML = `
-    <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
-    <div class="date">${fmtDate(iso, true)}</div>
-    <div style="margin:-2px 0 9px">${slotBadge(iso)}</div>
-    <div class="games">${lines}</div>
-    ${lineupBlock}
-    <div class="shirtwrap">
-      <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>Shirt</div>
-      <div class="shirts">${chips}</div>
+    <div class="nu-grid">
+      <div class="nu-cell nu-when">
+        <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${isToday ? "Tonight" : "Next up"} · Week ${wk}</div>
+        <div class="date">${fmtDate(iso, true)}</div>
+        <div>${slotBadge(iso)}</div>
+      </div>
+      <div class="nu-cell nu-games">
+        <div class="cellkick"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Games</div>
+        <div class="games">${lines}</div>
+      </div>
+      <div class="nu-cell wide">
+        <div class="nu-band">
+          ${lineupBlock}
+          <div class="shirtwrap">
+            <div class="shirtlab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.5 12 6l3.4-2.5 4.6 2.4-1.8 4.3-2.2-.8v8.6H8V9.4l-2.2.8L4 5.9z"/></svg>Shirt</div>
+            <div class="shirts">${chips}</div>
+          </div>
+        </div>
+      </div>
     </div>`;
 }
 
