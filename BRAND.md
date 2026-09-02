@@ -72,20 +72,26 @@ weight, which is why it went.
 
 | Use | Face | Weight | Size |
 |---|---|---|---|
-| Wordmark | Display | 600 | `clamp(29px,9.2vw,54px)`, line-height `.74` |
+| Wordmark | Display | 600 | `clamp(22px,6.9vw,40px)`, line-height `.771` |
 | Section head (h2) | Display | 500 | 22px |
 | Hero date | Display | 600 | `clamp(17px,4.6vw,34px)` |
 | Record value | Display | 600 | 26px |
 | Stat number | Display | 600 | 30px (34px at 640+) |
 | Bowler name | Display | 600 | `clamp(28px,8vw,40px)` |
+| Toggle | Display | 500 | `clamp(12px,3.8vw,17px)` |
+| Mark | n/a | n/a | `clamp(22px,7.2vw,42px)`, stroke `.9` |
 | Body copy | Body | 400 | 15px |
 | Notes | Body | 400 | 13.5px |
 | Labels, kickers, all data | Data | 400 to 700 | 8.5 to 13px, letterspaced |
 
-**The wordmark crashes.** Line-height `.74` overlaps RAMBOWLS and SCHEDULER.
-Big Shoulders has short descenders so the caps interlock without collision.
-This is the only place the type is allowed to be loud, and it is identical on
-both pages. If it differs between pages, that is a bug.
+**The wordmark is one word.** RAMBOWLS, single line. The page name lives in
+the toggle, which already inverts to say where you are. The crash treatment
+that overlapped two lines is gone with the second line.
+
+Line-height is `.771`, which is `(ascender - descender) / unitsPerEm` for Big
+Shoulders. At that value the text box bottom lands exactly on the baseline,
+which is what lets `align-items:flex-end` sit the ball on the baseline with
+the type. Measured delta is 0px at 320, 375, 390 and 430.
 
 ### No widows
 
@@ -170,18 +176,34 @@ The mark used to live up in the eyebrow. That read as two unrelated things
 stacked, not as a logo. One mark, beside the type, at a size that holds its own.
 
 **Clear space is part of the logo.** Nothing comes closer than `--clear`
-(`clamp(15px,4.4vw,24px)`) on any side. This is a constraint, not a preference:
-it is why the Schedule / Stats nav dropped to its own row instead of sharing a
-line with the wordmark. The nav was sitting inside the lockup's air.
+(`clamp(15px,4.4vw,24px)`) on any side. The eyebrow sits `--clear` above the
+brandline and the toggle is separated by `--clear`, so the lockup keeps its
+air while still sharing one band.
 
-Cost of that decision, stated plainly: the masthead is two bands again rather
-than one. The logo won that trade.
+### Schedule / Stats sits beside the logo
 
-### Schedule / Stats is a section head, not a widget
-
-Same face, same size, same tracking as an `h2`: Big Shoulders 500 at 22px,
-`.09em`. It sits below the logo, outside the clear space, and it inverts to
+It is a flex sibling of the logo, separated by `--clear`, both bottom-aligned.
+Big Shoulders 500 at `clamp(12px,3.8vw,17px)`, `.09em`, and it inverts to
 solid maple like every other selected thing.
+
+It briefly matched `h2` at 22px. It does not any more: the logo and toggle
+both came down about 25%, and the toggle followed. The toggle is still taller
+than the logo because `min-height:44px` is a floor that does not bend for
+composition. If the two ever need to look equal, raise the logo rather than
+lower the toggle.
+
+### One masthead spec, both pages
+
+The logo and toggle rules are identical in both files, and that is not enough
+on its own. They once drifted while the rules matched, because the containers
+differed: the Scheduler's masthead is a flex column so the brandline's margin
+applied, and the Stats masthead was a plain block so the same margin collapsed
+out and merged with the eyebrow's. Both are flex columns now.
+
+Verified numerically rather than by eye. At 390px both pages report the same
+eyebrow-to-logo gap, logo top, logo height, mark width, toggle top, toggle
+height and toggle right edge. If those diverge again, the container changed,
+not the type.
 
 **It is not covered by the no-emoji rule.** That rule is about glyphs used as
 content inside the interface, where they break the type system and render
