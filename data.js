@@ -40,7 +40,8 @@ const SEASON = {
    movement arrow until there are two real weeks to compare. */
 const STANDINGS = [
   {wk:0, place:10, baseline:"last season"},
-  {wk:2, place:4}
+  {wk:2, place:4},
+  {wk:3, place:3}
 ];
 
 /* ---------- players ----------
@@ -85,8 +86,8 @@ const SCHEDULE = [
   {wk:1,  iso:"2026-08-19", time24:"20:10", lane:8, opp:"The Lane 5 Pole Dancers",       us:514, them:532},
   {wk:2,  iso:"2026-08-26", time24:"21:20", lane:5, opp:"Peanut Gutter & Jelly",         us:552, them:541},
   {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                 us:559, them:488},
-  {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals"},
-  {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts"},
+  {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals",                    us:547, them:532},
+  {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts",                us:579, them:554},
   {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful"},
   {wk:4,  iso:"2026-09-09", time24:"20:10", lane:7, opp:"Glory Bowl"},
   {wk:5,  iso:"2026-09-16", time24:"19:00", lane:6, opp:"Bowls on Parade"},
