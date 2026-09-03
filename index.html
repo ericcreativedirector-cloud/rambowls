@@ -242,7 +242,12 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     /* the two quadrants carry the weight, the band underneath is a footer:
        give the top row a floor so it always reads as the taller half */
     grid-template-rows:minmax(126px,auto) auto}
-  .nu-when .slot{white-space:normal; max-width:100%}
+  /* The badge may wrap in this narrow column rather than overrun the divider,
+     but only BETWEEN its two nowrap units ("EARLY ·" / "7:00 & 8:10 PM").
+     flex-wrap is what actually permits that break: the units are flex items,
+     and without it a too-narrow column pushes the times through the border
+     instead of dropping them to a second line. */
+  .nu-when .slot{white-space:normal; max-width:100%; flex-wrap:wrap}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
   .nu-cell.wide{grid-column:1/-1; border-top:1px solid rgba(200,135,60,.28)}
@@ -696,10 +701,12 @@ function slotBadge(iso){
   if (!slot) return "";
   // all league games are PM, so show it once: "7:00 & 8:10 PM"
   const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
-  // The times ride together as one unbreakable unit, so the badge can only
-  // break after "late ·". Without this "PM" drops onto a line by itself.
+  // Two unbreakable units, so the badge can only ever break BETWEEN them.
+  // The label and its separator ride together: as a bare text node the "·"
+  // was its own wrap opportunity and dropped onto a line by itself under
+  // "EARLY". The times ride together too, or "PM" drops off the end.
   return `<span class="slot ${slot}">${slot === "early" ? SUN : MOON}`
-       + `${slot} · <span class="nb">${times.join(" & ")} PM</span></span>`;
+       + `<span class="nb">${slot} ·</span><span class="nb">${times.join(" & ")} PM</span></span>`;
 }
 
 // compact icon-only marker for schedule rows
