@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-09-01",
+  lastUpdated:"2026-09-03",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -57,15 +57,15 @@ const STANDINGS = [
 --------------------------------------------------------------- */
 const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
-   scores:{1:[136,124], 2:[125,97]}},
+   scores:{1:[136,124], 2:[125,97], 3:[95,90]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
    scores:{1:[149,122]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", prev:129, alt:false, hcpPre:49,
    scores:{1:[null,116]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    prev:134, alt:false, hcpPre:47,
-   scores:{}, note:"No games yet this season."},
+   scores:{3:[125,148]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
@@ -139,11 +139,9 @@ const NIGHTS = {
     sat:    [["Ken",""], ["Michael",""], ["Phil",""]]
   },
   "2026-09-02": {
-    played: false,
-    in:    [["Eric",""], ["Phil",""], ["Ron",""]],
-    maybe: [["Kelvyn","alt"]],
-    out:   [["Ken",""], ["Michael",""], ["Jamiqve","alt"]],
-    quiet: [["Prah",""], ["Pete","alt"]]
+    played: true,
+    bowled: [["Eric",2], ["Ron",2], ["Phil",2]],
+    sat:    [["Ken",""], ["Michael",""], ["Prah",""]]
   },
   "2026-09-09": {
     played: false,
