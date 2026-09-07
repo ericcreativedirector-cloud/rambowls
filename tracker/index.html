@@ -567,7 +567,7 @@ function render(){
     document.getElementById("laneEdge").style.left  = `calc(${pct * 100}% - 2.5px)`;
     document.getElementById("goalLeft").textContent = (a == null || !S.count)
       ? "No scores yet"
-      : `Now ${now} · ${Math.round(pct * 100)}% of the way there`;
+      : `Now ${now} · ${Math.round(pct * 100)}% of the way there`;
     document.getElementById("goalRight").textContent = (a == null || !S.count)
       ? ""
       // Measured off the SAME rounded figure shown as "Now", so 121 + 17 = 138

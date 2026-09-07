@@ -247,7 +247,11 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
      flex-wrap is what actually permits that break: the units are flex items,
      and without it a too-narrow column pushes the times through the border
      instead of dropping them to a second line. */
-  .nu-when .slot{white-space:normal; max-width:100%; flex-wrap:wrap}
+  /* The hero badge is allowed to wrap rather than run through the column
+     divider. Column gap carries the separation that a middot used to,
+     so nothing can be left stranded at the end of a line. */
+  .nu-when .slot{white-space:normal; max-width:100%; flex-wrap:wrap;
+    column-gap:7px; row-gap:1px; align-items:center}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
   .nu-cell.wide{grid-column:1/-1; border-top:1px solid rgba(200,135,60,.28)}
@@ -271,9 +275,17 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   /* "Wednesday," and "September 2" each stay whole — the date may break
      between them but never inside them, so no stray "2" on its own line. */
   .nextup .date .nb, .slot .nb{white-space:nowrap}
-  .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.65;
+  .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.55;
     color:var(--bone); overflow-wrap:anywhere}
   .nextup .games b{color:var(--maple); font-weight:500}
+  /* Time and lane ride together on one line, opponent on the next. The old
+     "time · lane · opponent" string wrapped mid-run and left a middot on a
+     line edge. Rows carry the separation now, so there is no character that
+     can be stranded and long team names get their own full width. */
+  .nextup .games .g + .g{margin-top:8px}
+  .nextup .games .gl{display:flex; gap:8px; align-items:baseline; white-space:nowrap}
+  .nextup .games .ln{color:var(--dim)}
+  .nextup .games .op{display:block; margin-top:1px}
   /* tonight's trio — who's actually throwing, both games */
   .lineup{margin-top:10px; padding-top:9px; border-top:1px solid rgba(200,135,60,.28);
     font-family:var(--data); font-size:10px; line-height:1.6; letter-spacing:.06em;
@@ -570,7 +582,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
           <a href="tracker/">Stats</a>
         </nav>
       </div>
-      <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
+      <p class="sub">Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games</p>
       <div class="stamps">
         <span class="tag" id="updated">Updated</span>
         <noscript><span class="tag">JavaScript required. Data won't load without it</span></noscript>
@@ -701,12 +713,13 @@ function slotBadge(iso){
   if (!slot) return "";
   // all league games are PM, so show it once: "7:00 & 8:10 PM"
   const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
-  // Two unbreakable units, so the badge can only ever break BETWEEN them.
-  // The label and its separator ride together: as a bare text node the "·"
-  // was its own wrap opportunity and dropped onto a line by itself under
-  // "EARLY". The times ride together too, or "PM" drops off the end.
+  // Two unbreakable units and no separator character between them. A middot
+  // here can only ever be stranded: as a bare text node it dropped onto its
+  // own line under "EARLY", and glued to the label it left line one ending on
+  // a dangling "·". The flex gap does the separating instead, which reads the
+  // same on one line and cannot be orphaned on two.
   return `<span class="slot ${slot}">${slot === "early" ? SUN : MOON}`
-       + `<span class="nb">${slot} ·</span><span class="nb">${times.join(" & ")} PM</span></span>`;
+       + `<span class="nb">${slot}</span><span class="nb">${times.join(" & ")} PM</span></span>`;
 }
 
 // compact icon-only marker for schedule rows
@@ -779,17 +792,21 @@ function nightCard(iso, nextIso){
   const played  = games.every(g => g.us != null);
   const past    = played || (!isNext && iso < todayISO());
 
-  const lab = past    ? `Week ${wk} · Final`
-            : isNext  ? `${isToday ? "Tonight" : "Next up"} · Week ${wk}`
+  const lab = past    ? `Week ${wk} · Final`
+            : isNext  ? `${isToday ? "Tonight" : "Next up"} · Week ${wk}`
             :           `Week ${wk}`;
 
   // played nights show the result inline; upcoming ones just the matchup
   const lines = games.map(g => {
-    const head = `<b>${fmtTime(g.time24)}</b> · Lane ${g.lane} · ${g.opp}`;
-    if (g.us == null) return head;
-    const win = g.us > g.them;
-    return `${head} <span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}–${g.them}`;
-  }).join("<br>");
+    let res = "";
+    if (g.us != null){
+      const win = g.us > g.them;
+      res = ` <span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}\u2013${g.them}`;
+    }
+    return `<div class="g">`
+         + `<span class="gl"><b>${fmtTime(g.time24)}</b><span class="ln">Lane ${g.lane}</span></span>`
+         + `<span class="op">${g.opp}${res}</span></div>`;
+  }).join("");
 
   const called = SHIRT_CALLS[iso] || null;
   const calledLabel = called
@@ -803,7 +820,7 @@ function nightCard(iso, nextIso){
   const lu = RB.lineupFor(iso);
   let lineupBlock;
   if (lu.names.length){
-    const names = lu.names.map(n => `<span class="nm">${n}</span>`).join(" · ");
+    const names = lu.names.map(n => `<span class="nm">${n}</span>`).join(" · ");
     const tail  = lu.short ? ` <span class="gap">+ ${lu.short} more needed</span>` : "";
     const why   = lu.played ? "Bowled."
                 : lu.manual ? "Set by hand for this night."
@@ -984,7 +1001,7 @@ function renderBoard(){
     let mark = "";
     if (p.games >= 6) mark = '<span class="stamp">Qualified</span>';
     else if (!p.alt && p.games === 0) mark = '<span class="stamp flag">Needs games</span>';
-    const meta = p.avg ? `avg ${p.avg} · hcp ${p.hcp}` : `no average yet · hcp ${p.hcp}`;
+    const meta = p.avg ? `avg ${p.avg} · hcp ${p.hcp}` : `no average yet · hcp ${p.hcp}`;
     const count = proj
       ? `${p.games}<span style="color:var(--maple)">+${proj}</span>/6`
       : `${p.games}/6`;
@@ -1012,7 +1029,7 @@ function renderBoard(){
   } else if (stuck.length){
     summary = `<div class="elig-summary risk">${stuck.join(", ")} can no longer reach 6 games${projNote}</div>`;
   } else {
-    summary = `<div class="elig-summary">${need} starter${need === 1 ? "" : "s"} still qualifying · ${RB.gamesRemaining()} games left${projNote}</div>`;
+    summary = `<div class="elig-summary">${need} starter${need === 1 ? "" : "s"} still qualifying · ${RB.gamesRemaining()} games left${projNote}</div>`;
   }
   document.getElementById("board").innerHTML =
     summary + starters + `<div class="divider">Alternates</div>` + alts;
@@ -1092,7 +1109,7 @@ function renderRecord(){
   const lastWk = played.length ? played[played.length-1].wk : 0;
   document.getElementById("throughNote").textContent =
     played.length
-      ? `Through Week ${lastWk} · ${played.length} of 24 games.`
+      ? `Through Week ${lastWk} · ${played.length} of 24 games.`
       : `No games logged yet.`;
 }
 
@@ -1169,8 +1186,8 @@ function renderNight(iso){
     const past = iso < todayISO();
     head.innerHTML = `Availability · Week ${wk}` + (past ? "" : headcount(0, 0));
     note.textContent = past
-      ? `${fmtDate(iso, true)} · ${matchups}. No lineup recorded for this night.`
-      : `${fmtDate(iso, true)} · ${matchups}. Nobody's replied yet. Send it in early if you already know.`;
+      ? `${fmtDate(iso, true)} · ${matchups}. No lineup recorded for this night.`
+      : `${fmtDate(iso, true)} · ${matchups}. Nobody's replied yet. Send it in early if you already know.`;
     box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", [])
       + (past ? "" : replyBox(iso, wk));
     return;
@@ -1225,8 +1242,8 @@ function renderLegend(){
   const early = isos.filter(d => nightSlot(d) === "early").length;
   const late  = isos.length - early;
   document.getElementById("legend").innerHTML =
-    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 PM · ${early} of ${isos.length}</span>`
-  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 PM · ${late} of ${isos.length}</span>`;
+    `<span><span class="slot early mini">${SUN}</span> Early night · 7:00 &amp; 8:10 PM · ${early} of ${isos.length}</span>`
+  + `<span><span class="slot late mini">${MOON}</span> Late night · 9:20 &amp; 10:30 PM · ${late} of ${isos.length}</span>`;
 }
 
 function renderSchedule(){
