@@ -148,8 +148,8 @@ const NIGHTS = {
     played: false,
     in:    [],
     maybe: [],
-    out:   [["Eric",""]],
-    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""],
+    out:   [["Eric",""], ["Phil",""]],
+    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""],
             ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
   },
   "2026-09-16": {
