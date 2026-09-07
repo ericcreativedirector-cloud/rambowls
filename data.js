@@ -146,10 +146,10 @@ const NIGHTS = {
   },
   "2026-09-09": {
     played: false,
-    in:    [],
+    in:    [["Ron",""]],
     maybe: [],
     out:   [["Eric",""], ["Phil",""]],
-    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""],
+    quiet: [["Ken",""], ["Michael",""], ["Prah",""],
             ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
   },
   "2026-09-16": {
