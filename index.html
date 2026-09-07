@@ -270,10 +270,10 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     display:flex; align-items:center; gap:5px}
   .nextup .lab .ico{width:11px !important; height:11px !important}
   .nextup .date{font-family:var(--display); font-weight:600;
-    font-size:clamp(17px,4.6vw,34px);
+    font-size:clamp(20px,5.4vw,38px);
     line-height:1.05; text-transform:uppercase; margin-bottom:8px; text-wrap:balance}
-  /* "Wednesday," and "September 2" each stay whole — the date may break
-     between them but never inside them, so no stray "2" on its own line. */
+  /* The date is one nowrap unit now, so "September 16" can never break and
+     leave the number stranded. Time badges use the same class. */
   .nextup .date .nb, .slot .nb{white-space:nowrap}
   .nextup .games{font-family:var(--data); font-size:10.5px; line-height:1.55;
     color:var(--bone); overflow-wrap:anywhere}
@@ -740,8 +740,11 @@ function fmtTime(t24){
 function fmtDate(iso, long){
   const [y,mo,d] = iso.split("-").map(Number);
   const dt = new Date(y, mo-1, d);
+  // No weekday in the long form. Every league night is a Wednesday and the
+  // eyebrow says so on every screen, so "Wednesday," was width spent on a
+  // word that could never differ between cards.
   const opts = long
-    ? {weekday:"long", month:"long", day:"numeric"}
+    ? {month:"long", day:"numeric"}
     : {month:"short", day:"numeric"};
   return dt.toLocaleDateString("en-US", opts);
 }
@@ -772,15 +775,11 @@ function nextNight(){
   return upcoming.length ? upcoming[0] : null;
 }
 
-/* Split the long date so neither half can break internally — "September 2"
-   never leaves a stray "2" alone on the next line. */
+/* One unbreakable unit, so the day number can never orphan onto its own
+   line. This used to split "Wednesday," from the month and day; dropping the
+   weekday removed the seam it was managing. */
 function dateNoWidow(iso){
-  const full = fmtDate(iso, true);          // "Wednesday, September 2"
-  const i = full.indexOf(", ");
-  if (i < 0) return `<span class="nb">${full}</span>`;
-  // keep the comma on the weekday — splitting on ", " would eat it
-  return `<span class="nb">${full.slice(0, i + 1)}</span> `
-       + `<span class="nb">${full.slice(i + 2)}</span>`;
+  return `<span class="nb">${fmtDate(iso, true)}</span>`;
 }
 
 /* One night's card: 2-up quadrant row over one long band. */
