@@ -155,12 +155,12 @@ const NIGHTS = {
   },
   "2026-09-09": {
     played: false,
-    // Four in. Game 1 is Ken, Ron, Kelvyn; Michael takes the game-2 slot from
-    // whoever posts the low score in game 1. Game 2 below is a placeholder —
-    // replace the two names beside Michael once game 1 is bowled.
+    // Four in. Ken and Ron are dues-paying members and take both games; Kelvyn
+    // is an alternate and yields the game-2 slot to Michael, who came out and
+    // is at 1 game. Members before alternates when they compete for a slot.
     lineup: {
       1: ["Ken","Ron","Kelvyn"],
-      2: ["Michael","Ron","Kelvyn"]
+      2: ["Michael","Ken","Ron"]
     },
     in:    [["Ron",""], ["Ken",""], ["Michael",""], ["Kelvyn","alt"]],
     maybe: [],
