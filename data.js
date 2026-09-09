@@ -118,7 +118,8 @@ const SHIRTS = [
 /* SHIRT CALL — set the value, save, push. null = not called yet. */
 const SHIRT_CALLS = {
   "2026-08-26": "fresh",
-  "2026-09-02": null
+  "2026-09-02": null,
+  "2026-09-09": "fresh"
 };
 
 /* ---------- availability, one entry per bowling night ----------
