@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-09-03",
+  lastUpdated:"2026-09-09",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -146,11 +146,14 @@ const NIGHTS = {
   },
   "2026-09-09": {
     played: false,
-    in:    [["Ron",""]],
+    // Game 1 is Ken, Ron, Kelvyn. Michael bowls game 2 in place of whoever
+    // posts the low score in game 1, so the game-2 trio is not known yet.
+    // `lineup` holds the game-1 three; update after the first game.
+    lineup: ["Ken","Ron","Kelvyn"],
+    in:    [["Ron",""], ["Ken",""], ["Michael",""], ["Kelvyn","alt"]],
     maybe: [],
     out:   [["Eric",""], ["Phil",""]],
-    quiet: [["Ken",""], ["Michael",""], ["Prah",""],
-            ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
+    quiet: [["Prah",""], ["Jamiqve","alt"], ["Pete","alt"]]
   },
   "2026-09-16": {
     played: false,
