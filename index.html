@@ -292,6 +292,12 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     text-transform:uppercase; color:var(--bone)}
   .lineup .k{color:var(--maple); letter-spacing:.12em}
   .lineup .nm{font-weight:700}
+  /* Split nights list a trio per game. The game tag is a quiet marker, not a
+     second heading — the names stay the loudest thing in the block. */
+  .lineup .lg{display:block; margin-top:3px}
+  .lineup .lg:first-of-type{margin-top:2px}
+  .lineup .gm{display:inline-block; min-width:16px; margin-right:5px;
+              font-size:9px; letter-spacing:.1em; color:var(--maple); opacity:.78}
   .lineup .sub{display:block; margin:3px 0 0; font-size:9px; letter-spacing:.08em;
     color:var(--dim); text-transform:none}
   .lineup .gap{color:var(--strike)}
@@ -813,20 +819,26 @@ function nightCard(iso, nextIso){
     : "TBD";
   const chips = `<span class="shirt${called ? " on" : " tbd"}">${calledLabel}</span>`;
 
-  /* Tonight's trio. Same three bowl both games, so this is one line, not two.
-     Auto-picked fewest-games-first; NIGHTS[iso].lineup wins; a played night
-     reports who actually bowled. */
+  /* Tonight's bowlers. Most nights the same three take both games and this is
+     one line; when a 4th shows up the trio changes between games and we list
+     each. Auto-picked fewest-games-first; NIGHTS[iso].lineup wins; a played
+     night reports who actually bowled. */
   const lu = RB.lineupFor(iso);
+  const nameRow = ns => ns.map(n => `<span class="nm">${n}</span>`).join(" · ");
   let lineupBlock;
   if (lu.names.length){
-    const names = lu.names.map(n => `<span class="nm">${n}</span>`).join(" · ");
     const tail  = lu.short ? ` <span class="gap">+ ${lu.short} more needed</span>` : "";
+    const body  = lu.split
+      ? Object.keys(lu.byGame).map(g =>
+          `<span class="lg"><span class="gm">G${g}</span>${nameRow(lu.byGame[g])}</span>`).join("")
+      : ` ${nameRow(lu.names)}${tail}`;
     const why   = lu.played ? "Bowled."
+                : lu.split  ? "Lineup changes between games."
                 : lu.manual ? "Set by hand for this night."
                 : lu.inCount > lu.names.length
                   ? `Fewest games first, from ${lu.inCount} in. Rotate however you like.`
                   : "Both games.";
-    lineupBlock = `<div class="lineup"><span class="k">${lu.played ? "Bowled" : "Lineup"}</span> ${names}${tail}
+    lineupBlock = `<div class="lineup"><span class="k">${lu.played ? "Bowled" : "Lineup"}</span>${body}
       <span class="sub">${why}</span></div>`;
   } else {
     lineupBlock = `<div class="lineup"><span class="k">Lineup</span>
@@ -979,16 +991,17 @@ function renderNextUp(){
 
 /* ---------- eligibility board ---------- */
 function renderBoard(){
-  /* Whoever is slated to bowl the next night gets two dashed pins — the two
-     games a double-header would add. Cap at the pins they still have open so
+  /* Whoever is slated to bowl the next night gets a dashed pin per game they
+     are actually down for — two on a normal night, one when the lineup splits
+     and they only take a single game. Cap at the pins they still have open so
      a bowler on 5 never shows 7. */
   const nextIso  = nextNight();
-  const lineup   = nextIso ? RB.lineupFor(nextIso) : {names:[]};
-  const playing  = new Set(lineup.names);
+  const slated   = nextIso ? RB.lineupGames(nextIso) : {};
   const projFor  = p => {
     const pl = RB.PLAYERS.find(x => x.name === p.name);
-    if (!pl || !playing.has(pl.short)) return 0;
-    return Math.min(2, Math.max(0, 6 - p.games));
+    const n  = pl ? (slated[pl.short] || 0) : 0;
+    if (!n) return 0;
+    return Math.min(n, Math.max(0, 6 - p.games));
   };
 
   const line = p => {
@@ -1018,8 +1031,14 @@ function renderBoard(){
   const need = starterList.filter(p => p.games < 6).length;
   // Red means the arithmetic has run out, not that it's early in the season.
   const stuck = RB.PLAYERS.filter(p => !p.alt && RB.atRisk(p)).map(p => p.short);
-  const projNote = playing.size
-    ? `<span class="proj">Dashed pins · the two games ${[...playing].join(", ")} would add on ${fmtDate(nextIso)}.</span>`
+  // The note has to name games, not just people: on a split night one bowler
+  // picks up two and another picks up one, and "the two games" would be a lie.
+  const slatedNames = Object.keys(slated);
+  const oneGame = slatedNames.filter(n => slated[n] === 1);
+  const projNote = slatedNames.length
+    ? `<span class="proj">Dashed pins · what ${slatedNames.join(", ")} would add on ${fmtDate(nextIso)}${
+        oneGame.length ? ` — ${oneGame.join(", ")} ${oneGame.length === 1 ? "is" : "are"} down for one game only` : ""
+      }.</span>`
     : "";
 
   let summary;

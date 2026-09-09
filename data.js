@@ -123,11 +123,19 @@ const SHIRT_CALLS = {
 };
 
 /* ---------- availability, one entry per bowling night ----------
-   Optional `lineup:["Eric","Phil","Ron"]` overrides the auto-picked trio for
-   that night. Leave it out and lineupFor() picks the three IN bowlers with
-   the fewest games logged (ties keep roster order), which is what actually
-   moves people toward the 6-game playoff threshold. Add it when the real
-   lineup differs — a swap at the alley, someone bowling for a teammate.
+   Optional `lineup` overrides the auto-picked trio for that night. Two forms:
+
+     lineup: ["Eric","Phil","Ron"]          same three bowl both games
+     lineup: {1:["Ken","Ron","Kelvyn"],     a different trio per game, for the
+              2:["Michael","Ron","Kelvyn"]} nights when a 4th or 5th shows up
+
+   Leave it out and lineupFor() picks the three IN bowlers with the fewest
+   games logged (ties keep roster order), which is what actually moves people
+   toward the 6-game playoff threshold. Add it when the real lineup differs —
+   a swap at the alley, someone bowling for a teammate.
+
+   The per-game form matters for eligibility: a bowler in only one game earns
+   one game toward the six, and the board projects accordingly.
    Short names only, exactly as they appear in the in/maybe/out lists. */
 const NIGHTS = {
   "2026-08-19": {
@@ -147,10 +155,13 @@ const NIGHTS = {
   },
   "2026-09-09": {
     played: false,
-    // Game 1 is Ken, Ron, Kelvyn. Michael bowls game 2 in place of whoever
-    // posts the low score in game 1, so the game-2 trio is not known yet.
-    // `lineup` holds the game-1 three; update after the first game.
-    lineup: ["Ken","Ron","Kelvyn"],
+    // Four in. Game 1 is Ken, Ron, Kelvyn; Michael takes the game-2 slot from
+    // whoever posts the low score in game 1. Game 2 below is a placeholder —
+    // replace the two names beside Michael once game 1 is bowled.
+    lineup: {
+      1: ["Ken","Ron","Kelvyn"],
+      2: ["Michael","Ron","Kelvyn"]
+    },
     in:    [["Ron",""], ["Ken",""], ["Michael",""], ["Kelvyn","alt"]],
     maybe: [],
     out:   [["Eric",""], ["Phil",""]],
@@ -262,28 +273,23 @@ function playerByShort(short){
 }
 
 /* ---------- tonight's trio ----------
-   We field 3 bowlers a night and keep the same 3 for both games. Given the
-   IN list, pick the three with the fewest games logged so the lineup itself
-   works the playoff-eligibility problem. `lineup` in NIGHTS overrides.
+   We field 3 bowlers a game. Most nights the same three bowl both games, but
+   when a 4th or 5th shows up the trio changes between games, so this resolves
+   per game. Given the IN list, pick the three with the fewest games logged so
+   the lineup itself works the playoff-eligibility problem. `lineup` in NIGHTS
+   overrides, either as one array (both games) or {1:[...], 2:[...]}.
+
+   lineupFor(iso)    -> the night: names is every bowler slated, in any game
+   lineupFor(iso, 1) -> just game 1's three
    Returns short names, plus enough context for the UI to explain itself. */
-function lineupFor(iso){
-  const n = NIGHTS[iso];
-  const need = SEASON.needPerGame;
-  const blank = {names:[], inCount:0, short:0, auto:true, manual:false, played:false};
-  if (!n) return {...blank, short:need};
+function gameNumbers(iso){
+  return SCHEDULE.filter(g => g.iso === iso).map((_, i) => i + 1);
+}
 
-  if (n.played){
-    const names = (n.bowled || []).map(x => x[0]);
-    return {names, inCount:names.length, short:0, auto:false, manual:false, played:true};
-  }
-  const ins = (n.in || []).map(x => x[0]);
-
-  if (Array.isArray(n.lineup) && n.lineup.length){
-    const names = n.lineup.slice(0, need);
-    return {names, inCount:ins.length, short:Math.max(0, need - names.length),
-            auto:false, manual:true, played:false};
-  }
-  const names = ins
+/* The three the auto-picker would field: fewest games logged, roster order
+   breaks ties. Shared by both the whole-night and per-game paths. */
+function autoTrio(ins, need){
+  return ins
     .map(s => ({s, p:playerByShort(s)}))
     .map(o => ({
       s: o.s,
@@ -293,8 +299,80 @@ function lineupFor(iso){
     .sort((a,b) => a.games - b.games || a.order - b.order)
     .slice(0, need)
     .map(o => o.s);
-  return {names, inCount:ins.length, short:Math.max(0, need - names.length),
-          auto:true, manual:false, played:false};
+}
+
+function lineupFor(iso, game){
+  const n = NIGHTS[iso];
+  const need = SEASON.needPerGame;
+  const blank = {names:[], inCount:0, short:0, auto:true, manual:false,
+                 played:false, game:game || null, split:false, byGame:{}};
+  if (!n) return {...blank, short:need};
+
+  if (n.played){
+    // A played night reports who actually bowled; the count next to each name
+    // already carries how many games they took, so there is nothing to split.
+    const names = (n.bowled || []).map(x => x[0]);
+    const byGame = {};
+    for (const g of gameNumbers(iso)) byGame[g] = names;
+    return {names, inCount:names.length, short:0, auto:false, manual:false,
+            played:true, game:game || null, split:false, byGame};
+  }
+
+  const ins  = (n.in || []).map(x => x[0]);
+  const nums = gameNumbers(iso);
+  const lu   = n.lineup;
+  const perGame = lu && !Array.isArray(lu) && typeof lu === "object";
+  const manual  = !!(Array.isArray(lu) ? lu.length : perGame);
+
+  // Resolve each game independently, then read the night off the parts.
+  const byGame = {};
+  for (const g of nums){
+    let names;
+    if (perGame && Array.isArray(lu[g]) && lu[g].length){
+      names = lu[g].slice(0, need);
+    } else if (Array.isArray(lu) && lu.length){
+      names = lu.slice(0, need);
+    } else if (perGame){
+      // Per-game object with this game unset: fall back to the other game so a
+      // half-filled night still reads sensibly, then to the auto trio.
+      const other = nums.map(k => lu[k]).find(v => Array.isArray(v) && v.length);
+      names = other ? other.slice(0, need) : autoTrio(ins, need);
+    } else {
+      names = autoTrio(ins, need);
+    }
+    byGame[g] = names;
+  }
+
+  const sets  = nums.map(g => byGame[g].join("|"));
+  const split = new Set(sets).size > 1;
+
+  if (game != null && byGame[game]){
+    const names = byGame[game];
+    return {names, inCount:ins.length, short:Math.max(0, need - names.length),
+            auto:!manual, manual, played:false, game, split, byGame};
+  }
+
+  // Whole-night view: every bowler slated in any game, roster order.
+  const union = [...new Set(nums.flatMap(g => byGame[g]))]
+    .sort((a,b) => {
+      const pa = playerByShort(a), pb = playerByShort(b);
+      return (pa ? PLAYERS.indexOf(pa) : Infinity) - (pb ? PLAYERS.indexOf(pb) : Infinity);
+    });
+  // "Short" is about fielding a legal game, so measure the thinnest game.
+  const worst = Math.max(...nums.map(g => Math.max(0, need - byGame[g].length)), 0);
+  return {names:union, inCount:ins.length, short:worst,
+          auto:!manual, manual, played:false, game:null, split, byGame};
+}
+
+/* How many of the night's games each bowler is slated for. The eligibility
+   board needs this: someone in one game of a double-header earns one game
+   toward the six, not two. Returns {shortName: gameCount}. */
+function lineupGames(iso){
+  const lu  = lineupFor(iso);
+  const out = {};
+  for (const g of Object.keys(lu.byGame))
+    for (const nm of lu.byGame[g]) out[nm] = (out[nm] || 0) + 1;
+  return out;
 }
 
 /* Last week the TEAM has officially recorded — for "Through Week X".
@@ -326,7 +404,7 @@ root.RB = {
   SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
   pad, todayISO, nights, weeks, playerById, playerByShort,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
-  gamesRemaining, atRisk, lineupFor
+  gamesRemaining, atRisk, lineupFor, lineupGames
 };
 
 /* data.js is loaded at the end of <body>, so the DOM is parsed by now.
