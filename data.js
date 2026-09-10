@@ -60,17 +60,17 @@ const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
    scores:{1:[136,124], 2:[125,97], 3:[95,90]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
-   scores:{1:[149,122]}},
+   scores:{1:[149,122], 4:[151,160]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120], 3:[162,176]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", prev:129, alt:false, hcpPre:49,
-   scores:{1:[null,116]}},
+   scores:{1:[null,116], 4:[null,140]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    prev:134, alt:false, hcpPre:47,
    scores:{3:[125,148]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
-   scores:{}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
+   scores:{4:[167,null]}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
    scores:{}, note:"Alternate, on the league sheet with no prior average, so the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
@@ -88,8 +88,8 @@ const SCHEDULE = [
   {wk:2,  iso:"2026-08-26", time24:"22:30", lane:5, opp:"The Milk Duds",                 us:559, them:488},
   {wk:3,  iso:"2026-09-02", time24:"21:20", lane:8, opp:"Pin Pals",                    us:547, them:532},
   {wk:3,  iso:"2026-09-02", time24:"22:30", lane:8, opp:"Gutter Sluts",                us:579, them:554},
-  {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful"},
-  {wk:4,  iso:"2026-09-09", time24:"20:10", lane:7, opp:"Glory Bowl"},
+  {wk:4,  iso:"2026-09-09", time24:"19:00", lane:7, opp:"The Bowled and the Beautiful", us:601, them:546},
+  {wk:4,  iso:"2026-09-09", time24:"20:10", lane:7, opp:"Glory Bowl",                   us:601, them:502},
   {wk:5,  iso:"2026-09-16", time24:"19:00", lane:6, opp:"Bowls on Parade"},
   {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats"},
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends"},
@@ -154,25 +154,23 @@ const NIGHTS = {
     sat:    [["Ken",""], ["Michael",""], ["Prah",""]]
   },
   "2026-09-09": {
-    played: false,
-    // Four in. Ken and Ron are dues-paying members and take both games; Kelvyn
-    // is an alternate and yields the game-2 slot to Michael, who came out and
-    // is at 1 game. Members before alternates when they compete for a slot.
+    played: true,
+    // Split night: Ken, Ron, Kelvyn took game 1; Michael came in for Kelvyn in
+    // game 2 under member-before-alternate. Kept the lineup for the record —
+    // `bowled` counts games but not which game each bowler took.
     lineup: {
       1: ["Ken","Ron","Kelvyn"],
       2: ["Michael","Ken","Ron"]
     },
-    in:    [["Ron",""], ["Ken",""], ["Michael",""], ["Kelvyn","alt"]],
-    maybe: [],
-    out:   [["Eric",""], ["Phil",""]],
-    quiet: [["Prah",""], ["Jamiqve","alt"], ["Pete","alt"]]
+    bowled: [["Ken",2], ["Ron",2], ["Kelvyn",1], ["Michael",1]],
+    sat:    [["Eric",""], ["Phil",""], ["Prah",""]]
   },
   "2026-09-16": {
     played: false,
-    in:    [],
+    in:    [["Ron",""]],
     maybe: [],
     out:   [["Eric",""]],
-    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""],
+    quiet: [["Ken",""], ["Michael",""], ["Phil",""], ["Prah",""],
             ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
   }
 };
