@@ -168,11 +168,16 @@ const NIGHTS = {
   },
   "2026-09-16": {
     played: false,
-    in:    [["Ron",""]],
+    // Michael called game 2 only. Ron already has 7 games, so he takes game 1
+    // and steps out of game 2 to give Ken, Phil and Michael the reps.
+    lineup: {
+      1: ["Phil","Ron","Ken"],
+      2: ["Michael","Phil","Ken"]
+    },
+    in:    [["Ken",""], ["Ron","game 1"], ["Michael","game 2"], ["Phil",""]],
     maybe: [],
-    out:   [["Eric",""]],
-    quiet: [["Ken",""], ["Michael",""], ["Phil",""], ["Prah",""],
-            ["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
+    out:   [["Eric",""], ["Prah",""]],
+    quiet: [["Kelvyn","alt"], ["Jamiqve","alt"], ["Pete","alt"]]
   }
 };
 
