@@ -406,6 +406,11 @@ if (who && !RB.playerById(who)){
 }
 let pickerOpen = !who;
 
+/* League rank arrives async from the sheet; render() shows it once it lands. */
+let LB = null;
+const ordinal = n => n + (["th","st","nd","rd"][(n % 100 > 10 && n % 100 < 14) ? 0 : (n % 10 < 4 ? n % 10 : 0)]);
+RB.leaderboard().then(lb => { LB = lb; if (who) render(); });
+
 /* ---------- provisional scores (this device only) ----------
    Official score ALWAYS wins. Provisional exists only to fill a game the
    league sheet has not posted yet, and is deleted the moment it does. */
@@ -504,6 +509,18 @@ document.getElementById("picked").addEventListener("click", () => {
   renderWho();
 });
 
+/* "26th of 101 on the league leaderboard, by scratch average." Omitted
+   entirely when the sheet can't be read and nothing is cached. */
+function rankLine(p){
+  const r = RB.leagueRank(LB, p.id);
+  if (!r) return "";
+  const when = LB.stale
+    ? ` <span style="white-space:nowrap">Last synced ${new Date(LB.at).toLocaleDateString("en-US",{month:"short",day:"numeric"})}.</span>`
+    : "";
+  return ` <b>${ordinal(r.rank)}</b> of ${r.of} on the league leaderboard, `
+    + `<span style="white-space:nowrap">by scratch average.</span>` + when;
+}
+
 /* ---------- main render ---------- */
 function render(){
   if (!who) return;
@@ -514,7 +531,8 @@ function render(){
   /* ----- the numbers (official data only, so they match the Scheduler) ----- */
   document.getElementById("numbersNote").innerHTML =
     (p.note ? esc(p.note) + " " : "") +
-    (S.count ? `<b>${S.count}</b> game${S.count > 1 ? "s" : ""} in.` : "");
+    (S.count ? `<b>${S.count}</b> game${S.count > 1 ? "s" : ""} in.` : "") +
+    rankLine(p);
 
   document.getElementById("statRow").innerHTML = `
     <div class="stat">

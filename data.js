@@ -64,9 +64,9 @@ const PLAYERS = [
    scores:{1:[149,122], 4:[151,160]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
    scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158]}},
-  {id:"michael", name:"Michael Seidler", short:"Michael", prev:129, alt:false, hcpPre:49,
+  {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
    scores:{1:[null,116], 4:[null,140]}},
-  {id:"phil",    name:"Phil Marken",     short:"Phil",    prev:134, alt:false, hcpPre:47,
+  {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
    scores:{3:[125,148]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180]}},
@@ -404,11 +404,85 @@ function lastCompletedWeek(){
 
    The pre-paint application lives in an inline <head> script on each page,
    so the theme is on the element before first paint. This is the picker. */
+/* ---------- league leaderboard ----------
+   Read live from the league sheet's Leaderboard tab: every bowler in the
+   league, ranked by scratch average, no minimum games. Rank is taken from the
+   sheet as-is (ties keep the sheet's order); nothing is recomputed here.
+
+   Trap from PLAN_SHEET_SYNC.md: a missing tab returns 200 with the FIRST
+   sheet's data. So the header row must read Player / Team or we reject it.
+   On any failure the last good copy on this device is used, flagged stale. */
+const LB_URL = "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/gviz/tq?tqx=out:csv&sheet=Leaderboard";
+const LB_KEY = "rambowls_lb_v1";
+
+function parseCSV(text){
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){
+      if (c === '"' && text[i+1] === '"'){ f += '"'; i++; }
+      else if (c === '"') q = false;
+      else f += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; }
+    else if (c !== "\r") f += c;
+  }
+  if (f !== "" || row.length) { row.push(f); rows.push(row); }
+  return rows.map(r => r.map(v => v.trim()));
+}
+
+function parseLeaderboard(text){
+  const rows = parseCSV(text);
+  const h = rows.findIndex(r => r[2] === "Player" && r[3] === "Team");
+  if (h < 0) throw new Error("Leaderboard header not found");
+  const out = [];
+  for (const r of rows.slice(h + 1)){
+    const rank = parseInt(r[1], 10), games = parseInt(r[8], 10);
+    if (!Number.isFinite(rank) || !r[2]) continue;
+    out.push({rank, name:r[2], team:r[3], avg:+r[4], games:games || 0});
+  }
+  if (!out.length) throw new Error("Leaderboard empty");
+  return out;
+}
+
+async function leaderboard(){
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 8000);
+    const res = await fetch(LB_URL, {signal: ctl.signal, cache: "no-store"});
+    clearTimeout(t);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const rows = parseLeaderboard(await res.text());
+    const data = {at: Date.now(), rows};
+    try { localStorage.setItem(LB_KEY, JSON.stringify(data)); } catch(e){}
+    return {...data, stale:false};
+  } catch(err){
+    try {
+      const raw = localStorage.getItem(LB_KEY);
+      if (raw) return {...JSON.parse(raw), stale:true};
+    } catch(e){}
+    return null;
+  }
+}
+
+/* A bowler's row, or null if they have no games on the sheet yet. `of` counts
+   only bowlers who have bowled, not the empty alternate slots. */
+function leagueRank(lb, id){
+  const p = playerById(id);
+  if (!lb || !p) return null;
+  const want = (p.sheetName || p.name).toLowerCase();
+  const row = lb.rows.find(r => r.name.toLowerCase() === want && r.team === "Rambowls");
+  if (!row || !row.games) return null;
+  return {...row, of: lb.rows.filter(r => r.games > 0).length};
+}
+
 root.RB = {
   SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
   pad, todayISO, nights, weeks, playerById, playerByShort,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
-  gamesRemaining, atRisk, lineupFor, lineupGames
+  gamesRemaining, atRisk, lineupFor, lineupGames,
+  leaderboard, leagueRank, parseLeaderboard
 };
 
 /* data.js is loaded at the end of <body>, so the DOM is parsed by now.
