@@ -184,6 +184,19 @@ const NIGHTS = {
     in:    [["Eric",""], ["Prah",""], ["Ken",""]],
     maybe: [],
     out:   [["Phil",""], ["Michael",""], ["Ron","standby"]]
+  },
+  // Ken said on 9/21 he's away the next two weeks.
+  "2026-09-30": {
+    in:    [],
+    maybe: [],
+    out:   [["Ken","away"]],
+    quiet: [["Eric",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
+  },
+  "2026-10-07": {
+    in:    [],
+    maybe: [],
+    out:   [["Ken","away"]],
+    quiet: [["Eric",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
   }
 };
 
