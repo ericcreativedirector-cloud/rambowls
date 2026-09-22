@@ -176,6 +176,14 @@ const NIGHTS = {
     },
     bowled: [["Ken",2], ["Phil",2], ["Ron",1], ["Michael",1]],
     sat:    [["Eric",""], ["Prah",""]]
+  },
+  "2026-09-23": {
+    // Ken doubles to bank games before two weeks away; Ron offered to sit and
+    // stays on standby.
+    lineup: ["Eric","Prah","Ken"],
+    in:    [["Eric",""], ["Prah",""], ["Ken",""]],
+    maybe: [],
+    out:   [["Phil",""], ["Michael",""], ["Ron","standby"]]
   }
 };
 
