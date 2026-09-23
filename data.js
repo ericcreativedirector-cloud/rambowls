@@ -120,7 +120,8 @@ const SHIRTS = [
 const SHIRT_CALLS = {
   "2026-08-26": "fresh",
   "2026-09-02": null,
-  "2026-09-09": "fresh"
+  "2026-09-09": "fresh",
+  "2026-09-23": "leroy"
 };
 
 /* ---------- availability, one entry per bowling night ----------
