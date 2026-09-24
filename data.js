@@ -59,9 +59,9 @@ const STANDINGS = [
 --------------------------------------------------------------- */
 const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
-   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,null]}},
+   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
-   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,null]}},
+   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
    scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
@@ -69,7 +69,7 @@ const PLAYERS = [
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
    scores:{3:[125,148], 5:[139,157]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
-   scores:{2:[144,180], 6:[149,null]}},
+   scores:{2:[144,180], 6:[149,141]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
    scores:{4:[167,null]}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
@@ -94,7 +94,7 @@ const SCHEDULE = [
   {wk:5,  iso:"2026-09-16", time24:"19:00", lane:6, opp:"Bowls on Parade",              us:540, them:577},
   {wk:5,  iso:"2026-09-16", time24:"20:10", lane:6, opp:"Deli Meats",                   us:498, them:549},
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends",                 us:514, them:608},
-  {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters"},
+  {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters",               us:527, them:579},
   {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads"},
   {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
@@ -179,12 +179,11 @@ const NIGHTS = {
     sat:    [["Eric",""], ["Prah",""]]
   },
   "2026-09-23": {
-    // Ken doubles to bank games before two weeks away; Ron offered to sit and
-    // stays on standby.
-    lineup: ["Eric","Prah","Ken"],
-    in:    [["Eric",""], ["Prah",""], ["Ken",""]],
-    maybe: [],
-    out:   [["Phil",""], ["Michael",""], ["Ron","standby"]]
+    played: true,
+    // Ken doubled to bank games before two weeks away; Ron offered to sit and
+    // stayed on standby.
+    bowled: [["Eric",2], ["Prah",2], ["Ken",2]],
+    sat:    [["Phil",""], ["Michael",""], ["Ron",""]]
   },
   // Ken said on 9/21 he's away the next two weeks.
   "2026-09-30": {
