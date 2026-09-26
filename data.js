@@ -42,7 +42,8 @@ const STANDINGS = [
   {wk:0, place:10, baseline:"last season"},
   {wk:2, place:4},
   {wk:3, place:3},
-  {wk:4, place:3}
+  {wk:4, place:3},
+  {wk:6, place:5}
 ];
 
 /* ---------- players ----------
