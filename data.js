@@ -188,16 +188,17 @@ const NIGHTS = {
   },
   // Ken said on 9/21 he's away the next two weeks.
   "2026-09-30": {
+    // Eric and Michael out on 9/28; Michael is back for 10/7.
     in:    [],
     maybe: [],
-    out:   [["Ken","away"]],
-    quiet: [["Eric",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
+    out:   [["Ken","away"], ["Eric",""], ["Michael",""]],
+    quiet: [["Prah",""], ["Ron",""], ["Phil",""]]
   },
   "2026-10-07": {
-    in:    [],
+    in:    [["Michael",""]],
     maybe: [],
     out:   [["Ken","away"]],
-    quiet: [["Eric",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
+    quiet: [["Eric",""], ["Ron",""], ["Phil",""], ["Prah",""]]
   }
 };
 
