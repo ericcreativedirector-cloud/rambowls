@@ -195,10 +195,10 @@ const NIGHTS = {
     quiet: [["Prah",""], ["Ron",""], ["Phil",""]]
   },
   "2026-10-07": {
-    in:    [["Michael",""]],
+    in:    [["Eric",""], ["Michael",""]],
     maybe: [],
     out:   [["Ken","away"]],
-    quiet: [["Eric",""], ["Ron",""], ["Phil",""], ["Prah",""]]
+    quiet: [["Ron",""], ["Phil",""], ["Prah",""]]
   }
 };
 
