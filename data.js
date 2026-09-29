@@ -188,10 +188,11 @@ const NIGHTS = {
   },
   // Ken said on 9/21 he's away the next two weeks.
   "2026-09-30": {
-    // Eric and Michael out on 9/28; Michael is back for 10/7. Phil in on
-    // 9/28; Ron pretty sure, confirming 9/29.
-    in:    [["Phil",""]],
-    maybe: [["Ron","confirming"]],
+    // Eric and Michael out on 9/28; Michael is back for 10/7. Ron, Phil and
+    // Kelvyn confirmed 9/29.
+    lineup: ["Ron","Phil","Kelvyn"],
+    in:    [["Ron",""], ["Phil",""], ["Kelvyn","alt"]],
+    maybe: [],
     out:   [["Ken","away"], ["Eric",""], ["Michael",""]],
     quiet: [["Prah",""]]
   },
