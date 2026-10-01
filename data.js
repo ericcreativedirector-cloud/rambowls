@@ -43,7 +43,8 @@ const STANDINGS = [
   {wk:2, place:4},
   {wk:3, place:3},
   {wk:4, place:3},
-  {wk:6, place:5}
+  {wk:6, place:5},
+  {wk:7, place:8}
 ];
 
 /* ---------- players ----------
