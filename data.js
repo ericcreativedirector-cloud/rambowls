@@ -64,15 +64,15 @@ const PLAYERS = [
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
    scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,null]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
    scores:{1:[null,116], 4:[null,140], 5:[null,94]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
-   scores:{3:[125,148], 5:[139,157], 7:[103,null]}},
+   scores:{3:[125,148], 5:[139,157], 7:[103,133]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180], 6:[149,141]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
-   scores:{4:[167,null], 7:[92,null]}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
+   scores:{4:[167,null], 7:[92,139]}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
    scores:{}, note:"Alternate, on the league sheet with no prior average, so the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
@@ -188,13 +188,11 @@ const NIGHTS = {
   },
   // Ken said on 9/21 he's away the next two weeks.
   "2026-09-30": {
-    // Eric and Michael out on 9/28; Michael is back for 10/7. Ron, Phil and
-    // Kelvyn confirmed 9/29.
-    lineup: ["Ron","Phil","Kelvyn"],
-    in:    [["Ron",""], ["Phil",""], ["Kelvyn","alt"]],
-    maybe: [],
-    out:   [["Ken","away"], ["Eric",""], ["Michael",""]],
-    quiet: [["Prah",""]]
+    played: true,
+    // Game 2 team result is still open: the screen gave the opponents' scratch
+    // scores but not their handicap, so no card total yet.
+    bowled: [["Ron",2], ["Phil",2], ["Kelvyn",2]],
+    sat:    [["Ken",""], ["Eric",""], ["Michael",""], ["Prah",""]]
   },
   "2026-10-07": {
     in:    [["Eric",""], ["Michael",""]],
