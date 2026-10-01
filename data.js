@@ -97,7 +97,9 @@ const SCHEDULE = [
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends",                 us:514, them:608},
   {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters",               us:527, them:579},
   {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads",                 us:469, them:347},
-  {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane"},
+  // Game 2 "them" is approximate: 423 scratch off the lane screen, plus a handicap
+  // Ken put at about 20 pins over ours (121). Reconcile against the league sheet.
+  {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:564},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
@@ -189,8 +191,6 @@ const NIGHTS = {
   // Ken said on 9/21 he's away the next two weeks.
   "2026-09-30": {
     played: true,
-    // Game 2 team result is still open: the screen gave the opponents' scratch
-    // scores but not their handicap, so no card total yet.
     bowled: [["Ron",2], ["Phil",2], ["Kelvyn",2]],
     sat:    [["Ken",""], ["Eric",""], ["Michael",""], ["Prah",""]]
   },
