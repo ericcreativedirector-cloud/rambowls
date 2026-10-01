@@ -97,9 +97,7 @@ const SCHEDULE = [
   {wk:6,  iso:"2026-09-23", time24:"21:20", lane:6, opp:"Bite Legends",                 us:514, them:608},
   {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters",               us:527, them:579},
   {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads",                 us:469, them:347},
-  // Game 2 "them" is approximate: 423 scratch off the lane screen, plus a handicap
-  // Ken put at about 20 pins over ours (121). Reconcile against the league sheet.
-  {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:564},
+    {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:563},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
