@@ -194,10 +194,26 @@ const NIGHTS = {
     sat:    [["Ken",""], ["Eric",""], ["Michael",""], ["Prah",""]]
   },
   "2026-10-07": {
-    in:    [["Eric",""], ["Michael",""]],
+    // Eric, Michael and Phil take both games. Ron is coming for support and
+    // steps in for game 2 if someone needs relieving.
+    lineup: ["Eric","Michael","Phil"],
+    in:    [["Eric",""], ["Michael",""], ["Phil",""], ["Ron","support, game 2 if needed"]],
     maybe: [],
     out:   [["Ken","away"]],
-    quiet: [["Ron",""], ["Phil",""], ["Prah",""]]
+    quiet: [["Prah",""]]
+  },
+  // Phil said on 10/5 he's out the next two weeks.
+  "2026-10-14": {
+    in:    [],
+    maybe: [],
+    out:   [["Phil",""]],
+    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
+  },
+  "2026-10-21": {
+    in:    [],
+    maybe: [],
+    out:   [["Phil",""]],
+    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
   }
 };
 

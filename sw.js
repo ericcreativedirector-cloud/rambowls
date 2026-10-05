@@ -1,6 +1,6 @@
 // Rambowls Scheduler - offline cache
 // Bump CACHE when you push an update, so phones pick up the new version.
-const CACHE = 'rambowls-v78';
+const CACHE = 'rambowls-v79';
 
 const ASSETS = [
   './',
