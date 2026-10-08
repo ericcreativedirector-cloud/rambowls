@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-09-30",
+  lastUpdated:"2026-10-07",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -61,15 +61,15 @@ const STANDINGS = [
 --------------------------------------------------------------- */
 const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
-   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105]}},
+   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105], 8:[95,null]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
    scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
    scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
-   scores:{1:[null,116], 4:[null,140], 5:[null,94]}},
+   scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,null]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
-   scores:{3:[125,148], 5:[139,157], 7:[103,133]}},
+   scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,null]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180], 6:[149,141]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
@@ -99,7 +99,7 @@ const SCHEDULE = [
   {wk:6,  iso:"2026-09-23", time24:"22:30", lane:6, opp:"Tokyo Drifters",               us:527, them:579},
   {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads",                 us:469, them:347},
     {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:563},
-  {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split"},
+  {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split",              us:556, them:579},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
   {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
