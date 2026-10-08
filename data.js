@@ -65,11 +65,11 @@ const PLAYERS = [
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
    scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
-   scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,null]}},
+   scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,132]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
-   scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,null]}},
+   scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,144]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180], 6:[149,141]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
@@ -100,7 +100,7 @@ const SCHEDULE = [
   {wk:7,  iso:"2026-09-30", time24:"21:20", lane:7, opp:"The Pinheads",                 us:469, them:347},
     {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:563},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split",              us:556, them:579},
-  {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends"},
+  {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends",                 us:530, them:556},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
   {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
   {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
@@ -194,13 +194,14 @@ const NIGHTS = {
     sat:    [["Ken",""], ["Eric",""], ["Michael",""], ["Prah",""]]
   },
   "2026-10-07": {
-    // Eric, Michael and Phil take both games. Ron is coming for support and
-    // steps in for game 2 if someone needs relieving.
-    lineup: ["Eric","Michael","Phil"],
-    in:    [["Eric",""], ["Michael",""], ["Phil",""], ["Ron","support, game 2 if needed"]],
-    maybe: [],
-    out:   [["Ken","away"]],
-    quiet: [["Prah",""]]
+    played: true,
+    // Ron came for support and took Eric's spot in game 2.
+    lineup: {
+      1: ["Eric","Michael","Phil"],
+      2: ["Ron","Phil","Michael"]
+    },
+    bowled: [["Phil",2], ["Michael",2], ["Eric",1], ["Ron",1]],
+    sat:    [["Ken",""], ["Prah",""]]
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
