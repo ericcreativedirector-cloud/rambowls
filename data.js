@@ -214,8 +214,8 @@ const NIGHTS = {
   "2026-10-21": {
     in:    [],
     maybe: [],
-    out:   [["Phil",""]],
-    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
+    out:   [["Phil",""], ["Eric",""]],
+    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
   }
 };
 
