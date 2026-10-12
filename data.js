@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-10-07",
+  lastUpdated:"2026-10-12",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -206,10 +206,12 @@ const NIGHTS = {
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
-    in:    [],
+    // Eric in for both late games (10/12). Prah sits at 4 games, two short of
+    // the six; Michael at 5. Two more bowlers needed with Phil out.
+    in:    [["Eric","both games"]],
     maybe: [],
     out:   [["Phil",""]],
-    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
+    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
   },
   "2026-10-21": {
     in:    [],
