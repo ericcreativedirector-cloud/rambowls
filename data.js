@@ -206,17 +206,18 @@ const NIGHTS = {
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
-    // Eric in for both late games (10/12). Prah sits at 4 games, two short of
-    // the six; Michael at 5. Two more bowlers needed with Phil out.
-    in:    [["Eric","both games"]],
+    // Group chat 10/12: Prah and Ken in, Michael out. Trio is Eric, Prah, Ken.
+    // Eric offered one of his games to Michael or Ron if either shows.
+    // Kelvyn said he's out for the next few games.
+    in:    [["Eric","both games"], ["Prah",""], ["Ken","if needed"]],
     maybe: [],
-    out:   [["Phil",""]],
-    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
+    out:   [["Phil",""], ["Michael",""], ["Kelvyn","next few games"]],
+    quiet: [["Ron",""]]
   },
   "2026-10-21": {
     in:    [],
     maybe: [],
-    out:   [["Phil",""], ["Eric",""]],
+    out:   [["Phil",""], ["Eric",""], ["Kelvyn","next few games"]],
     quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
   }
 };
