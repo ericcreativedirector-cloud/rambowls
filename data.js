@@ -209,7 +209,7 @@ const NIGHTS = {
     // Group chat 10/12: Prah and Ken in, Michael out. Trio is Eric, Prah, Ken.
     // Eric offered one of his games to Michael or Ron if either shows.
     // Kelvyn said he's out for the next few games.
-    in:    [["Eric","both games"], ["Prah",""], ["Ken","if needed"]],
+    in:    [["Eric","both games"], ["Prah","both games"], ["Ken","both games"]],
     maybe: [],
     out:   [["Phil",""], ["Michael",""], ["Kelvyn","next few games"]],
     quiet: [["Ron",""]]
