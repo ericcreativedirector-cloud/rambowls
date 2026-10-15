@@ -207,13 +207,13 @@ const NIGHTS = {
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
     played: true,
-    // Michael took game 1, Ken game 2. Game 2 bowler scores still to come from
-    // the card or the sheet.
+    // Eric bowled game 1 and went home; Ken came in for game 2. Game 2 bowler
+    // scores still to come from the card or the sheet.
     lineup: {
       1: ["Eric","Michael","Prah"],
-      2: ["Eric","Prah","Ken"]
+      2: ["Michael","Ken","Prah"]
     },
-    bowled: [["Eric",2], ["Prah",2], ["Michael",1], ["Ken",1]],
+    bowled: [["Michael",2], ["Prah",2], ["Eric",1], ["Ken",1]],
     sat:    [["Phil",""], ["Ron",""], ["Kelvyn",""]]
   },
   "2026-10-21": {
