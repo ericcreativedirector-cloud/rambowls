@@ -222,10 +222,11 @@ const NIGHTS = {
     sat:    [["Phil",""], ["Ron",""], ["Kelvyn",""]]
   },
   "2026-10-21": {
-    in:    [],
+    // Away night at The Gutter LIC. Eric, Phil and Michael all out.
+    in:    [["Ron",""]],
     maybe: [],
-    out:   [["Phil",""], ["Eric",""], ["Kelvyn","next few games"]],
-    quiet: [["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""]]
+    out:   [["Eric",""], ["Phil",""], ["Michael",""], ["Kelvyn","next few games"]],
+    quiet: [["Ken",""], ["Prah",""]]
   }
 };
 
