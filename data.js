@@ -103,7 +103,7 @@ const SCHEDULE = [
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split",              us:556, them:579},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends",                 us:530, them:556},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds",                us:517, them:549},
-  {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
+  {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade",              us:577, them:543},
   {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
   {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly"},
   {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split"},
@@ -206,16 +206,15 @@ const NIGHTS = {
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
-    // Game 1 card: Eric, Michael, Prah bowled; Ken sat. Game 2 trio is
-    // Eric, Prah, Ken. Kelvyn is out for the next few games.
+    played: true,
+    // Michael took game 1, Ken game 2. Game 2 bowler scores still to come from
+    // the card or the sheet.
     lineup: {
       1: ["Eric","Michael","Prah"],
       2: ["Eric","Prah","Ken"]
     },
-    in:    [["Eric",""], ["Prah",""], ["Michael","game 1"], ["Ken","game 2"]],
-    maybe: [],
-    out:   [["Phil",""], ["Kelvyn","next few games"]],
-    quiet: [["Ron",""]]
+    bowled: [["Eric",2], ["Prah",2], ["Michael",1], ["Ken",1]],
+    sat:    [["Phil",""], ["Ron",""], ["Kelvyn",""]]
   },
   "2026-10-21": {
     in:    [],
