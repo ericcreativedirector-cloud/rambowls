@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-10-12",
+  lastUpdated:"2026-10-14",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -62,17 +62,17 @@ const STANDINGS = [
 --------------------------------------------------------------- */
 const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
-   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105], 8:[95,null]}},
+   scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105], 8:[95,null], 9:[104,null]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
    scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
    scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
-   scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,132]}},
+   scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,132], 9:[121,null]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
    scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,144]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
-   scores:{2:[144,180], 6:[149,141]}},
+   scores:{2:[144,180], 6:[149,141], 9:[142,null]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
    scores:{4:[167,null], 7:[92,139]}, note:"Alternate. Carries a real 138 average from last season, so his handicap is 43, not the 56 an unrated bowler gets."},
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
@@ -102,7 +102,7 @@ const SCHEDULE = [
     {wk:7,  iso:"2026-09-30", time24:"22:30", lane:7, opp:"Blame It On The Lane",         us:504, them:563},
   {wk:8,  iso:"2026-10-07", time24:"19:00", lane:8, opp:"2 Legit 2 Split",              us:556, them:579},
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends",                 us:530, them:556},
-  {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds"},
+  {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds",                us:517, them:549},
   {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade"},
   {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
   {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly"},
@@ -206,13 +206,13 @@ const NIGHTS = {
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
-    // Group chat 10/12: Prah and Ken in both games. Michael showed, so Eric
-    // gave him game 1 and takes game 2. Kelvyn is out for the next few games.
+    // Game 1 card: Eric, Michael, Prah bowled; Ken sat. Game 2 trio is
+    // Eric, Prah, Ken. Kelvyn is out for the next few games.
     lineup: {
-      1: ["Michael","Prah","Ken"],
+      1: ["Eric","Michael","Prah"],
       2: ["Eric","Prah","Ken"]
     },
-    in:    [["Michael","game 1"], ["Eric","game 2"], ["Prah","both games"], ["Ken","both games"]],
+    in:    [["Eric",""], ["Prah",""], ["Michael","game 1"], ["Ken","game 2"]],
     maybe: [],
     out:   [["Phil",""], ["Kelvyn","next few games"]],
     quiet: [["Ron",""]]
