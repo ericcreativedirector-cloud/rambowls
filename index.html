@@ -601,7 +601,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Where we stand</h2>
     <p class="note" id="throughNote"></p>
     <div class="record">
-      <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div></div>
+      <div class="rec-cell"><div class="rec-val" id="recRecord">—</div><div class="rec-lab">Record</div><div class="rec-sub" id="recRecordSub"></div></div>
       <div class="rec-cell"><div class="rec-val" id="recPlace">—</div><div class="rec-lab">League place</div><div class="rec-sub" id="recPlaceSub"></div></div>
       <div class="rec-cell"><div class="rec-val" id="recUs">—</div><div class="rec-lab">Avg scratch total</div><div class="rec-sub" id="recUsSub"></div></div>
       <div class="rec-cell"><div class="rec-val" id="recQual">—</div><div class="rec-lab">Starters qualified</div><div class="rec-sub" id="recQualSub"></div></div>
@@ -1062,6 +1062,10 @@ function renderRecord(){
   const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : "—";
 
   document.getElementById("recRecord").textContent = t ? `${w}-${l}-${t}` : `${w}–${l}`;
+  // Team playoff spot comes off the league sheet, same as place. Stamp it the
+  // way a bowler's six games are stamped, so the two reads match.
+  document.getElementById("recRecordSub").innerHTML =
+    RB.SEASON.playoffEligible ? `<span class="stamp">Playoff eligible</span>` : "";
 
   /* Avg team total, scratch — matches the league sheet's "Avg." column.
      The us/them figures in SCHEDULE include handicap (they decide W/L);

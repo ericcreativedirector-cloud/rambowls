@@ -105,13 +105,17 @@ night-by-night chart all derive from this. **Nothing else to update.**
 "2026-09-09": "leroy"   // "leroy" | "aloha" | "fresh" | null
 ```
 
-**6. Update `SEASON.lastUpdated`** — this is the date the *data* was last
+**6. Playoff spot** — when the league sheet's Playoff Eligible column says
+Yes for the team, set `SEASON.playoffEligible` to that night's date. The
+record cell gets a "Playoff eligible" stamp. Leave it `null` until then.
+
+**7. Update `SEASON.lastUpdated`** — this is the date the *data* was last
 updated, not today's date. If no new scores went in, leave it alone.
 
-**7. Bump the service worker cache** in `sw.js` (`rambowls-v16`, `v17`, …) so
+**8. Bump the service worker cache** in `sw.js` (`rambowls-v16`, `v17`, …) so
 phones with the app installed pull the new build instead of a stale cache.
 
-**8. Push:**
+**9. Push:**
 
 ```bash
 git add -A && git commit -m "Week 3 results" && git push

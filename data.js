@@ -21,6 +21,9 @@ const SEASON = {
   // existing group thread. Nobody's number is published in this public repo.
   sheetUrl:   "https://docs.google.com/spreadsheets/d/1eRRPcCOAMt8T2kVdodaOWb0ZtKiVKRoZxKHh8Q70i-g/edit?gid=62#gid=62",
   qualify:    6,     // games needed for playoff eligibility
+  // Date the league sheet's Playoff Eligible column flipped to Yes for the
+  // team. null until it does. Team-level; the per-bowler 6-game rule is below.
+  playoffEligible:"2026-10-14",
   needPerGame:3,     // bowlers we want on a lane each game
   ballast:    4,     // league ballast games
   setPoint:   200,   // handicap set point
