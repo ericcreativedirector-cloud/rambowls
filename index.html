@@ -254,6 +254,10 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     column-gap:7px; row-gap:1px; align-items:center}
   .nu-cell{padding:12px 13px; min-width:0}
   .nu-when{border-right:1px solid rgba(200,135,60,.28)}
+  .nu-venue{display:flex; align-items:center; gap:5px; margin-top:8px;
+    font-family:var(--data); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--maple); text-wrap:balance}
+  .nu-venue .ico{width:12px; height:12px; flex:none}
   .nu-cell.wide{grid-column:1/-1; border-top:1px solid rgba(200,135,60,.28)}
   .cellkick{font-family:var(--data); font-size:8.5px; letter-spacing:.12em;
     text-transform:uppercase; color:var(--maple); margin-bottom:7px;
@@ -856,6 +860,7 @@ function nightCard(iso, nextIso){
         <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${lab}</div>
         <div class="date">${dateNoWidow(iso)}</div>
         <div>${slotBadge(iso)}</div>
+        ${games[0].venue ? `<div class="nu-venue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.5s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10.3" r="2.6"/></svg><span>At ${games[0].venue}</span></div>` : ""}
       </div>
       <div class="nu-cell nu-games">
         <div class="cellkick"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Games</div>
@@ -1199,7 +1204,8 @@ function renderNight(iso){
   const data = nights[iso];
   const games = schedule.filter(g => g.iso === iso);
   const wk = games.length ? games[0].wk : "";
-  const matchups = games.map(g => `${g.opp} at ${fmtTime(g.time24)} on Lane ${g.lane}`).join(", ");
+  const matchups = games.map(g => `${g.opp} at ${fmtTime(g.time24)} on Lane ${g.lane}`).join(", ")
+    + (games[0] && games[0].venue ? `. At ${games[0].venue}, not Williamsburg` : "");
 
   document.querySelectorAll("#availTabs .tab").forEach(t =>
     t.classList.toggle("on", t.dataset.iso === iso));
@@ -1344,8 +1350,8 @@ function downloadICS(games, filename){
       `DTSTART;TZID=America/New_York:${icsStamp(g.iso, g.time24)}`,
       `DTEND;TZID=America/New_York:${icsStamp(g.iso, g.time24, 65)}`,
       `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
-      `LOCATION:The Gutter, Lane ${g.lane}`,
-      `DESCRIPTION:Week ${g.wk} · 2026 Fall Wednesday League. Lane ${g.lane}.`,
+      `LOCATION:${(g.venue || "The Gutter, Williamsburg").replace(/\s*[,;]\s*/g," ")}, Lane ${g.lane}`,
+      `DESCRIPTION:Week ${g.wk} · 2026 Fall Wednesday League. Lane ${g.lane}.${g.venue ? ` At ${g.venue.replace(/\s*[,;]\s*/g," ")}, not Williamsburg.` : ""}`,
       "BEGIN:VALARM","TRIGGER:-PT60M","ACTION:DISPLAY",
       "DESCRIPTION:Rambowls in 1 hour","END:VALARM",
       "END:VEVENT"

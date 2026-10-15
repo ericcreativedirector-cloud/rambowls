@@ -142,6 +142,10 @@ Live in about a minute.
   labeled "Provisional", and are deleted automatically the moment the official
   score appears. Provisional scores never affect average, handicap, high game,
   qualification, Road to Goal or the night chart — those stay official-only.
+- **Away nights.** A game in `SCHEDULE` can carry `venue:"The Gutter, Long
+  Island City"` when the league moves a night. The night card, the
+  availability note and the calendar export all say so. Leave it off for
+  Williamsburg.
 - The repo is public for free GitHub Pages hosting, so don't put anything here
   you wouldn't post publicly. Player names and averages are already visible.
 - No analytics, no cookies. The only local storage is the selected player name

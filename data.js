@@ -88,6 +88,8 @@ const PLAYERS = [
 /* ---------- schedule ----------
    Two games per bowling night. iso = date, time24 = start.
    us / them = official team totals; absent means not bowled yet.
+   venue = only when a night is NOT at the home alley in Williamsburg. The
+   night card, the availability note and the calendar export all pick it up.
 --------------------------------------------------------------- */
 const SCHEDULE = [
   {wk:1,  iso:"2026-08-19", time24:"19:00", lane:7, opp:"The Pinheads",                  us:533, them:470},
@@ -108,8 +110,8 @@ const SCHEDULE = [
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends",                 us:530, them:556},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds",                us:517, them:549},
   {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade",              us:577, them:543},
-  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM"},
-  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly"},
+  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM", venue:"The Gutter, Long Island City"},
+  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly",         venue:"The Gutter, Long Island City"},
   {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split"},
   {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl"},
   {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM"},
