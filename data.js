@@ -206,12 +206,15 @@ const NIGHTS = {
   },
   // Phil said on 10/5 he's out the next two weeks.
   "2026-10-14": {
-    // Group chat 10/12: Prah and Ken in, Michael out. Trio is Eric, Prah, Ken.
-    // Eric offered one of his games to Michael or Ron if either shows.
-    // Kelvyn said he's out for the next few games.
-    in:    [["Eric",""], ["Prah","both games"], ["Ken","both games"]],
+    // Group chat 10/12: Prah and Ken in both games. Michael showed, so Eric
+    // gave him game 1 and takes game 2. Kelvyn is out for the next few games.
+    lineup: {
+      1: ["Michael","Prah","Ken"],
+      2: ["Eric","Prah","Ken"]
+    },
+    in:    [["Michael","game 1"], ["Eric","game 2"], ["Prah","both games"], ["Ken","both games"]],
     maybe: [],
-    out:   [["Phil",""], ["Michael",""], ["Kelvyn","next few games"]],
+    out:   [["Phil",""], ["Kelvyn","next few games"]],
     quiet: [["Ron",""]]
   },
   "2026-10-21": {
