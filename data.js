@@ -82,7 +82,9 @@ const PLAYERS = [
   {id:"jamiqve", name:"Jamiqve Mascoll", short:"Jamiqve", prev:120, alt:true,  hcpPre:56,
    scores:{}, note:"Alternate, on the league sheet with no prior average, so the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Not on the league sheet yet, still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."}
+   scores:{}, note:"Not on the league sheet yet, still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."},
+  {id:"kenny",   name:"Kenny",           short:"Kenny",   prev:120, alt:true,  hcpPre:56,
+   scores:{}, note:"Sub, a friend of Phil's. First night was 10/21. Not on the league sheet, so the league standard 120 stands in until an average is filed."}
 ];
 
 /* ---------- schedule ----------
@@ -222,11 +224,13 @@ const NIGHTS = {
     sat:    [["Phil",""], ["Ron",""], ["Kelvyn",""]]
   },
   "2026-10-21": {
-    // Away night at The Gutter LIC. Eric, Phil and Michael all out.
-    in:    [["Ron",""]],
+    // Away night at The Gutter LIC. Eric, Phil and Michael out. Kenny, a friend
+    // of Phil's, subs in for both games.
+    lineup: ["Ron","Ken","Kenny"],
+    in:    [["Ron",""], ["Ken",""], ["Kenny","sub"]],
     maybe: [],
     out:   [["Eric",""], ["Phil",""], ["Michael",""], ["Kelvyn","next few games"]],
-    quiet: [["Ken",""], ["Prah",""]]
+    quiet: [["Prah",""]]
   }
 };
 
