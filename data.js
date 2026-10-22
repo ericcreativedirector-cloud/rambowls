@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-10-14",
+  lastUpdated:"2026-10-21",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -68,9 +68,9 @@ const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
    scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105], 8:[95,null], 9:[104,null]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
-   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141], 9:[null,154]}},
+   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141], 9:[null,154], 10:[105,null]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108], 10:[116,null]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
    scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,127], 9:[121,149]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
@@ -84,7 +84,7 @@ const PLAYERS = [
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
    scores:{}, note:"Not on the league sheet yet, still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."},
   {id:"kenny",   name:"Kenny",           short:"Kenny",   prev:120, alt:true,  hcpPre:56,
-   scores:{}, note:"Sub, a friend of Phil's. First night was 10/21. Not on the league sheet, so the league standard 120 stands in until an average is filed."}
+   scores:{10:[140,null]}, note:"Sub, a friend of Phil's. First night was 10/21. Not on the league sheet, so the league standard 120 stands in until an average is filed."}
 ];
 
 /* ---------- schedule ----------
