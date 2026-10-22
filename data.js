@@ -83,8 +83,8 @@ const PLAYERS = [
    scores:{}, note:"Alternate, on the league sheet with no prior average, so the league standard 120 stands in until he files one."},
   {id:"pete",    name:"Pete",            short:"Pete",    prev:120, alt:true,  hcpPre:56,
    scores:{}, note:"Not on the league sheet yet, still unconfirmed with the commissioner. Shown at the league standard 120 until that's settled."},
-  {id:"kenny",   name:"Kenny",           short:"Kenny",   prev:120, alt:true,  hcpPre:56,
-   scores:{10:[140,137]}, note:"Sub, a friend of Phil's. First night was 10/21. Not on the league sheet, so the league standard 120 stands in until an average is filed."}
+  {id:"kenny",   name:"Kenny Diaz",      short:"Kenny",   prev:173, alt:true,  hcpPre:19,
+   scores:{10:[140,137]}, note:"Sub, a friend of Phil's. First night was 10/21. The league sheet carries a prior average for him, so his handicap started at 19, not the 56 an unrated bowler gets."}
 ];
 
 /* ---------- schedule ----------
@@ -112,8 +112,8 @@ const SCHEDULE = [
   {wk:8,  iso:"2026-10-07", time24:"20:10", lane:8, opp:"Bite Legends",                 us:530, them:556},
   {wk:9,  iso:"2026-10-14", time24:"21:20", lane:6, opp:"The Milk Duds",                us:517, them:549},
   {wk:9,  iso:"2026-10-14", time24:"22:30", lane:5, opp:"Bowls on Parade",              us:577, them:543},
-  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM", venue:"The Gutter, Long Island City"},
-  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly",         venue:"The Gutter, Long Island City"},
+  {wk:10, iso:"2026-10-21", time24:"21:20", lane:7, opp:"WHO DO YOU THINK YOU ARE I AM", venue:"The Gutter, Long Island City", us:468, them:490},
+  {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly",         venue:"The Gutter, Long Island City", us:539, them:590},
   {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split"},
   {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl"},
   {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM"},
@@ -226,7 +226,7 @@ const NIGHTS = {
   "2026-10-21": {
     played: true,
     // Away night at The Gutter LIC. Kenny, a friend of Phil's, subbed both
-    // games. Team results come from the league sheet; no cards.
+    // games. Team results are from the league sheet; there were no cards.
     bowled: [["Ron",2], ["Ken",2], ["Kenny",2]],
     sat:    [["Eric",""], ["Phil",""], ["Michael",""], ["Prah",""], ["Kelvyn",""]]
   }
