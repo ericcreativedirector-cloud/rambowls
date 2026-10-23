@@ -229,6 +229,13 @@ const NIGHTS = {
     // games. Team results are from the league sheet; there were no cards.
     bowled: [["Ron",2], ["Ken",2], ["Kenny",2]],
     sat:    [["Eric",""], ["Phil",""], ["Michael",""], ["Prah",""], ["Kelvyn",""]]
+  },
+  "2026-10-28": {
+    // Group chat 10/23: Phil has softball at 9, so game 1 only. Michael both.
+    in:    [["Michael",""], ["Phil","game 1 only"]],
+    maybe: [],
+    out:   [],
+    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Prah",""], ["Kelvyn",""]]
   }
 };
 
