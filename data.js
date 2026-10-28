@@ -231,11 +231,16 @@ const NIGHTS = {
     sat:    [["Eric",""], ["Phil",""], ["Michael",""], ["Prah",""], ["Kelvyn",""]]
   },
   "2026-10-28": {
-    // Group chat 10/23: Phil has softball at 9, so game 1 only. Michael both.
-    in:    [["Michael",""], ["Phil","game 1 only"]],
+    // Phil has softball at 9, so game 1 only; Eric arrives for game 2. Ron and
+    // Michael take both. Prah out, has his six.
+    lineup: {
+      1: ["Ron","Michael","Phil"],
+      2: ["Ron","Michael","Eric"]
+    },
+    in:    [["Ron",""], ["Michael",""], ["Phil","game 1"], ["Eric","game 2"]],
     maybe: [],
-    out:   [],
-    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Prah",""], ["Kelvyn",""]]
+    out:   [["Prah",""]],
+    quiet: [["Ken",""], ["Kelvyn",""]]
   }
 };
 
