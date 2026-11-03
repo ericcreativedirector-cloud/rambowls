@@ -240,6 +240,14 @@ const NIGHTS = {
     },
     bowled: [["Ron",2], ["Michael",2], ["Phil",1], ["Eric",1]],
     sat:    [["Ken",""], ["Prah",""], ["Kelvyn",""]]
+  },
+  "2026-11-04": {
+    // Last night of the season. Four in for three slots; everyone is already
+    // qualified, so the trio is Eric's call on the night.
+    in:    [["Eric",""], ["Ken",""], ["Ron",""], ["Phil",""]],
+    maybe: [],
+    out:   [["Prah",""], ["Michael",""]],
+    quiet: [["Kelvyn",""]]
   }
 };
 
