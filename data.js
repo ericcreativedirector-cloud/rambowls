@@ -242,9 +242,12 @@ const NIGHTS = {
     sat:    [["Ken",""], ["Prah",""], ["Kelvyn",""]]
   },
   "2026-11-04": {
-    // Last night of the season. Four in for three slots; everyone is already
-    // qualified, so the trio is Eric's call on the night.
-    in:    [["Eric",""], ["Ken",""], ["Ron",""], ["Phil",""]],
+    // Last night of the season. Ken, Ron and Phil take game 1. Game 2 is not
+    // decided yet; Eric is available for it. Everyone is already qualified.
+    lineup: {
+      1: ["Ken","Ron","Phil"]
+    },
+    in:    [["Ken",""], ["Ron",""], ["Phil",""], ["Eric","game 2 if needed"]],
     maybe: [],
     out:   [["Prah",""], ["Michael",""]],
     quiet: [["Kelvyn",""]]
