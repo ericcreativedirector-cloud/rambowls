@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-10-28",
+  lastUpdated:"2026-11-04",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -69,13 +69,13 @@ const PLAYERS = [
   {id:"eric",    name:"Eric Rodriguez",  short:"Eric",    prev:112, goal:138, alt:false, hcpPre:61,
    scores:{1:[136,124], 2:[125,97], 3:[95,90], 6:[93,105], 8:[95,null], 9:[104,null], 11:[null,113]}},
   {id:"ken",     name:"Ken Yamaguchi",   short:"Ken",     prev:140, alt:false, hcpPre:42,
-   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141], 9:[null,154], 10:[105,181]}},
+   scores:{1:[149,122], 4:[151,160], 5:[139,114], 6:[132,141], 9:[null,154], 10:[105,181], 12:[139,null]}},
   {id:"ron",     name:"Ron Upperman",    short:"Ron",     prev:116, alt:false, hcpPre:59,
-   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108], 10:[116,114], 11:[164,103]}},
+   scores:{1:[86,null], 2:[121,120], 3:[162,176], 4:[149,158], 5:[136,null], 7:[153,111], 8:[null,108], 10:[116,114], 11:[164,103], 12:[158,null]}},
   {id:"michael", name:"Michael Seidler", short:"Michael", sheetName:"Mike Seidler", prev:129, alt:false, hcpPre:49,
    scores:{1:[null,116], 4:[null,140], 5:[null,94], 8:[150,127], 9:[121,149], 11:[135,96]}},
   {id:"phil",    name:"Phil Marken",     short:"Phil",    sheetName:"Phill Marken", prev:134, alt:false, hcpPre:47,
-   scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,149], 11:[108,null]}},
+   scores:{3:[125,148], 5:[139,157], 7:[103,133], 8:[145,149], 11:[108,null], 12:[120,null]}},
   {id:"prah",    name:"Dave Prah",       short:"Prah",    prev:138, alt:false, hcpPre:43,
    scores:{2:[144,180], 6:[149,141], 9:[142,146]}},
   {id:"kelvyn",  name:"Kelvyn Perez",    short:"Kelvyn",  prev:138, alt:true,  hcpPre:43,
@@ -117,7 +117,7 @@ const SCHEDULE = [
   {wk:10, iso:"2026-10-21", time24:"22:30", lane:8, opp:"Peanut Gutter & Jelly",         venue:"The Gutter, Long Island City", us:539, them:590},
   {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split",              us:549, them:495},
   {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl",                   us:476, them:511},
-  {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM"},
+  {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM", us:552, them:497},
   {wk:12, iso:"2026-11-04", time24:"20:10", lane:6, opp:"Tokyo Drifters"}
 ];
 
