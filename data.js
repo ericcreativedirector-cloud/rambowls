@@ -50,7 +50,8 @@ const STANDINGS = [
   {wk:7, place:8},
   {wk:8, place:10},
   {wk:9, place:9},
-  {wk:11, place:10}
+  {wk:11, place:10},
+  {wk:12, place:7}
 ];
 
 /* ---------- players ----------
@@ -118,8 +119,6 @@ const SCHEDULE = [
   {wk:11, iso:"2026-10-28", time24:"19:00", lane:5, opp:"2 Legit 2 Split",              us:549, them:495},
   {wk:11, iso:"2026-10-28", time24:"20:10", lane:5, opp:"Glory Bowl",                   us:476, them:511},
   {wk:12, iso:"2026-11-04", time24:"19:00", lane:5, opp:"WHO DO YOU THINK YOU ARE I AM", us:552, them:497},
-  // Game 2 card wrote 155 handicap and 521, but its three handicaps (48, 41,
-  // 65) sum to 154. Recorded as 520 pending the league sheet.
   {wk:12, iso:"2026-11-04", time24:"20:10", lane:6, opp:"Tokyo Drifters",               us:520, them:503}
 ];
 
