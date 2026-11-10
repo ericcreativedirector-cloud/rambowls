@@ -482,7 +482,8 @@ function renderWho(){
   const sub = document.getElementById("pageSub");
 
   row.innerHTML = "";
-  for (const p of RB.PLAYERS){
+  const byName = RB.PLAYERS.slice().sort((a, b) => a.short.localeCompare(b.short));
+  for (const p of byName){
     const b = document.createElement("button");
     b.type = "button";
     b.textContent = p.short;
