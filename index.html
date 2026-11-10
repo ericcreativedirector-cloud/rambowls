@@ -350,6 +350,20 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     text-transform:uppercase; color:var(--maple); font-weight:700}
   .sheetbox .arw{margin-left:auto; color:var(--maple); font-size:20px; flex:0 0 auto}
 
+  .po{display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule);
+    border-radius:2px; overflow:hidden}
+  .po-game{background:var(--lane-2); padding:12px}
+  .po-kick{font-family:var(--data); font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--maple)}
+  .po-vs{font-family:var(--display); font-weight:600; font-size:22px; line-height:1.15; margin-top:6px; text-wrap:balance}
+  .po-vs .seed{font-family:var(--data); font-size:12px; color:var(--dim); font-weight:400; letter-spacing:.04em}
+  .po-meta{font-family:var(--data); font-size:11px; color:var(--dim); margin-top:8px;
+    display:flex; flex-wrap:wrap; gap:4px 14px}
+  .po-meta .tbd{color:var(--maple)}
+  .po-br{background:var(--lane-2); padding:10px 12px; display:grid; gap:6px;
+    font-family:var(--data); font-size:11.5px; color:var(--dim)}
+  .po-br .row{display:flex; gap:10px; align-items:baseline}
+  .po-br .ln{color:var(--maple); flex:0 0 52px}
+  .po-br .us{color:var(--bone); font-weight:700}
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
@@ -601,6 +615,12 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
     <div class="nextup" id="nextup"></div>
   </div>
 
+  <section id="playoffsSec" hidden>
+    <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v3a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 0 5H7M17 5h2.5a2.5 2.5 0 0 1 0 5H17M12 12v4M9 20h6M10 16h4"/></svg>Playoffs</h2>
+    <p class="note" id="poNote"></p>
+    <div class="po" id="po"></div>
+  </section>
+
   <section>
     <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Where we stand</h2>
     <p class="note" id="throughNote"></p>
@@ -687,6 +707,13 @@ const SHIRT_CALLS  = RB.SHIRT_CALLS;
 const SHIRTS       = RB.SHIRTS;
 const schedule     = RB.SCHEDULE;
 const nights       = RB.NIGHTS;
+const playoffs     = RB.PLAYOFFS || {games:[], bracket:[]};
+/* Every night the page shows: the season, plus any playoff game the league has
+   given a date. Record and eligibility stay on `schedule` alone. */
+const nightGames   = schedule.concat(
+  playoffs.games.filter(g => g.iso && g.time24).map(g => ({...g, wk:g.round, playoff:true})));
+const wkLabel = g => g.playoff ? g.round : `Week ${g.wk}`;
+const wkShort = g => g.playoff ? g.round : `Wk ${g.wk}`;
 
 // Roster rows are derived — games, average and handicap all come from the
 // shared math, so they match the Stats page by construction.
@@ -713,7 +740,7 @@ const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.2A8.4 
 
 // A night is "early" when its first game starts before 9pm.
 function nightSlot(iso){
-  const first = schedule.filter(g => g.iso === iso)[0];
+  const first = nightGames.filter(g => g.iso === iso)[0];
   if (!first) return null;
   return parseInt(first.time24, 10) < 21 ? "early" : "late";
 }
@@ -722,7 +749,7 @@ function slotBadge(iso){
   const slot = nightSlot(iso);
   if (!slot) return "";
   // all league games are PM, so show it once: "7:00 & 8:10 PM"
-  const times = schedule.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
+  const times = nightGames.filter(g => g.iso === iso).map(g => fmtTime(g.time24).replace(" PM",""));
   // Two unbreakable units and no separator character between them. A middot
   // here can only ever be stranded: as a bare text node it dropped onto its
   // own line under "EARLY", and glued to the label it left line one ending on
@@ -779,9 +806,9 @@ function isUnfinished(g, now){
   return gameEnd(g) > (now || new Date());
 }
 
-function nextNight(){
+function nextNight(list){
   const now = new Date();
-  const upcoming = schedule.filter(g => isUnfinished(g, now)).map(g => g.iso);
+  const upcoming = (list || nightGames).filter(g => isUnfinished(g, now)).map(g => g.iso);
   return upcoming.length ? upcoming[0] : null;
 }
 
@@ -794,16 +821,17 @@ function dateNoWidow(iso){
 
 /* One night's card: 2-up quadrant row over one long band. */
 function nightCard(iso, nextIso){
-  const games   = schedule.filter(g => g.iso === iso);
+  const games   = nightGames.filter(g => g.iso === iso);
   const wk      = games[0].wk;
+  const wkName  = wkLabel(games[0]);
   const isNext  = iso === nextIso;
   const isToday = iso === todayISO();
   const played  = games.every(g => g.us != null);
   const past    = played || (!isNext && iso < todayISO());
 
-  const lab = past    ? `Week ${wk} · Final`
-            : isNext  ? `${isToday ? "Tonight" : "Next up"} · Week ${wk}`
-            :           `Week ${wk}`;
+  const lab = past    ? `${wkName} · Final`
+            : isNext  ? `${isToday ? "Tonight" : "Next up"} · ${wkName}`
+            :           wkName;
 
   // played nights show the result inline; upcoming ones just the matchup
   const lines = games.map(g => {
@@ -854,7 +882,7 @@ function nightCard(iso, nextIso){
   // ones ahead are present but quiet, the ones behind are just record.
   const state = past ? "past" : isNext ? "next" : "future";
 
-  return `<div class="nu-card ${state}" data-iso="${iso}" data-wk="${wk}">
+  return `<div class="nu-card ${state}" data-iso="${iso}" data-wk="${wk}"${games[0].playoff ? ' data-playoff="1"' : ""}>
     <div class="nu-grid">
       <div class="nu-cell nu-when">
         <div class="lab"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg>${lab}</div>
@@ -884,7 +912,8 @@ function nightCard(iso, nextIso){
    no separate archive view. */
 function renderNextUp(){
   const el      = document.getElementById("nextup");
-  const isos    = [...new Set(schedule.map(g => g.iso))].sort();
+  const isos    = [...new Set(nightGames.map(g => g.iso))].sort();
+  const seasonN = new Set(schedule.map(g => g.iso)).size;
   const nextIso = nextNight();
   const startIso = nextIso || isos[isos.length - 1];
 
@@ -905,7 +934,7 @@ function renderNextUp(){
   const label = () => {
     const c = cards[idx];
     if (!c) return;
-    pos.innerHTML = `Week <b>${c.dataset.wk}</b> of ${isos.length}`;
+    pos.innerHTML = c.dataset.playoff ? `<b>${c.dataset.wk}</b>` : `Week <b>${c.dataset.wk}</b> of ${seasonN}`;
     ticks.forEach((t, i) => {
       t.className = "tick"
         + (i === idx ? " on" : cards[i].classList.contains("past") ? " done" : "");
@@ -1000,7 +1029,7 @@ function renderBoard(){
      are actually down for — two on a normal night, one when the lineup splits
      and they only take a single game. Cap at the pins they still have open so
      a bowler on 5 never shows 7. */
-  const nextIso  = nextNight();
+  const nextIso  = nextNight(schedule);           // playoff games earn no pins
   const slated   = nextIso ? RB.lineupGames(nextIso) : {};
   const projFor  = p => {
     const pl = RB.PLAYERS.find(x => x.name === p.name);
@@ -1059,6 +1088,40 @@ function renderBoard(){
 }
 
 /* ---------- record ---------- */
+/* ---------- playoffs ----------
+   Bracket off the league sheet. A game with no date yet says so; once the
+   league posts one the night also runs through Next up and Availability. */
+function renderPlayoffs(){
+  const sec = document.getElementById("playoffsSec");
+  if (!playoffs.games.length){ sec.hidden = true; return; }
+  sec.hidden = false;
+  const seedTag = n => n ? `<span class="seed">${n} seed</span>` : "";
+  const cards = playoffs.games.map(g => {
+    const when = g.iso && g.time24
+      ? `${fmtDate(g.iso, true)} · ${fmtTime(g.time24)}`
+      : `<span class="tbd">Date and time not posted yet</span>`;
+    let res = "";
+    if (g.us != null && g.them != null){
+      const win = g.us > g.them;
+      res = `<span><span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}\u2013${g.them}</span>`;
+    }
+    return `<div class="po-game">
+      <div class="po-kick">${g.round}</div>
+      <div class="po-vs">Rambowls ${seedTag(g.seed)} vs ${g.opp} ${seedTag(g.oppSeed)}</div>
+      <div class="po-meta"><span>${when}</span><span>Lane ${g.lane}</span><span>${playoffs.format}</span>${res}</div>
+    </div>`;
+  }).join("");
+  const br = playoffs.bracket.length
+    ? `<div class="po-br">` + playoffs.bracket.map(m => {
+        const name = (t, sd) => `<span class="${t === "Rambowls" ? "us" : ""}">${t} (${sd})</span>`;
+        return `<div class="row"><span class="ln">Lane ${m.lane}</span><span>${name(m.a, m.aSeed)} vs ${name(m.b, m.bSeed)}</span></div>`;
+      }).join("") + `</div>`
+    : "";
+  document.getElementById("po").innerHTML = cards + br;
+  document.getElementById("poNote").textContent =
+    "Seeds from the league sheet. Semis and the final follow for the winners.";
+}
+
 function renderRecord(){
   const played = schedule.filter(g => g.us != null);
   const w = played.filter(g => g.us >  g.them).length;
@@ -1202,8 +1265,8 @@ function renderNight(iso){
   const note = document.getElementById("availNote");
   const box  = document.getElementById("avail");
   const data = nights[iso];
-  const games = schedule.filter(g => g.iso === iso);
-  const wk = games.length ? games[0].wk : "";
+  const games = nightGames.filter(g => g.iso === iso);
+  const wk = games.length ? wkLabel(games[0]) : "";
   const matchups = games.map(g => `${g.opp} at ${fmtTime(g.time24)} on Lane ${g.lane}`).join(", ")
     + (games[0] && games[0].venue ? `. At ${games[0].venue}, not Williamsburg` : "");
 
@@ -1212,7 +1275,7 @@ function renderNight(iso){
 
   if (!data){
     const past = iso < todayISO();
-    head.innerHTML = `Availability · Week ${wk}` + (past ? "" : headcount(0, 0));
+    head.innerHTML = `Availability · ${wk}` + (past ? "" : headcount(0, 0));
     note.textContent = past
       ? `${fmtDate(iso, true)} · ${matchups}. No lineup recorded for this night.`
       : `${fmtDate(iso, true)} · ${matchups}. Nobody's replied yet. Send it in early if you already know.`;
@@ -1222,13 +1285,13 @@ function renderNight(iso){
   }
 
   if (data.played){
-    head.textContent = `Who bowled · Week ${wk}`;
+    head.textContent = `Who bowled · ${wk}`;
     note.textContent = `${fmtDate(iso, true)} · ${matchups}.`;
     const bowled = (data.bowled || []).map(([n,g]) => [n, `${g} ${g===1?"game":"games"}`]);
     box.innerHTML = col("in","Bowled", bowled) + col("quiet","Sat out", data.sat);
   } else {
     const today = iso === todayISO();
-    head.innerHTML = `${today ? "Tonight" : "Availability"} · Week ${wk}`
+    head.innerHTML = `${today ? "Tonight" : "Availability"} · ${wk}`
       + headcount((data.in || []).length, (data.maybe || []).length);
     note.textContent = `${fmtDate(iso, true)} · ${matchups}.`;
     box.innerHTML =
@@ -1240,15 +1303,15 @@ function renderNight(iso){
 
 function renderAvailability(){
   // every bowling night in the season, not just the ones with data
-  const isos = [...new Set(schedule.map(g => g.iso))].sort();
+  const isos = [...new Set(nightGames.map(g => g.iso))].sort();
   const tabs = document.getElementById("availTabs");
   const t = todayISO();
   const active = isos.find(d => d >= t) || isos[isos.length-1];
 
   tabs.innerHTML = isos.map(d => {
-    const g = schedule.filter(x => x.iso === d)[0];
+    const g = nightGames.filter(x => x.iso === d)[0];
     const has = !!nights[d];
-    return `<button class="tab ${nightSlot(d)}${has ? "" : " empty"}" data-iso="${d}">Wk ${g.wk} · ${fmtDate(d)}</button>`;
+    return `<button class="tab ${nightSlot(d)}${has ? "" : " empty"}" data-iso="${d}">${wkShort(g)} · ${fmtDate(d)}</button>`;
   }).join("");
 
   tabs.querySelectorAll(".tab").forEach(btn =>
@@ -1276,7 +1339,7 @@ function renderLegend(){
 
 function renderSchedule(){
   const next = nextNight();
-  const isos = [...new Set(schedule.map(g => g.iso))].sort();
+  const isos = [...new Set(nightGames.map(g => g.iso))].sort();
 
   // Focused window: most recent completed week, the next week, and the one
   // after it. Everything older or farther out collapses behind one control.
@@ -1288,7 +1351,7 @@ function renderSchedule(){
     return i >= firstIdx && i <= lastIdx;
   };
 
-  document.getElementById("sched").innerHTML = schedule.map(g => {
+  document.getElementById("sched").innerHTML = nightGames.map(g => {
     const done = g.us != null;
     let result = `<span class="pending">—</span>`;
     if (done){
@@ -1297,14 +1360,14 @@ function renderSchedule(){
     }
     const hide = !inWindow(g.iso);
     return `<tr class="${done?"done":""}${g.iso===next?" next":""}${hide?" collapsible hidden-row":""}">
-      <td class="wk">${g.wk}</td>
+      <td class="wk">${g.playoff ? "QF" : g.wk}</td>
       <td class="when">${slotBadge2(g)}${fmtDate(g.iso)} · ${fmtTime(g.time24)} · L${g.lane}</td>
       <td>${g.opp}</td>
       <td class="score">${result}</td>
     </tr>`;
   }).join("");
 
-  const hiddenCount = schedule.filter(g => !inWindow(g.iso)).length;
+  const hiddenCount = nightGames.filter(g => !inWindow(g.iso)).length;
   const btn = document.getElementById("moreBtn");
   if (!hiddenCount){ btn.style.display = "none"; return; }
 
@@ -1351,7 +1414,7 @@ function downloadICS(games, filename){
       `DTEND;TZID=America/New_York:${icsStamp(g.iso, g.time24, 65)}`,
       `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
       `LOCATION:${(g.venue || "The Gutter, Williamsburg").replace(/\s*[,;]\s*/g," ")}, Lane ${g.lane}`,
-      `DESCRIPTION:Week ${g.wk} · 2026 Fall Wednesday League. Lane ${g.lane}.${g.venue ? ` At ${g.venue.replace(/\s*[,;]\s*/g," ")}, not Williamsburg.` : ""}`,
+      `DESCRIPTION:${wkLabel(g)} · 2026 Fall Wednesday League. Lane ${g.lane}.${g.venue ? ` At ${g.venue.replace(/\s*[,;]\s*/g," ")}, not Williamsburg.` : ""}`,
       "BEGIN:VALARM","TRIGGER:-PT60M","ACTION:DISPLAY",
       "DESCRIPTION:Rambowls in 1 hour","END:VALARM",
       "END:VEVENT"
@@ -1378,6 +1441,7 @@ try {
   renderAvailability();
   renderLegend();
   renderSchedule();
+  renderPlayoffs();
 } catch (err) {
   // Never let a silent "—" disguise a real failure.
   const u = document.getElementById("updated");
@@ -1385,13 +1449,13 @@ try {
     `Couldn't load team data. <a href="${SHEET_URL}" target="_blank" rel="noopener" style="color:inherit">use the league sheet ↗</a>`;
   console.error("Rambowls boot failed:", err);
 }
-document.getElementById("icsAll").onclick  = () => downloadICS(schedule, "rambowls-fall-2026");
+document.getElementById("icsAll").onclick  = () => downloadICS(nightGames, "rambowls-fall-2026");
 document.getElementById("icsRest").onclick = () => {
   // Same definition of "not bowled yet" that Next Up and the schedule
   // highlight use — an official result finishes a game immediately, and
   // otherwise it stands until 65 minutes past its start.
   const now = new Date();
-  downloadICS(schedule.filter(g => isUnfinished(g, now)), "rambowls-remaining");
+  downloadICS(nightGames.filter(g => isUnfinished(g, now)), "rambowls-remaining");
 };
 
 // offline support — safe to fail, the page works without it

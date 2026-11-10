@@ -54,6 +54,27 @@ const STANDINGS = [
   {wk:12, place:7}
 ];
 
+/* ---------- playoffs ----------
+   From the league sheet's Playoffs tab, seeds as written there in parentheses.
+   The sheet gives lanes but no date or time: set iso and time24 on a game when
+   the league posts them and that night shows up in Next up, Availability, the
+   schedule table and the calendar export like any other. Playoff games never
+   touch the regular-season record or the six-game eligibility count.
+   Results: a playoff tie is decided on total pins over the games, so each game
+   carries us/them as totals with handicap, same as SCHEDULE. */
+const PLAYOFFS = {
+  format: "Two games, total pins",
+  games: [
+    {round:"Quarterfinal", iso:null, time24:null, lane:6, opp:"The Milk Duds", seed:7, oppSeed:2}
+  ],
+  bracket: [
+    {round:"Quarterfinal", lane:8, a:"Deli Meats",      aSeed:1, b:"WHO DO YOU THINK YOU ARE I AM", bSeed:8},
+    {round:"Quarterfinal", lane:7, a:"Bite Legends",    aSeed:3, b:"Peanut Gutter & Jelly",         bSeed:6},
+    {round:"Quarterfinal", lane:6, a:"The Milk Duds",   aSeed:2, b:"Rambowls",                      bSeed:7},
+    {round:"Quarterfinal", lane:5, a:"2 Legit 2 Split", aSeed:4, b:"Bowls on Parade",               bSeed:5}
+  ]
+};
+
 /* ---------- players ----------
    prev    = last season's average from the league sheet (ballast anchor)
    hcpPre  = the league sheet's OWN preseason handicap. Kept verbatim because
@@ -551,7 +572,7 @@ function leagueRank(lb, id){
 }
 
 root.RB = {
-  SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS,
+  SEASON, PLAYERS, SCHEDULE, SHIRTS, SHIRT_CALLS, NIGHTS, STANDINGS, PLAYOFFS,
   pad, todayISO, nights, weeks, playerById, playerByShort,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
   gamesRemaining, atRisk, lineupFor, lineupGames,
