@@ -152,6 +152,14 @@ Live in about a minute.
   and only alternates with `subGames` (six) regular-season games are
   offered as subs. Playoff games never count
   toward the record or the six-game eligibility.
+- **Playoff rounds** each carry `about` (unconfirmed start times, shown as
+  "about 8:10", never exported), `lineup` (the semifinal's trios; the
+  quarterfinal's live on `NIGHTS["2026-11-11"].lineup`), `fallback`,
+  `scores` (per bowler per game) and `us`/`them` (the round's totals with
+  handicap, one result per round). Entering a result flips the next round
+  from conditional to live, or drops it on a loss. Playoff scores never
+  enter `PLAYERS.scores`, so averages, handicaps, the eligibility count and
+  the record stay as the season ended. That is what freezes the handicaps.
 - **Away nights.** A game in `SCHEDULE` can carry `venue:"The Gutter, Long
   Island City"` when the league moves a night. The night card, the
   availability note and the calendar export all say so. Leave it off for

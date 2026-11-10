@@ -287,7 +287,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
      line edge. Rows carry the separation now, so there is no character that
      can be stranded and long team names get their own full width. */
   .nextup .games .g + .g{margin-top:8px}
-  .nextup .games .gl{display:flex; gap:8px; align-items:baseline; white-space:nowrap}
+  .nextup .games .gl{display:flex; gap:8px; align-items:baseline; white-space:nowrap; flex-wrap:wrap}
   .nextup .games .ln{color:var(--dim)}
   .nextup .games .op{display:block; margin-top:1px}
   /* tonight's trio — who's actually throwing, both games */
@@ -305,6 +305,17 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .lineup .sub{display:block; margin:3px 0 0; font-size:9px; letter-spacing:.08em;
     color:var(--dim); text-transform:none}
   .lineup .gap{color:var(--strike)}
+  /* playoff nights: a round label above each pair of trios, handicap beside
+     each name, approximate times in the gutter. Conditional rounds sit back. */
+  .lineup .rnd{display:block; margin-top:6px; font-size:9px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--maple)}
+  .lineup .rnd.cond, .lineup .lg.cond{opacity:.62}
+  .lineup .hc{font-family:var(--data); font-size:9.5px; color:var(--dim); margin-left:3px}
+  .lineup .gt{font-family:var(--data); font-size:9.5px; color:var(--dim); margin-right:6px; white-space:nowrap}
+  .games .rnd{font-family:var(--data); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--maple); margin:7px 0 2px}
+  .games .rnd:first-child{margin-top:0}
+  .games .cond{opacity:.62}
   .nextup .cta{margin-top:11px}
   .nextup .btn{font-size:9px; padding:8px 10px; letter-spacing:.06em}
 
@@ -839,7 +850,7 @@ function nightCard(iso, nextIso){
             :           wkName;
 
   // played nights show the result inline; upcoming ones just the matchup
-  const lines = games.map(g => {
+  let lines = games.map(g => {
     let res = "";
     if (g.us != null){
       const win = g.us > g.them;
@@ -849,13 +860,11 @@ function nightCard(iso, nextIso){
          + `<span class="gl"><b>${fmtTime(g.time24)}</b><span class="ln">Lane ${g.lane}</span></span>`
          + `<span class="op">${g.opp}${res}</span></div>`;
   }).join("")
-  // A playoff round that follows on the same night, with no time of its own
-  // yet: the semifinal straight after the quarterfinal.
-  + (games[0].playoff
-      ? playoffs.games.filter(p => p.iso === iso && !p.time24).map(p =>
-          `<div class="g"><span class="gl"><b>Then</b><span class="ln">${p.lane ? `Lane ${p.lane}` : "Lane TBD"}</span></span>`
-        + `<span class="op">${p.round}${p.after ? `, with a ${p.after.toLowerCase()} win` : ""}</span></div>`).join("")
-      : "");
+;
+  // A playoff night lists its rounds instead: every game with its time, the
+  // round's result on total pins, and the follow-on round marked conditional
+  // until the one before it is won.
+  if (games[0].playoff) lines = playoffLines(iso);
   const lanesOn = games[0].playoff && playoffs.lanesOn
     ? `<div class="nu-venue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg><span>Lanes on at ${fmtTime(playoffs.lanesOn)}</span></div>`
     : "";
@@ -875,21 +884,9 @@ function nightCard(iso, nextIso){
   let lineupBlock;
   if (games[0].playoff && !lu.played){
     // Playoff format is two 3-on-3 games with all six bowling, so each bowler
-    // takes one game. lineupFor() resolves games off SCHEDULE, so read the
-    // night's per-game lineup directly here. Subs only from alternates with
-    // six regular-season games.
-    const subs = playoffSubs();
-    const subNote = subs.length
-      ? `Subs allowed: ${subs.join(", ")}.`
-      : "No alternate has the six regular-season games the league needs to sub.";
-    const set = nights[iso] && nights[iso].lineup && !Array.isArray(nights[iso].lineup)
-      ? nights[iso].lineup : null;
-    const body = set
-      ? Object.keys(set).map(g =>
-          `<span class="lg"><span class="gm">G${g}</span>${nameRow(set[g])}</span>`).join("")
-      : ` ${nameRow(STARTERS)}`;
-    lineupBlock = `<div class="lineup"><span class="k">Lineup</span>${body}
-      <span class="sub">All six bowl, three a game${set ? "" : ". Trios to be set"}. ${subNote}</span></div>`;
+    // takes one game. lineupFor() resolves games off SCHEDULE, so the night's
+    // per-game lineup and the follow-on round's are read directly.
+    lineupBlock = playoffLineupBlock(iso);
   } else if (lu.names.length){
     const tail  = lu.short ? ` <span class="gap">+ ${lu.short} more needed</span>` : "";
     const body  = lu.split
@@ -1129,7 +1126,8 @@ function renderPlayoffs(){
   if (!playoffs.games.length){ sec.hidden = true; return; }
   sec.hidden = false;
   const seedTag = n => n ? `<span class="seed">${n} seed</span>` : "";
-  const cards = playoffs.games.map(g => {
+  const cards = playoffs.games.filter(g => RB.playoffStatus(g) !== "out").map(g => {
+    const st = RB.playoffStatus(g);
     const when = g.iso && g.time24
       ? `${fmtDate(g.iso, true)} · ${fmtTime(g.time24)}`
       : g.iso
@@ -1140,13 +1138,13 @@ function renderPlayoffs(){
       ? `Rambowls ${seedTag(g.seed)} vs ${g.opp} ${seedTag(g.oppSeed)}`
       : `Rambowls ${seedTag(g.seed)} vs <span class="tbd">opponent to come</span>`;
     let res = "";
-    if (g.us != null && g.them != null){
+    if (st === "done"){
       const win = g.us > g.them;
-      res = `<span><span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}\u2013${g.them}</span>`;
+      res = `<span><span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}\u2013${g.them} on total pins</span>`;
     }
-    const kick = g.after ? `${g.round} · with a ${g.after.toLowerCase()} win` : g.round;
+    const kick = st === "conditional" ? `${g.round} · with a ${g.after.toLowerCase()} win` : g.round;
     const note = g.note ? `<div class="po-note">${g.note}</div>` : "";
-    return `<div class="po-game${g.after ? " later" : ""}">
+    return `<div class="po-game${st === "conditional" ? " later" : ""}">
       <div class="po-kick">${kick}</div>
       <div class="po-vs">${vs}</div>
       <div class="po-meta"><span>${when}</span><span>${lane}</span><span>${g.format || playoffs.format}</span>${res}</div>
@@ -1263,6 +1261,80 @@ const needFor = iso => isPlayoffNight(iso) ? STARTERS.length : NEED;
 const playoffSubs = () => RB.PLAYERS
   .filter(p => p.alt && RB.playerStats(p.id).count >= (playoffs.subGames || RB.SEASON.qualify))
   .map(p => p.short);
+/* Game start for a playoff round: the league's time24 for game 1, otherwise
+   the round's "about" estimate, flagged as such. */
+function playoffGameTime(r, n, short){
+  if (String(n) === "1" && r.time24) return short ? fmtTime(r.time24).replace(" PM","") : fmtTime(r.time24);
+  const t = r.about && r.about[n];
+  return t ? `about ${fmtTime(t).replace(" PM","")}` : "Time TBD";
+}
+const playoffGameNums = r => Object.keys(r.scores || {1:{}, 2:{}});
+/* The round's trios: the night's own lineup for the first round of a night,
+   the round's own lineup for the rest. */
+function playoffTrios(iso, r){
+  if (r.lineup) return r.lineup;
+  const first = playoffs.games.find(p => p.iso === iso);
+  const night = nights[iso];
+  return r === first && night && night.lineup && !Array.isArray(night.lineup) ? night.lineup : null;
+}
+
+/* The games cell of a playoff night: one block per round still in play. */
+function playoffLines(iso){
+  return playoffs.games.filter(p => p.iso === iso).map(r => {
+    const st = RB.playoffStatus(r);
+    if (st === "out") return "";
+    const cond = st === "conditional";
+    const laneTxt = r.lane ? `Lane ${r.lane}` : "Lane TBD";
+    const oppTxt  = r.opp ? `${r.opp}${r.oppSeed ? ` (${r.oppSeed})` : ""}` : "Opponent TBD";
+    const head = `<div class="rnd${cond ? " cond" : ""}">${
+      cond ? `Then: ${r.round}, with a ${r.after.toLowerCase()} win` : r.round}</div>`;
+    const rows = playoffGameNums(r).map((n, i) =>
+      `<div class="g${cond ? " cond" : ""}"><span class="gl"><b>${playoffGameTime(r, n)}</b><span class="ln">${laneTxt}</span></span>`
+      + `<span class="op">${i === 0 ? oppTxt : `Game ${n}`}</span></div>`).join("");
+    const res = st === "done"
+      ? `<div class="g"><span class="gl"><b>Total</b></span><span class="op"><span class="chip ${r.us > r.them ? "w" : "l"}">${r.us > r.them ? "W" : "L"}</span> ${r.us}\u2013${r.them} on total pins</span></div>`
+      : "";
+    return head + rows + res;
+  }).join("");
+}
+
+/* The lineup cell of a playoff night: trios per round with each bowler's
+   frozen handicap, the follow-on round marked conditional, and any named
+   fallback spelled out with the league's sub terms. */
+function playoffLineupBlock(iso){
+  const hc  = n => { const h = RB.playoffHcp(n); return `<span class="nm">${n}</span>${h != null ? `<span class="hc">+${h}</span>` : ""}`; };
+  const row = ns => ns.map(hc).join(" · ");
+  const parts = [];
+  for (const r of playoffs.games.filter(p => p.iso === iso)){
+    const st = RB.playoffStatus(r);
+    if (st === "out") continue;
+    const cond = st === "conditional";
+    const set  = playoffTrios(iso, r);
+    parts.push(`<span class="rnd${cond ? " cond" : ""}">${cond ? `${r.round}, with a ${r.after.toLowerCase()} win` : r.round}</span>`);
+    if (set){
+      parts.push(Object.keys(set).map(n =>
+        `<span class="lg${cond ? " cond" : ""}"><span class="gm">G${n}</span><span class="gt">${playoffGameTime(r, n, true)}</span>${row(set[n])}</span>`).join(""));
+    } else {
+      parts.push(`<span class="lg"><span class="gap">Trios to be set</span></span>`);
+    }
+    for (const n of Object.keys(r.fallback || {})){
+      const fb = r.fallback[n];
+      const terms = fb.by.map(b => RB.playoffSubTerms(b, fb.for)).filter(Boolean);
+      if (!terms.length) continue;
+      const names = terms.map(t => t.sub).join(" or ");
+      const back  = terms.filter(t => t.higher).map(t => `${t.sub} ${t.giveBack}`).join(", ");
+      parts.push(`<span class="sub${cond ? " cond" : ""}">If ${fb.for} is not back for game ${n}: ${names} bowls as ${fb.for}, on ${fb.for}'s +${RB.playoffHcp(fb.for)}${
+        back ? `, giving back the difference in averages (${back})` : ""}.</span>`);
+    }
+  }
+  const subs = playoffSubs();
+  const subNote = subs.length
+    ? `Subs allowed: ${subs.join(", ")}.`
+    : "No alternate has the six regular-season games the league needs to sub. A starter can bowl a second game as the sub, in a game they are not already bowling as themselves.";
+  return `<div class="lineup"><span class="k">Lineup</span>${parts.join("")}
+    <span class="sub">All six bowl, three a game. Handicaps are frozen for the playoffs. ${subNote}</span></div>`;
+}
+
 function headcount(inN, maybeN, need){
   need = need || NEED;
   const maybe = maybeN ? ` · ${maybeN} maybe` : "";

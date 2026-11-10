@@ -73,19 +73,41 @@ const PLAYOFFS = {
   // An alternate may sub only with six regular-season games. The UI reads the
   // roster against this number; nobody is hand-listed as eligible.
   subGames: 6,
+  /* Each round carries:
+       about    start times the league has not confirmed, by game. Only time24
+                is the league's. Shown as "about 8:10", never exported.
+       lineup   the round's trios, by game. The first round of a night reads
+                NIGHTS[iso].lineup instead, so Availability and the card agree.
+       fallback by game: {for, by} if a named bowler may not be there.
+       scores   per bowler per game, {Phil:120, ...}. Playoff scores live
+                here and nowhere else: they never enter PLAYERS.scores.
+       us/them  the round's totals with handicap, both games added. One result
+                per round, since the round is won on total pins. Entering a
+                result flips the next round from conditional to live, or drops
+                it on a loss. Fill opp, oppSeed and lane on the next round
+                once the league reseeds. */
   games: [
     {round:"Quarterfinal", short:"QF", iso:"2026-11-11", time24:"19:00", lane:6,
-     opp:"The Milk Duds", seed:7, oppSeed:2},
+     opp:"The Milk Duds", seed:7, oppSeed:2,
+     about:{2:"20:10"},
+     scores:{1:{}, 2:{}}, us:null, them:null},
     // Same night, for the quarterfinal winners. Reseeded, so the opponent and
     // lane come from the night itself. No time24 on purpose: the night card
     // for 11/11 already covers it, and a second dated game would double it.
-    {round:"Semifinal", short:"SF", iso:"2026-11-11", time24:null, lane:null, opp:null, seed:7,
+    {round:"Semifinal", short:"SF", iso:"2026-11-11", time24:null, lane:null, opp:null, oppSeed:null, seed:7,
      after:"Quarterfinal",
+     about:{1:"21:20", 2:"22:30"},
+     lineup:{1:["Michael","Ron","Prah"], 2:["Phil","Ken","Eric"]},
+     // Phil may not be back from softball for the last game. Prah or Ron, both
+     // in game 1 and both higher averages, bowls as Phil on Phil's handicap.
+     fallback:{2:{for:"Phil", by:["Prah","Ron"]}},
+     scores:{1:{}, 2:{}}, us:null, them:null,
      note:"Same night, straight after the quarterfinal. Reseeded: the highest seed still in plays the lowest."},
     // Set time24 and lane once the league posts them and 11/18 joins Next up,
     // Availability, the schedule table and the calendar like any other night.
-    {round:"Final", short:"F", iso:"2026-11-18", time24:null, lane:null, opp:null, seed:7,
+    {round:"Final", short:"F", iso:"2026-11-18", time24:null, lane:null, opp:null, oppSeed:null, seed:7,
      after:"Semifinal", format:"Four 3-on-3 games, all six bowl twice, total pins",
+     scores:{1:{}, 2:{}, 3:{}, 4:{}}, us:null, them:null,
      note:"Lane and time not posted yet."}
   ],
   bracket: [
@@ -310,10 +332,17 @@ const NIGHTS = {
   // Playoff night. All six bowl, three a game: set lineup {1:[...], 2:[...]}
   // once the two trios are decided and the night card shows them.
   "2026-11-11": {
-    in:    [],
+    // Quarterfinal. All six starters in. Phil has softball at 8:30, so he
+    // bowls the 7:00 game and the last game of the night only. This lineup is
+    // the quarterfinal's; the semifinal's trios live on PLAYOFFS.
+    lineup: {
+      1: ["Phil","Ken","Ron"],
+      2: ["Eric","Michael","Prah"]
+    },
+    in:    [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""], ["Phil","7:00 and the last game only"]],
     maybe: [],
     out:   [],
-    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
+    quiet: []
   }
 };
 
@@ -515,6 +544,47 @@ function lineupGames(iso){
   return out;
 }
 
+/* ---------- playoffs: read-only helpers ----------
+   Playoff scores live on PLAYOFFS.games[].scores and nowhere else. They never
+   enter PLAYERS.scores, so playerStats, league averages, handicaps, the
+   eligibility count and the season record are untouched. That is also why
+   handicaps are frozen for the playoffs: with no new regular-season games,
+   playerStats() returns the same figure in every round. */
+function playoffHcp(short){
+  const p = playerByShort(short);
+  return p ? playerStats(p.id).hcp : null;
+}
+
+/* A round's standing, from the rounds before it:
+   "done"        its own result is in
+   "out"         an earlier round was lost, so this one is off
+   "conditional" waits on an earlier round that has no result yet
+   "live"        on: the first round, or every earlier round was won */
+function playoffStatus(g){
+  const rounds = PLAYOFFS.games;
+  const i = rounds.indexOf(g);
+  for (let k = 0; k < i; k++){
+    const r = rounds[k];
+    if (r.us == null || r.them == null) return "conditional";
+    if (r.us < r.them) return "out";
+  }
+  return (g.us != null && g.them != null) ? "done" : "live";
+}
+
+/* Sub terms per the league email: a higher-average sub gives back the
+   difference in averages and bowls on the absent bowler's handicap; a
+   lower-average sub bowls on their own. Averages are the app's league
+   averages, the same ones the handicaps come from. */
+function playoffSubTerms(subShort, forShort){
+  const s = playerByShort(subShort), f = playerByShort(forShort);
+  if (!s || !f) return null;
+  const sa = playerStats(s.id).leagueAvg, fa = playerStats(f.id).leagueAvg;
+  if (sa == null || fa == null) return null;
+  const diff = Math.round(sa - fa);
+  return {sub:subShort, for:forShort, higher:diff > 0, giveBack:Math.max(0, diff),
+          hcp: diff > 0 ? playerStats(f.id).hcp : playerStats(s.id).hcp};
+}
+
 /* Last week the TEAM has officially recorded — for "Through Week X".
    Deliberately ignores individual scores: if one bowler's numbers get entered
    before the team totals, Stats would otherwise claim a week is complete while
@@ -618,6 +688,7 @@ root.RB = {
   pad, todayISO, nights, weeks, playerById, playerByShort,
   officialGames, leagueAverage, handicapFor, playerStats, lastCompletedWeek,
   gamesRemaining, atRisk, lineupFor, lineupGames,
+  playoffHcp, playoffStatus, playoffSubTerms,
   leaderboard, leagueRank, parseLeaderboard
 };
 

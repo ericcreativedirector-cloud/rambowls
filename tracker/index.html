@@ -344,6 +344,12 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
       <p class="tiny" id="ballastNote"></p>
     </section>
 
+    <section id="poSec" hidden>
+      <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v3a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 0 5H7M17 5h2.5a2.5 2.5 0 0 1 0 5H17M12 12v4M9 20h6M10 16h4"/></svg>Playoffs</h2>
+      <p class="note" id="poNote"></p>
+      <div class="log" id="poLog"></div>
+    </section>
+
     <section>
       <h2><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/></svg><span id="laneTitle">Season goal</span></h2>
       <p class="note" id="goalNote"></p>
@@ -521,12 +527,63 @@ function rankLine(p){
     + `<span style="white-space:nowrap">by scratch average.</span>` + when;
 }
 
+/* ---------- playoffs ----------
+   Read-only view of PLAYOFFS for the chosen bowler: which game they bowl in
+   each round, on what handicap, and the round's result once it is in. None
+   of it touches the season figures above or below. */
+function renderPlayoffBlock(p){
+  const sec = document.getElementById("poSec");
+  const PO  = RB.PLAYOFFS;
+  if (!PO || !PO.games || !PO.games.length || p.alt){ sec.hidden = true; return; }
+  const rounds = PO.games.filter(r => RB.playoffStatus(r) !== "out");
+  if (!rounds.length){ sec.hidden = true; return; }
+  sec.hidden = false;
+  const fmt12 = t => { const [h,m] = t.split(":").map(Number); return `${((h+11)%12)+1}:${String(m).padStart(2,"0")} PM`; };
+  const dateOf = iso => { const [y,mo,d] = iso.split("-").map(Number);
+    return new Date(y, mo-1, d).toLocaleDateString("en-US", {month:"short", day:"numeric"}); };
+  const firstOf = {};
+  for (const r of PO.games) if (!(r.iso in firstOf)) firstOf[r.iso] = r;
+  const trios = r => {
+    if (r.lineup) return r.lineup;
+    const n = RB.NIGHTS[r.iso];
+    return firstOf[r.iso] === r && n && n.lineup && !Array.isArray(n.lineup) ? n.lineup : null;
+  };
+  const hcp = RB.playoffHcp(p.short);
+  const rows = rounds.map(r => {
+    const st   = RB.playoffStatus(r);
+    const cond = st === "conditional";
+    const set  = trios(r);
+    const game = set ? Object.keys(set).find(n => set[n].includes(p.short)) : null;
+    const when = game
+      ? (String(game) === "1" && r.time24 ? fmt12(r.time24) : (r.about && r.about[game] ? `about ${fmt12(r.about[game]).replace(" PM","")}` : "time to come"))
+      : null;
+    const opp  = r.opp ? `vs ${r.opp}${r.oppSeed ? ` (${r.oppSeed})` : ""}` : "opponent to come";
+    const lane = r.lane ? `, Lane ${r.lane}` : "";
+    const mine = game
+      ? `You bowl game ${game}, ${when}, on +${hcp}.`
+      : set ? "You are not in this round's lineup." : "Trios to be set.";
+    const score = game && r.scores && r.scores[game] && r.scores[game][p.short] != null
+      ? ` Your game: ${r.scores[game][p.short]}.` : "";
+    const res = st === "done"
+      ? ` Round: ${r.us > r.them ? "won" : "lost"} ${r.us} to ${r.them} on total pins.` : "";
+    const lead = cond ? `${r.round}, with a ${r.after.toLowerCase()} win` : r.round;
+    return `<div class="logrow"${cond ? ' style="opacity:.62"' : ""}>
+      <div class="wkn">${lead} · ${dateOf(r.iso)}</div>
+      <div>${opp}${lane}. ${mine}${score}${res}</div>
+    </div>`;
+  }).join("");
+  document.getElementById("poLog").innerHTML = rows;
+  document.getElementById("poNote").textContent =
+    "Playoff games do not count toward the season figures on this page. Handicaps are frozen at the regular-season values.";
+}
+
 /* ---------- main render ---------- */
 function render(){
   if (!who) return;
   const p = RB.playerById(who);
   const prov = pruneProv(p);
   const S = RB.playerStats(p.id);
+  renderPlayoffBlock(p);
 
   /* ----- the numbers (official data only, so they match the Scheduler) ----- */
   document.getElementById("numbersNote").innerHTML =
