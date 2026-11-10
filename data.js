@@ -63,9 +63,22 @@ const STANDINGS = [
    Results: a playoff tie is decided on total pins over the games, so each game
    carries us/them as totals with handicap, same as SCHEDULE. */
 const PLAYOFFS = {
-  format: "Two games, total pins",
+  // Format per the league email of 11/10: two 3-on-3 games a round, all six
+  // bowlers bowl once, total pins with handicap wins. Semis the same night,
+  // reseeded. The final on 11/18 is four games, everyone bowls twice.
+  format: "Two 3-on-3 games, all six bowl, total pins",
+  notes: [
+    "Lanes on at 6:45, games at 7:00.",
+    "Three bowl game 1, the other three bowl game 2.",
+    "Semis follow the same night, reseeded: highest seed left plays lowest.",
+    "Final is Nov 18: four games, everyone bowls twice.",
+    "Subs: only teammates with six regular-season games. A higher-average sub gives back the difference in averages and bowls on the absentee's handicap."
+  ],
   games: [
-    {round:"Quarterfinal", iso:null, time24:null, lane:6, opp:"The Milk Duds", seed:7, oppSeed:2}
+    {round:"Quarterfinal", iso:"2026-11-11", time24:"19:00", lane:6, opp:"The Milk Duds", seed:7, oppSeed:2},
+    {round:"Semifinal",    iso:"2026-11-11", time24:null,    lane:null, opp:"Reseeded after the quarters", seed:7, oppSeed:null},
+    {round:"Final",        iso:"2026-11-18", time24:null,    lane:null, opp:"Winner of the other semi",   seed:7, oppSeed:null,
+     format:"Four 3-on-3 games, everyone bowls twice, total pins"}
   ],
   bracket: [
     {round:"Quarterfinal", lane:8, a:"Deli Meats",      aSeed:1, b:"WHO DO YOU THINK YOU ARE I AM", bSeed:8},
@@ -262,6 +275,13 @@ const NIGHTS = {
     },
     bowled: [["Ron",2], ["Michael",2], ["Phil",1], ["Eric",1]],
     sat:    [["Ken",""], ["Prah",""], ["Kelvyn",""]]
+  },
+  "2026-11-11": {
+    // Quarterfinal. All six starters bowl, three a game. Replies to come.
+    in:    [],
+    maybe: [],
+    out:   [],
+    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
   },
   "2026-11-04": {
     played: true,

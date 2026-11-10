@@ -364,6 +364,7 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .po-br .row{display:flex; gap:10px; align-items:baseline}
   .po-br .ln{color:var(--maple); flex:0 0 52px}
   .po-br .us{color:var(--bone); font-weight:700}
+  .po-notes .row span{text-wrap:pretty}
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
@@ -1096,10 +1097,13 @@ function renderPlayoffs(){
   if (!playoffs.games.length){ sec.hidden = true; return; }
   sec.hidden = false;
   const seedTag = n => n ? `<span class="seed">${n} seed</span>` : "";
+  // Rambowls' own seed only matters when the opponent's is known too.
   const cards = playoffs.games.map(g => {
     const when = g.iso && g.time24
       ? `${fmtDate(g.iso, true)} · ${fmtTime(g.time24)}`
+      : g.iso ? `${fmtDate(g.iso, true)} · <span class="tbd">time to follow</span>`
       : `<span class="tbd">Date and time not posted yet</span>`;
+    const lane = g.lane ? `<span>Lane ${g.lane}</span>` : `<span class="tbd">Lane to follow</span>`;
     let res = "";
     if (g.us != null && g.them != null){
       const win = g.us > g.them;
@@ -1107,19 +1111,22 @@ function renderPlayoffs(){
     }
     return `<div class="po-game">
       <div class="po-kick">${g.round}</div>
-      <div class="po-vs">Rambowls ${seedTag(g.seed)} vs ${g.opp} ${seedTag(g.oppSeed)}</div>
-      <div class="po-meta"><span>${when}</span><span>Lane ${g.lane}</span><span>${playoffs.format}</span>${res}</div>
+      <div class="po-vs">Rambowls ${g.oppSeed ? seedTag(g.seed) : ""} vs ${g.opp} ${seedTag(g.oppSeed)}</div>
+      <div class="po-meta"><span>${when}</span>${lane}<span>${g.format || playoffs.format}</span>${res}</div>
     </div>`;
   }).join("");
   const br = playoffs.bracket.length
     ? `<div class="po-br">` + playoffs.bracket.map(m => {
-        const name = (t, sd) => `<span class="${t === "Rambowls" ? "us" : ""}">${t} (${sd})</span>`;
+        const name = (t, sd) => `<span class="${t === "Rambowls" ? "us" : ""}">${t}${sd ? ` (${sd})` : ""}</span>`;
         return `<div class="row"><span class="ln">Lane ${m.lane}</span><span>${name(m.a, m.aSeed)} vs ${name(m.b, m.bSeed)}</span></div>`;
       }).join("") + `</div>`
     : "";
-  document.getElementById("po").innerHTML = cards + br;
+  const notes = (playoffs.notes || []).length
+    ? `<div class="po-br po-notes">` + playoffs.notes.map(n => `<div class="row"><span>${n}</span></div>`).join("") + `</div>`
+    : "";
+  document.getElementById("po").innerHTML = cards + br + notes;
   document.getElementById("poNote").textContent =
-    "Seeds from the league sheet. Semis and the final follow for the winners.";
+    "Seeds and bracket from the league sheet, format from the league email.";
 }
 
 function renderRecord(){
