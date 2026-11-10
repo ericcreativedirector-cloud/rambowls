@@ -364,7 +364,11 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .po-br .row{display:flex; gap:10px; align-items:baseline}
   .po-br .ln{color:var(--maple); flex:0 0 52px}
   .po-br .us{color:var(--bone); font-weight:700}
-  .po-notes .row span{text-wrap:pretty}
+  .po-game.later .po-vs{color:var(--dim)}
+  .po-note{font-family:var(--data); font-size:11px; color:var(--dim); margin-top:6px; text-wrap:pretty}
+  .po-rules{background:var(--lane-2); padding:10px 12px}
+  .po-rules ul{margin:6px 0 0; padding-left:16px; font-size:13px; line-height:1.4; color:var(--bone)}
+  .po-rules li{margin:4px 0; text-wrap:pretty}
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
@@ -714,7 +718,7 @@ const playoffs     = RB.PLAYOFFS || {games:[], bracket:[]};
 const nightGames   = schedule.concat(
   playoffs.games.filter(g => g.iso && g.time24).map(g => ({...g, wk:g.round, playoff:true})));
 const wkLabel = g => g.playoff ? g.round : `Week ${g.wk}`;
-const wkShort = g => g.playoff ? g.round : `Wk ${g.wk}`;
+const wkShort = g => g.playoff ? (g.short || g.round) : `Wk ${g.wk}`;
 
 // Roster rows are derived — games, average and handicap all come from the
 // shared math, so they match the Stats page by construction.
@@ -844,7 +848,17 @@ function nightCard(iso, nextIso){
     return `<div class="g">`
          + `<span class="gl"><b>${fmtTime(g.time24)}</b><span class="ln">Lane ${g.lane}</span></span>`
          + `<span class="op">${g.opp}${res}</span></div>`;
-  }).join("");
+  }).join("")
+  // A playoff round that follows on the same night, with no time of its own
+  // yet: the semifinal straight after the quarterfinal.
+  + (games[0].playoff
+      ? playoffs.games.filter(p => p.iso === iso && !p.time24).map(p =>
+          `<div class="g"><span class="gl"><b>Then</b><span class="ln">${p.lane ? `Lane ${p.lane}` : "Lane TBD"}</span></span>`
+        + `<span class="op">${p.round}${p.after ? `, with a ${p.after.toLowerCase()} win` : ""}</span></div>`).join("")
+      : "");
+  const lanesOn = games[0].playoff && playoffs.lanesOn
+    ? `<div class="nu-venue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></svg><span>Lanes on at ${fmtTime(playoffs.lanesOn)}</span></div>`
+    : "";
 
   const called = SHIRT_CALLS[iso] || null;
   const calledLabel = called
@@ -859,7 +873,24 @@ function nightCard(iso, nextIso){
   const lu = RB.lineupFor(iso);
   const nameRow = ns => ns.map(n => `<span class="nm">${n}</span>`).join(" · ");
   let lineupBlock;
-  if (lu.names.length){
+  if (games[0].playoff && !lu.played){
+    // Playoff format is two 3-on-3 games with all six bowling, so each bowler
+    // takes one game. lineupFor() resolves games off SCHEDULE, so read the
+    // night's per-game lineup directly here. Subs only from alternates with
+    // six regular-season games.
+    const subs = playoffSubs();
+    const subNote = subs.length
+      ? `Subs allowed: ${subs.join(", ")}.`
+      : "No alternate has the six regular-season games the league needs to sub.";
+    const set = nights[iso] && nights[iso].lineup && !Array.isArray(nights[iso].lineup)
+      ? nights[iso].lineup : null;
+    const body = set
+      ? Object.keys(set).map(g =>
+          `<span class="lg"><span class="gm">G${g}</span>${nameRow(set[g])}</span>`).join("")
+      : ` ${nameRow(STARTERS)}`;
+    lineupBlock = `<div class="lineup"><span class="k">Lineup</span>${body}
+      <span class="sub">All six bowl, three a game${set ? "" : ". Trios to be set"}. ${subNote}</span></div>`;
+  } else if (lu.names.length){
     const tail  = lu.short ? ` <span class="gap">+ ${lu.short} more needed</span>` : "";
     const body  = lu.split
       ? Object.keys(lu.byGame).map(g =>
@@ -890,6 +921,7 @@ function nightCard(iso, nextIso){
         <div class="date">${dateNoWidow(iso)}</div>
         <div>${slotBadge(iso)}</div>
         ${games[0].venue ? `<div class="nu-venue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.5s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10.3" r="2.6"/></svg><span>At ${games[0].venue}</span></div>` : ""}
+        ${lanesOn}
       </div>
       <div class="nu-cell nu-games">
         <div class="cellkick"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9.3 19V5M14.7 19v-6M20 19V8"/></svg>Games</div>
@@ -1097,22 +1129,28 @@ function renderPlayoffs(){
   if (!playoffs.games.length){ sec.hidden = true; return; }
   sec.hidden = false;
   const seedTag = n => n ? `<span class="seed">${n} seed</span>` : "";
-  // Rambowls' own seed only matters when the opponent's is known too.
   const cards = playoffs.games.map(g => {
     const when = g.iso && g.time24
       ? `${fmtDate(g.iso, true)} · ${fmtTime(g.time24)}`
-      : g.iso ? `${fmtDate(g.iso, true)} · <span class="tbd">time to follow</span>`
-      : `<span class="tbd">Date and time not posted yet</span>`;
-    const lane = g.lane ? `<span>Lane ${g.lane}</span>` : `<span class="tbd">Lane to follow</span>`;
+      : g.iso
+        ? `${fmtDate(g.iso, true)} · <span class="tbd">time to come</span>`
+        : `<span class="tbd">Date and time not posted yet</span>`;
+    const lane = g.lane ? `Lane ${g.lane}` : `<span class="tbd">Lane to come</span>`;
+    const vs = g.opp
+      ? `Rambowls ${seedTag(g.seed)} vs ${g.opp} ${seedTag(g.oppSeed)}`
+      : `Rambowls ${seedTag(g.seed)} vs <span class="tbd">opponent to come</span>`;
     let res = "";
     if (g.us != null && g.them != null){
       const win = g.us > g.them;
       res = `<span><span class="chip ${win ? "w" : "l"}">${win ? "W" : "L"}</span> ${g.us}\u2013${g.them}</span>`;
     }
-    return `<div class="po-game">
-      <div class="po-kick">${g.round}</div>
-      <div class="po-vs">Rambowls ${g.oppSeed ? seedTag(g.seed) : ""} vs ${g.opp} ${seedTag(g.oppSeed)}</div>
-      <div class="po-meta"><span>${when}</span>${lane}<span>${g.format || playoffs.format}</span>${res}</div>
+    const kick = g.after ? `${g.round} · with a ${g.after.toLowerCase()} win` : g.round;
+    const note = g.note ? `<div class="po-note">${g.note}</div>` : "";
+    return `<div class="po-game${g.after ? " later" : ""}">
+      <div class="po-kick">${kick}</div>
+      <div class="po-vs">${vs}</div>
+      <div class="po-meta"><span>${when}</span><span>${lane}</span><span>${g.format || playoffs.format}</span>${res}</div>
+      ${note}
     </div>`;
   }).join("");
   const br = playoffs.bracket.length
@@ -1121,12 +1159,14 @@ function renderPlayoffs(){
         return `<div class="row"><span class="ln">Lane ${m.lane}</span><span>${name(m.a, m.aSeed)} vs ${name(m.b, m.bSeed)}</span></div>`;
       }).join("") + `</div>`
     : "";
-  const notes = (playoffs.notes || []).length
-    ? `<div class="po-br po-notes">` + playoffs.notes.map(n => `<div class="row"><span>${n}</span></div>`).join("") + `</div>`
+  const rules = (playoffs.rules || []).length
+    ? `<div class="po-rules"><div class="po-kick">League rules</div><ul>${
+        playoffs.rules.map(r => `<li>${r}</li>`).join("")}</ul></div>`
     : "";
-  document.getElementById("po").innerHTML = cards + br + notes;
+  document.getElementById("po").innerHTML = cards + br + rules;
+  const lanesOn = playoffs.lanesOn ? ` Lanes on at ${fmtTime(playoffs.lanesOn)}.` : "";
   document.getElementById("poNote").textContent =
-    "Seeds and bracket from the league sheet, format from the league email.";
+    `Seeds from the league sheet, format and rules from the league email.${lanesOn}`;
 }
 
 function renderRecord(){
@@ -1215,16 +1255,25 @@ function renderRecord(){
    real problem; more is a rotation, which is how people reach six games —
    so it reads as information, not a warning. */
 const NEED = RB.SEASON.needPerGame;
-function headcount(inN, maybeN){
+/* Playoff rounds are all six bowlers, not a trio. */
+const STARTERS = RB.PLAYERS.filter(p => !p.alt).map(p => p.short);
+const isPlayoffNight = iso => nightGames.some(g => g.iso === iso && g.playoff);
+const needFor = iso => isPlayoffNight(iso) ? STARTERS.length : NEED;
+/* Alternates the league lets us sub in: six regular-season games. */
+const playoffSubs = () => RB.PLAYERS
+  .filter(p => p.alt && RB.playerStats(p.id).count >= (playoffs.subGames || RB.SEASON.qualify))
+  .map(p => p.short);
+function headcount(inN, maybeN, need){
+  need = need || NEED;
   const maybe = maybeN ? ` · ${maybeN} maybe` : "";
   let cls, txt;
-  if (inN === NEED){
-    cls = "ok";   txt = `Roster set · ${inN}/${NEED} in`;
-  } else if (inN < NEED){
-    const gap = NEED - inN;
+  if (inN === need){
+    cls = "ok";   txt = `Roster set · ${inN}/${need} in`;
+  } else if (inN < need){
+    const gap = need - inN;
     cls = "warn"; txt = `${inN} in · need ${gap} more`;
   } else {
-    cls = "rot";  txt = `${inN} in · rotate ${inN - NEED}`;
+    cls = "rot";  txt = `${inN} in · rotate ${inN - need}`;
   }
   return `<span class="headcount ${cls}">${txt}${maybe}</span>`;
 }
@@ -1236,12 +1285,14 @@ function headcount(inN, maybeN){
    and it means nobody has to decide who is or isn't on a hardcoded list.
    The "sms:?&body=" form is what works across platforms; the "?&" is not
    a typo. */
-function smsLink(iso, wk, status){
+function smsLink(iso, label, status){
   return `sms:?&body=` + encodeURIComponent(
-    `Rambowls Wk ${wk} - ${fmtDate(iso)} - I'm ${status}`);
+    `Rambowls ${label} - ${fmtDate(iso)} - I'm ${status}`);
 }
 
-function replyBox(iso, wk){
+/* `label` is the short night name the text starts with: "Wk 12", or the
+   playoff round. */
+function replyBox(iso, label){
   const cap  = RB.SEASON.captain;
   const chat = RB.SEASON.groupChatName;
   // Messages opens with the text written and nobody in the To: field, so the
@@ -1252,9 +1303,9 @@ function replyBox(iso, wk){
     <p>Send to <strong>${cap}</strong>, he keeps the sheet.
        Add the <strong>${chat}</strong> thread too if you want everyone to see it.</p>
     <div class="reply-row">
-      <a class="yes" href="${smsLink(iso, wk, "IN")}">I'm in</a>
-      <a class="mb"  href="${smsLink(iso, wk, "a MAYBE")}">Maybe</a>
-      <a class="no"  href="${smsLink(iso, wk, "OUT")}">I'm out</a>
+      <a class="yes" href="${smsLink(iso, label, "IN")}">I'm in</a>
+      <a class="mb"  href="${smsLink(iso, label, "a MAYBE")}">Maybe</a>
+      <a class="no"  href="${smsLink(iso, label, "OUT")}">I'm out</a>
     </div>
   </div>`;
 }
@@ -1273,21 +1324,25 @@ function renderNight(iso){
   const box  = document.getElementById("avail");
   const data = nights[iso];
   const games = nightGames.filter(g => g.iso === iso);
-  const wk = games.length ? wkLabel(games[0]) : "";
+  const wk    = games.length ? wkLabel(games[0]) : "";
+  const label = games.length ? wkShort(games[0]) : "";
+  const po    = isPlayoffNight(iso);
+  const need  = needFor(iso);
   const matchups = games.map(g => `${g.opp} at ${fmtTime(g.time24)} on Lane ${g.lane}`).join(", ")
-    + (games[0] && games[0].venue ? `. At ${games[0].venue}, not Williamsburg` : "");
+    + (games[0] && games[0].venue ? `. At ${games[0].venue}, not Williamsburg` : "")
+    + (po ? `. All six bowl, three a game${playoffs.lanesOn ? `, lanes on at ${fmtTime(playoffs.lanesOn).replace(" PM","")}` : ""}` : "");
 
   document.querySelectorAll("#availTabs .tab").forEach(t =>
     t.classList.toggle("on", t.dataset.iso === iso));
 
   if (!data){
     const past = iso < todayISO();
-    head.innerHTML = `Availability · ${wk}` + (past ? "" : headcount(0, 0));
+    head.innerHTML = `Availability · ${wk}` + (past ? "" : headcount(0, 0, need));
     note.textContent = past
       ? `${fmtDate(iso, true)} · ${matchups}. No lineup recorded for this night.`
       : `${fmtDate(iso, true)} · ${matchups}. Nobody's replied yet. Send it in early if you already know.`;
     box.innerHTML = col("quiet", past ? "Not recorded" : "No replies yet", [])
-      + (past ? "" : replyBox(iso, wk));
+      + (past ? "" : replyBox(iso, label));
     return;
   }
 
@@ -1299,12 +1354,12 @@ function renderNight(iso){
   } else {
     const today = iso === todayISO();
     head.innerHTML = `${today ? "Tonight" : "Availability"} · ${wk}`
-      + headcount((data.in || []).length, (data.maybe || []).length);
+      + headcount((data.in || []).length, (data.maybe || []).length, need);
     note.textContent = `${fmtDate(iso, true)} · ${matchups}.`;
     box.innerHTML =
       col("in","In",data.in) + col("maybe","Maybe",data.maybe) +
       col("out","Out",data.out) + col("quiet","No reply yet",data.quiet) +
-      replyBox(iso, wk);
+      replyBox(iso, label);
   }
 }
 
@@ -1367,7 +1422,7 @@ function renderSchedule(){
     }
     const hide = !inWindow(g.iso);
     return `<tr class="${done?"done":""}${g.iso===next?" next":""}${hide?" collapsible hidden-row":""}">
-      <td class="wk">${g.playoff ? "QF" : g.wk}</td>
+      <td class="wk">${g.playoff ? (g.short || g.round) : g.wk}</td>
       <td class="when">${slotBadge2(g)}${fmtDate(g.iso)} · ${fmtTime(g.time24)} · L${g.lane}</td>
       <td>${g.opp}</td>
       <td class="score">${result}</td>
@@ -1421,7 +1476,7 @@ function downloadICS(games, filename){
       `DTEND;TZID=America/New_York:${icsStamp(g.iso, g.time24, 65)}`,
       `SUMMARY:Rambowls vs ${g.opp.replace(/[,;]/g," ")}`,
       `LOCATION:${(g.venue || "The Gutter, Williamsburg").replace(/\s*[,;]\s*/g," ")}, Lane ${g.lane}`,
-      `DESCRIPTION:${wkLabel(g)} · 2026 Fall Wednesday League. Lane ${g.lane}.${g.venue ? ` At ${g.venue.replace(/\s*[,;]\s*/g," ")}, not Williamsburg.` : ""}`,
+      `DESCRIPTION:${wkLabel(g)} · 2026 Fall Wednesday League. Lane ${g.lane}.${g.venue ? ` At ${g.venue.replace(/\s*[,;]\s*/g," ")}, not Williamsburg.` : ""}${g.playoff ? ` Playoffs: all six bowl, three a game.${playoffs.lanesOn ? ` Lanes on at ${fmtTime(playoffs.lanesOn)}.` : ""}` : ""}`,
       "BEGIN:VALARM","TRIGGER:-PT60M","ACTION:DISPLAY",
       "DESCRIPTION:Rambowls in 1 hour","END:VALARM",
       "END:VEVENT"

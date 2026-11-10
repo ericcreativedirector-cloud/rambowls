@@ -143,11 +143,15 @@ Live in about a minute.
   score appears. Provisional scores never affect average, handicap, high game,
   qualification, Road to Goal or the night chart — those stay official-only.
 - **Playoffs.** `PLAYOFFS` in `data.js` holds the bracket from the league
-  sheet and the Rambowls games, one per round. A game with no `iso` shows
-  "Date and time not posted yet" in the Playoffs section; give it an `iso`
-  and `time24` and it joins Next up, Availability, the schedule table and
-  the calendar export. Playoff games never count toward the record or the
-  six-game eligibility.
+  sheet, the Rambowls games one per round, and the league's playoff rules
+  as `rules`. A game with both `iso` and `time24` joins Next up,
+  Availability, the schedule table and the calendar export; one with only
+  an `iso` stays in the Playoffs section until the league posts the rest.
+  Playoff rounds are two 3-on-3 games with all six bowling, so the night
+  card lists the starters until `NIGHTS[iso].lineup` names the two trios,
+  and only alternates with `subGames` (six) regular-season games are
+  offered as subs. Playoff games never count
+  toward the record or the six-game eligibility.
 - **Away nights.** A game in `SCHEDULE` can carry `venue:"The Gutter, Long
   Island City"` when the league moves a night. The night card, the
   availability note and the calendar export all say so. Leave it off for

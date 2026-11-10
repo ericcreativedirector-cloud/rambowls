@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-11-04",
+  lastUpdated:"2026-11-10",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -56,35 +56,56 @@ const STANDINGS = [
 
 /* ---------- playoffs ----------
    From the league sheet's Playoffs tab, seeds as written there in parentheses.
-   The sheet gives lanes but no date or time: set iso and time24 on a game when
-   the league posts them and that night shows up in Next up, Availability, the
-   schedule table and the calendar export like any other. Playoff games never
+   A game with both iso and time24 shows up in Next up, Availability, the
+   schedule table and the calendar export like any other night; one with only
+   an iso stays in the Playoffs section until the league posts the rest. Playoff games never
    touch the regular-season record or the six-game eligibility count.
    Results: a playoff tie is decided on total pins over the games, so each game
    carries us/them as totals with handicap, same as SCHEDULE. */
 const PLAYOFFS = {
-  // Format per the league email of 11/10: two 3-on-3 games a round, all six
-  // bowlers bowl once, total pins with handicap wins. Semis the same night,
-  // reseeded. The final on 11/18 is four games, everyone bowls twice.
-  format: "Two 3-on-3 games, all six bowl, total pins",
-  notes: [
-    "Lanes on at 6:45, games at 7:00.",
-    "Three bowl game 1, the other three bowl game 2.",
-    "Semis follow the same night, reseeded: highest seed left plays lowest.",
-    "Final is Nov 18: four games, everyone bowls twice.",
-    "Subs: only teammates with six regular-season games. A higher-average sub gives back the difference in averages and bowls on the absentee's handicap."
-  ],
+  // League email of 11/10 (Tony, for Bill and Brent): lanes on at 6:45, games
+  // start at 7:00. Quarters and semis are both 11/11, the final is 11/18.
+  // Quarters and semis: two 3-on-3 games, all six bowlers bowl, so each bowls
+  // one game. Total score with handicap wins. Final: four games, all six bowl
+  // twice.
+  format:  "Two 3-on-3 games, all six bowl once, total pins",
+  lanesOn: "18:45",
+  // An alternate may sub only with six regular-season games. The UI reads the
+  // roster against this number; nobody is hand-listed as eligible.
+  subGames: 6,
   games: [
-    {round:"Quarterfinal", iso:"2026-11-11", time24:"19:00", lane:6, opp:"The Milk Duds", seed:7, oppSeed:2},
-    {round:"Semifinal",    iso:"2026-11-11", time24:null,    lane:null, opp:"Reseeded after the quarters", seed:7, oppSeed:null},
-    {round:"Final",        iso:"2026-11-18", time24:null,    lane:null, opp:"Winner of the other semi",   seed:7, oppSeed:null,
-     format:"Four 3-on-3 games, everyone bowls twice, total pins"}
+    {round:"Quarterfinal", short:"QF", iso:"2026-11-11", time24:"19:00", lane:6,
+     opp:"The Milk Duds", seed:7, oppSeed:2},
+    // Same night, for the quarterfinal winners. Reseeded, so the opponent and
+    // lane come from the night itself. No time24 on purpose: the night card
+    // for 11/11 already covers it, and a second dated game would double it.
+    {round:"Semifinal", short:"SF", iso:"2026-11-11", time24:null, lane:null, opp:null, seed:7,
+     after:"Quarterfinal",
+     note:"Same night, straight after the quarterfinal. Reseeded: the highest seed still in plays the lowest."},
+    // Set time24 and lane once the league posts them and 11/18 joins Next up,
+    // Availability, the schedule table and the calendar like any other night.
+    {round:"Final", short:"F", iso:"2026-11-18", time24:null, lane:null, opp:null, seed:7,
+     after:"Semifinal", format:"Four 3-on-3 games, all six bowl twice, total pins",
+     note:"Lane and time not posted yet."}
   ],
   bracket: [
     {round:"Quarterfinal", lane:8, a:"Deli Meats",      aSeed:1, b:"WHO DO YOU THINK YOU ARE I AM", bSeed:8},
     {round:"Quarterfinal", lane:7, a:"Bite Legends",    aSeed:3, b:"Peanut Gutter & Jelly",         bSeed:6},
     {round:"Quarterfinal", lane:6, a:"The Milk Duds",   aSeed:2, b:"Rambowls",                      bSeed:7},
     {round:"Quarterfinal", lane:5, a:"2 Legit 2 Split", aSeed:4, b:"Bowls on Parade",               bSeed:5}
+  ],
+  // The league email, condensed. Nothing here is invented.
+  rules: [
+    "Lanes on at 6:45, games start at 7:00.",
+    "Quarterfinal and semifinal, both 11/11: two games, three on three, all six bowlers bowl (three a game), total score wins.",
+    "Semifinals are reseeded. The highest seed still in plays the lowest.",
+    "Final, 11/18: four games, all six bowlers bowl twice, total score wins.",
+    "Individual handicaps apply in every round as normal. They do not reset between rounds.",
+    "Sub with a higher average: deduct the difference in averages. The absent bowler's handicap is used for that game, not the sub's.",
+    "Sub with a lower average: the sub uses their own handicap.",
+    "A sub cannot sub in a game they are bowling as themselves. Declare at the start of the game whether you are subbing or bowling as yourself.",
+    "An alternate may sub only if they bowled six games in the regular season. Standard sub penalties apply.",
+    "Tie after all games: every bowler bowls one more tenth frame, handicaps pro-rated to a tenth, and all six scores are added. Repeat until there is a winner."
   ]
 };
 
@@ -276,13 +297,6 @@ const NIGHTS = {
     bowled: [["Ron",2], ["Michael",2], ["Phil",1], ["Eric",1]],
     sat:    [["Ken",""], ["Prah",""], ["Kelvyn",""]]
   },
-  "2026-11-11": {
-    // Quarterfinal. All six starters bowl, three a game. Replies to come.
-    in:    [],
-    maybe: [],
-    out:   [],
-    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
-  },
   "2026-11-04": {
     played: true,
     // Last night of the season. Eric came in for Phil in game 2. Swept it.
@@ -292,6 +306,14 @@ const NIGHTS = {
     },
     bowled: [["Ron",2], ["Ken",2], ["Phil",1], ["Eric",1]],
     sat:    [["Prah",""], ["Michael",""], ["Kelvyn",""]]
+  },
+  // Playoff night. All six bowl, three a game: set lineup {1:[...], 2:[...]}
+  // once the two trios are decided and the night card shows them.
+  "2026-11-11": {
+    in:    [],
+    maybe: [],
+    out:   [],
+    quiet: [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Phil",""], ["Prah",""]]
   }
 };
 
