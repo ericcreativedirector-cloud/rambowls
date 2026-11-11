@@ -116,6 +116,88 @@ const PLAYOFFS = {
     {round:"Quarterfinal", lane:6, a:"The Milk Duds",   aSeed:2, b:"Rambowls",                      bSeed:7},
     {round:"Quarterfinal", lane:5, a:"2 Legit 2 Split", aSeed:4, b:"Bowls on Parade",               bSeed:5}
   ],
+  /* Scouting for 11/11. Every average, handicap and score is copied from the
+     league sheet's team tabs, final regular-season figures through 11/4.
+     proj = sum of (season average + handicap) for the six bowlers with the six
+     games needed to bowl. odds is an estimate from those averages and each
+     bowler's game-to-game spread, not a league number. bowlers rows are
+     [name, avg, hcp, last four scores, tag, read]; tag is "threat" or "soft". */
+  scout: {
+    us: 1077,
+    source: "League sheet through 11/4. Projection is season average plus handicap for each team's six eligible bowlers. Odds and the chance of each draw are estimates.",
+    teams: [
+      {round:"Quarterfinal", team:"The Milk Duds", seed:2, rec:"18-6", proj:1079, odds:49,
+       bowlers: [
+         ["Frank Burton",    157.4, 30, [169,134,161,181], "threat", "Anchor. 16 games, season low 134."],
+         ["Julian Jacobson", 143.9, 39, [133,133,95,175],  "",       "Swings from 95 to 188."],
+         ["Matty Krant",     133.8, 46, [100,135,117,153], "",       "Only 6 games."],
+         ["Steven Carey",    127.3, 51, [132,136,153,104], "",       "Low 78, high 153."],
+         ["Marc Lesser",     125.3, 52, [98,141,130,127],  "",       "Steady."],
+         ["Hannah Berg",     111.1, 62, [111,98,146,102],  "soft",   "Their lowest expected score with handicap."]
+       ],
+       notes: [
+         "Won 7 of their last 8. Team average with handicap went from 523 in the first half to 560 in the second.",
+         "Season series 1-1: we won 559-488 in Week 2, lost 517-549 in Week 9 on Lane 6."
+       ]},
+      /* Semifinal is reseeded, so the opponent is not known until the
+         quarterfinals finish. options are every team we can draw, most likely
+         first. chance = estimated chance we draw them given we win; needs = the
+         results that put them across from us. Once PLAYOFFS.games' semifinal
+         has opp set, only that team's block shows and the tabs go away.
+         Bite Legends and WHO cannot be our semifinal opponent under reseeding. */
+      {round:"Semifinal", options: [
+        {team:"Deli Meats", short:"Deli Meats", seed:1, rec:"19-5", proj:1104, odds:36, chance:62,
+         needs:"Deli Meats beat WHO DO YOU THINK YOU ARE I AM on Lane 8.",
+         bowlers: [
+           ["Eddie Arecco",     175.9, 17, [218,246,150,152], "threat", "218 and 246 two weeks ago."],
+           ["Danny O'Brien",    160.2, 28, [178,204,138,129], "threat", "Anchor. 21 games, high 225."],
+           ["Ted Pfeifer",      150.7, 35, [147,166,136,166], "",       "Consistent."],
+           ["Matt Stollstorff", 149.2, 36, [153,148,168,108], "",       "Only 6 games."],
+           ["Cole Dudley",      124.6, 53, [88,143,138,129],  "soft",   "Ranges from 88 to 178."],
+           ["Alex Realmuto",    112.0, 62, [122,112,95,87],   "soft",   "Has not bowled since 10/14."]
+         ],
+         notes: ["Won their last six.", "Beat us 549-498 in Week 5, our only meeting."]},
+        {team:"Bowls on Parade", short:"Bowls", seed:5, rec:"13-11", proj:1088, odds:43, chance:17,
+         needs:"WHO beat Deli Meats, Bite Legends beat Peanut Gutter & Jelly, and Bowls on Parade beat 2 Legit 2 Split.",
+         bowlers: [
+           ["Pete Dixon",           186.2, 10, [213,161,176,173], "threat", "Season low is 161."],
+           ["Adam Maid",            167.1, 23, [141,213,187,138], "threat", "213 and 187 in the last four."],
+           ["Brent Postlethweight", 141.7, 41, [174,144,121,129], "",       "Steady. 12 games, low 121."],
+           ["Seth Keim",            138.6, 43, [202,124,156,144], "",       "High 202."],
+           ["Konner Smith",         133.2, 47, [120,136,156,141], "",       "Ranges from 98 to 166."],
+           ["Ally Martinelli",      117.8, 58, [132,112,125,101], "",       "Only 6 games."],
+           ["Jaclyn Whalen",        113.1, 61, [103,141,134,108], "",       "Ranges from 90 to 141."],
+           ["Eliza Hanson",          96.4, 73, [100,78,123,105],  "soft",   "Their lowest expected score with handicap."]
+         ],
+         notes: [
+           "Eight of them have six games and only six bowl. The projection runs from 1,064 to 1,107 depending on who they send; 1,088 is the middle.",
+           "Season series 1-1: lost 540-577 in Week 5, won 577-543 in Week 9."
+         ]},
+        {team:"2 Legit 2 Split", short:"2 Legit", seed:4, rec:"16-8", proj:1071, odds:53, chance:12,
+         needs:"WHO beat Deli Meats, Bite Legends beat Peanut Gutter & Jelly, and 2 Legit 2 Split beat Bowls on Parade.",
+         bowlers: [
+           ["Dan O'Brien",     143.6, 39, [165,138,156,104], "",     "Low of 104 came in the most recent game."],
+           ["Dave King",       141.7, 41, [124,123,179,113], "",     "14 games, the most on the team."],
+           ["Grayson Johnson", 136.8, 44, [141,187,130,168], "",     "Has not bowled since 10/7."],
+           ["Nicole Bell",     135.8, 45, [133,153,113,144], "",     "Ranges from 101 to 177."],
+           ["Kevin Pernick",   119.4, 56, [126,69,84,124],   "soft", "69 and 84 in the last four."],
+           ["Matt Duncan",      95.7, 73, [133,88,98,135],   "",     "133 and 135 in the last four, on a 73 handicap."]
+         ],
+         notes: ["Season series 1-1: lost 556-579 in Week 8, won 549-495 in Week 11."]},
+        {team:"Peanut Gutter & Jelly", short:"PG&J", seed:6, rec:"13-11", proj:1063, odds:57, chance:9,
+         needs:"WHO beat Deli Meats and Peanut Gutter & Jelly beat Bite Legends.",
+         bowlers: [
+           ["Luke Harris",     142.8, 40, [92,102,176,135],   "",       "Swings from 92 to 187."],
+           ["Devon Bostick",   132.4, 47, [186,153,160,116],  "threat", "186, 153 and 160 in the last four."],
+           ["Asher Tanenbaum", 131.4, 48, [103,139,143,136],  "",       "Ranges from 103 to 155."],
+           ["Stanley Simons",  126.7, 51, [166,142,120,91],   "",       "166 down to 91 across the last four."],
+           ["Jeff Novak",      118.2, 57, [148,101,135,98],   "",       "Ranges from 84 to 156."],
+           ["Nyah Estevez",     95.4, 73, [130,69,71,86],     "soft",   "Last three: 69, 71, 86."]
+         ],
+         notes: ["Lost their last three.", "Season series 1-1: won 552-541 in Week 2, lost 539-590 in Week 10."]}
+      ]}
+    ]
+  },
   // The league email, condensed. Nothing here is invented.
   rules: [
     "Lanes on at 6:45, games start at 7:00.",

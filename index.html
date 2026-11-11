@@ -380,6 +380,38 @@ if(t==="NYK"||t==="BKN")document.documentElement.setAttribute("data-theme",t);}c
   .po-rules{background:var(--lane-2); padding:10px 12px}
   .po-rules ul{margin:6px 0 0; padding-left:16px; font-size:13px; line-height:1.4; color:var(--bone)}
   .po-rules li{margin:4px 0; text-wrap:pretty}
+  /* scouting: one block per opponent, numbers in the data face, a tag only
+     where the sheet backs it (threat = strike, soft spot = signal) */
+  .sc{background:var(--lane-2); padding:12px; min-width:0}
+  .sc.later .sc-team{color:var(--dim)}
+  .sc-team{font-family:var(--display); font-weight:600; font-size:22px; line-height:1.15; margin-top:6px; text-wrap:balance}
+  .sc-team .seed{font-family:var(--data); font-size:12px; color:var(--dim); font-weight:400; letter-spacing:.04em}
+  .sc-proj{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--rule);
+    border:1px solid var(--rule); border-radius:2px; margin-top:10px}
+  .sc-proj div{background:var(--lane); padding:7px 9px}
+  .sc-proj .pl{display:block; font-family:var(--data); font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
+  .sc-proj .pv{font-family:var(--display); font-weight:600; font-size:22px; line-height:1.1; font-variant-numeric:tabular-nums}
+  .sc-rows{margin-top:10px; display:grid; gap:0}
+  .sc-row{display:grid; grid-template-columns:1fr auto; gap:2px 10px; padding:7px 0; border-top:1px solid var(--rule)}
+  .sc-row .nm{font-weight:500; font-size:14px}
+  .sc-row .num{font-family:var(--data); font-size:12px; white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums}
+  .sc-row .num i{font-style:normal; color:var(--dim)}
+  .sc-row .rd{font-size:12px; color:var(--dim); text-wrap:pretty}
+  .sc-row .l4{font-family:var(--data); font-size:11px; color:var(--dim); white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums}
+  .sc-tag{font-family:var(--data); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:1px 5px; border:1px solid currentColor; border-radius:2px; margin-left:6px; vertical-align:1px; white-space:nowrap}
+  .sc-tag.threat{color:var(--strike)} .sc-tag.soft{color:var(--signal)}
+  .sc-notes{margin:8px 0 0; padding-left:16px; font-size:13px; line-height:1.4}
+  .sc-notes li{margin:4px 0; text-wrap:pretty}
+  /* four draws fit a 2 by 2 grid at phone width, so none hides off-screen */
+  .tabs.sc-tabs{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:10px 0 0; overflow:visible; padding-bottom:0}
+  .tabs.sc-tabs .tab{display:flex; min-width:0; justify-content:space-between; align-items:center; gap:8px; text-align:left;
+    padding:7px 10px; letter-spacing:.05em}
+  .sc-tabs .tab b{font-weight:500; opacity:.75; margin-left:3px}
+  .sc-tabs .tab.on b{font-weight:700; opacity:1}
+  .sc-needs{font-family:var(--data); font-size:11px; color:var(--dim); margin-top:8px; text-wrap:pretty}
+  .sc-needs b{color:var(--bone); font-weight:500}
+  .sc-src{background:var(--lane-2); padding:10px 12px; font-family:var(--data); font-size:10.5px; color:var(--dim); text-wrap:pretty}
   .record{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
     background:var(--rule); border:1px solid var(--rule); border-radius:2px; overflow:hidden}
   .rec-cell{background:var(--lane-2); padding:11px 12px}
@@ -1126,6 +1158,7 @@ function renderBoard(){
 /* ---------- playoffs ----------
    Bracket off the league sheet. A game with no date yet says so; once the
    league posts one the night also runs through Next up and Availability. */
+let scoutPick = 0;   // which semifinal draw the Scouting tabs show
 function renderPlayoffs(){
   const sec = document.getElementById("playoffsSec");
   if (!playoffs.games.length){ sec.hidden = true; return; }
@@ -1166,7 +1199,48 @@ function renderPlayoffs(){
     ? `<div class="po-rules"><div class="po-kick">League rules</div><ul>${
         playoffs.rules.map(r => `<li>${r}</li>`).join("")}</ul></div>`
     : "";
-  document.getElementById("po").innerHTML = cards + br + rules;
+  // Scouting: one block per round still in play, numbers straight off data.js.
+  // A round with options (the reseeded semifinal) gets a tab per team we can
+  // draw, most likely first; once the league names the opponent, only that
+  // team shows.
+  const sc = playoffs.scout;
+  const num = n => n.toLocaleString("en-US");
+  const scTeam = t => {
+    const rows = t.bowlers.map(([nm, avg, hcp, last, tag, read]) =>
+      `<div class="sc-row"><span class="nm">${nm}${tag ? `<span class="sc-tag ${tag}">${tag === "threat" ? "Threat" : "Soft spot"}</span>` : ""}</span>`
+      + `<span class="num">${avg.toFixed(1)} <i>+${hcp}</i></span>`
+      + `<span class="rd">${read}</span><span class="l4">${last.join(" ")}</span></div>`).join("");
+    return `<div class="sc-team">${t.team} <span class="seed">${t.seed} seed · ${t.rec}</span></div>
+      <div class="sc-proj"><div><span class="pl">Rambowls</span><span class="pv">${num(sc.us)}</span></div>`
+      + `<div><span class="pl">${t.short || t.team}</span><span class="pv">${num(t.proj)}</span></div>`
+      + `<div><span class="pl">Our odds, est.</span><span class="pv">${t.odds}%</span></div></div>
+      <div class="sc-rows">${rows}</div>
+      <ul class="sc-notes">${t.notes.map(n => `<li>${n}</li>`).join("")}</ul>`;
+  };
+  const scout = sc ? sc.teams.map(t => {
+    const g = playoffs.games.find(p => p.round === t.round);
+    const st = g ? RB.playoffStatus(g) : "live";
+    if (st === "out" || st === "done") return "";
+    const later = st === "conditional" ? " later" : "";
+    if (!t.options)
+      return `<div class="sc${later}"><div class="po-kick">Scouting · ${t.round}</div>${scTeam(t)}</div>`;
+    const known = g && g.opp ? t.options.find(o => o.team === g.opp) : null;
+    if (known)
+      return `<div class="sc${later}"><div class="po-kick">Scouting · ${t.round}</div>${scTeam(known)}</div>`;
+    const pick = t.options[scoutPick] || t.options[0];
+    const tabs = t.options.map((o, i) =>
+      `<button class="tab${o === pick ? " on" : ""}" role="tab" aria-selected="${o === pick}" data-scout="${i}">${o.short} <b>${o.chance}%</b></button>`).join("");
+    return `<div class="sc">
+      <div class="po-kick">Scouting · ${t.round} · who we could draw</div>
+      <div class="tabs sc-tabs" role="tablist">${tabs}</div>
+      <div class="sc-needs"><b>${pick.chance}% chance.</b> Needs: ${pick.needs}</div>
+      ${scTeam(pick)}
+    </div>`;
+  }).join("") : "";
+  const scoutSrc = scout ? `<div class="sc-src">Average, handicap and last four games. ${sc.source}</div>` : "";
+  document.getElementById("po").innerHTML = cards + scout + scoutSrc + br + rules;
+  document.querySelectorAll("#po [data-scout]").forEach(b =>
+    b.addEventListener("click", () => { scoutPick = +b.dataset.scout; renderPlayoffs(); }));
   const lanesOn = playoffs.lanesOn ? ` Lanes on at ${fmtTime(playoffs.lanesOn)}.` : "";
   document.getElementById("poNote").textContent =
     `Seeds from the league sheet, format and rules from the league email.${lanesOn}`;
