@@ -10,7 +10,7 @@ const SEASON = {
   label:      "2026 Fall Wednesday League",
   venue:      "The Gutter Bar",
   span:       "Aug 19 – Nov 4 · Lanes 5–8 · 12 weeks, 24 games",
-  lastUpdated:"2026-11-10",
+  lastUpdated:"2026-11-11",
   // Name of the team's group thread in Messages, shown in the reply prompt
   // so people know which conversation to pick. Cosmetic only.
   groupChatName:"Rambowls",
@@ -92,7 +92,10 @@ const PLAYOFFS = {
      about:{2:"20:10"},
      // Game 1 card: Rambowls 400 scratch + 145 = 545, The Milk Duds 452 + 120
      // = 572. Down 27 going into game 2. Round totals go in after game 2.
-     scores:{1:{Ron:148, Phil:116, Michael:136}, 2:{}}, us:null, them:null},
+     // Game 2 card: Rambowls 312 + 144 = 456, The Milk Duds 369 + 137 = 506 (a
+     // sub penalty of 23 came off their handicap). Round on total pins:
+     // 1001 to 1078, The Milk Duds by 77. Season over.
+     scores:{1:{Ron:148, Phil:116, Michael:136}, 2:{Prah:113, Eric:100, Ken:99}}, us:1001, them:1078},
     // Same night, for the quarterfinal winners. Reseeded, so the opponent and
     // lane come from the night itself. No time24 on purpose: the night card
     // for 11/11 already covers it, and a second dated game would double it.
@@ -421,14 +424,13 @@ const NIGHTS = {
     // the quarterfinal's; the semifinal's trios live on PLAYOFFS.
     // Game 1 card: Ron, Phil and Mike bowled, so Michael went in for Ken.
     // Everyone bowls once, which leaves Eric, Ken and Prah for game 2.
+    played: true,
     lineup: {
       1: ["Ron","Phil","Michael"],
       2: ["Eric","Ken","Prah"]
     },
-    in:    [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""], ["Phil","7:00 and the last game only"]],
-    maybe: [],
-    out:   [],
-    quiet: []
+    bowled: [["Eric",1], ["Ken",1], ["Michael",1], ["Phil",1], ["Prah",1], ["Ron",1]],
+    sat:    [["Kelvyn",""], ["Kenny",""]]
   }
 };
 
