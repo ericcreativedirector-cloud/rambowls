@@ -90,7 +90,9 @@ const PLAYOFFS = {
     {round:"Quarterfinal", short:"QF", iso:"2026-11-11", time24:"19:00", lane:6,
      opp:"The Milk Duds", seed:7, oppSeed:2,
      about:{2:"20:10"},
-     scores:{1:{}, 2:{}}, us:null, them:null},
+     // Game 1 card: Rambowls 400 scratch + 145 = 545, The Milk Duds 452 + 120
+     // = 572. Down 27 going into game 2. Round totals go in after game 2.
+     scores:{1:{Ron:148, Phil:116, Michael:136}, 2:{}}, us:null, them:null},
     // Same night, for the quarterfinal winners. Reseeded, so the opponent and
     // lane come from the night itself. No time24 on purpose: the night card
     // for 11/11 already covers it, and a second dated game would double it.
@@ -417,9 +419,11 @@ const NIGHTS = {
     // Quarterfinal. All six starters in. Phil has softball at 8:30, so he
     // bowls the 7:00 game and the last game of the night only. This lineup is
     // the quarterfinal's; the semifinal's trios live on PLAYOFFS.
+    // Game 1 card: Ron, Phil and Mike bowled, so Michael went in for Ken.
+    // Everyone bowls once, which leaves Eric, Ken and Prah for game 2.
     lineup: {
-      1: ["Phil","Ken","Ron"],
-      2: ["Eric","Michael","Prah"]
+      1: ["Ron","Phil","Michael"],
+      2: ["Eric","Ken","Prah"]
     },
     in:    [["Eric",""], ["Ken",""], ["Ron",""], ["Michael",""], ["Prah",""], ["Phil","7:00 and the last game only"]],
     maybe: [],
